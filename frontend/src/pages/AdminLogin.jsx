@@ -140,33 +140,33 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-blue-950 to-slate-950 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 relative">
-      {/* Top Bar with Back Link & Language Switcher */}
-      <div className="absolute top-6 left-6 right-6 flex items-center justify-between">
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-blue-950 to-slate-950 flex flex-col justify-between sm:justify-center py-2 sm:py-8 px-3 sm:px-6 lg:px-8">
+      {/* Dedicated Top Navigation Row */}
+      <div className="w-full flex items-center justify-between px-4 pt-3 pb-2 max-w-4xl mx-auto">
         <Link
           to="/"
-          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-semibold backdrop-blur-md transition-all touch-target-min"
+          className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-semibold backdrop-blur-md transition-all touch-target-min"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
           <span>{lang === 'hi' ? 'मुख्य पृष्ठ पर लौटें' : 'Back to Home'}</span>
         </Link>
 
         <button
           onClick={toggleLang}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-semibold backdrop-blur-md transition-all touch-target-min cursor-pointer"
+          className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-semibold backdrop-blur-md transition-all touch-target-min cursor-pointer"
         >
-          <Languages className="w-4 h-4 text-blue-300" />
+          <Languages className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-300 shrink-0" />
           <span>{lang === 'hi' ? 'English' : 'हिंदी'}</span>
         </button>
       </div>
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="my-auto py-2 sm:py-4 w-full sm:max-w-md sm:mx-auto">
         {/* Emblem / Branding */}
-        <div className="flex justify-center">
-          <div className="w-16 h-16 rounded-xl bg-white shadow-xl flex items-center justify-center p-2 border-2 border-blue-400">
+        <div className="flex justify-center mt-2 sm:mt-0">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-white shadow-xl flex items-center justify-center p-2 border-2 border-blue-400">
             <svg
               viewBox="0 0 100 100"
-              className="w-12 h-12 text-blue-900"
+              className="w-10 h-10 sm:w-12 sm:h-12 text-blue-900"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
@@ -188,17 +188,17 @@ const AdminLogin = () => {
           </div>
         </div>
 
-        <h2 className="mt-4 text-center text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        <h2 className="mt-3 sm:mt-4 text-center text-xl sm:text-3xl font-extrabold text-white tracking-tight px-2">
           {t.navTitle} {lang === 'hi' ? 'प्रशासन लॉगिन' : 'Admin Login'}
         </h2>
-        <p className="mt-1 text-center text-xs sm:text-sm text-blue-200">
+        <p className="mt-1 text-center text-xs sm:text-sm text-blue-200 px-2">
           GramSeva Administrative Control Portal
         </p>
 
         {/* 2-Step Progress Indicator */}
-        <div className="mt-4 flex items-center justify-center gap-2">
+        <div className="mt-3 sm:mt-4 flex items-center justify-center flex-wrap sm:flex-nowrap gap-2 px-3 py-1">
           <span
-            className={`text-xs px-2.5 py-1 rounded-full font-semibold transition-all ${
+            className={`text-[11px] sm:text-xs shrink-0 px-2.5 py-1 rounded-full font-semibold transition-all ${
               step === 1
                 ? 'bg-blue-600 text-white shadow-xs'
                 : 'bg-emerald-600/80 text-emerald-100'
@@ -206,22 +206,22 @@ const AdminLogin = () => {
           >
             {step === 1 ? '1. क्रेडेंशियल्स' : '✓ 1. क्रेडेंशियल्स'}
           </span>
-          <span className="text-white/40 text-xs">→</span>
+          <span className="text-white/40 text-xs shrink-0">→</span>
           <span
-            className={`text-xs px-2.5 py-1 rounded-full font-semibold transition-all ${
+            className={`text-[11px] sm:text-xs shrink-0 px-2.5 py-1 rounded-full font-semibold transition-all ${
               step === 2
                 ? 'bg-blue-600 text-white shadow-xs ring-2 ring-blue-400'
                 : 'bg-white/10 text-white/60'
             }`}
           >
-            2. सुरक्षा पिन (2FA PIN)
+            <span className="sm:hidden">2. सुरक्षा पिन (2FA)</span>
+            <span className="hidden sm:inline">2. सुरक्षा पिन (2FA PIN)</span>
           </span>
         </div>
-      </div>
 
-      {/* Login Card */}
-      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-6 sm:px-10 shadow-2xl rounded-3xl border border-slate-200">
+        {/* Login Card */}
+        <div className="mt-5 sm:mt-6">
+          <div className="bg-white py-6 sm:py-8 px-4 sm:px-10 shadow-2xl rounded-2xl sm:rounded-3xl border border-slate-200">
           {errorMsg && (
             <div className="mb-5 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-medium flex items-start gap-2">
               <AlertTriangle className="w-5 h-5 shrink-0 text-red-600 mt-0.5" />
@@ -441,7 +441,8 @@ const AdminLogin = () => {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default AdminLogin;
