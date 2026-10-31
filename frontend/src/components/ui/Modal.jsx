@@ -64,7 +64,7 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl' }) => 
         </div>
 
         {/* Modal Content */}
-        <div className="p-5 overflow-y-auto flex-1 overscroll-contain">
+        <div className="p-3.5 sm:p-5 overflow-y-auto flex-1 overscroll-contain">
           {children}
         </div>
       </div>

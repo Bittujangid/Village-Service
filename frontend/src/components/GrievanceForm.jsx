@@ -670,10 +670,10 @@ const GrievanceForm = ({ onSuccessClose }) => {
 
           {/* OTP Verification Dropdown Box */}
           {otpSent && !isPhoneVerified && (
-            <div className="mt-3 p-3.5 bg-blue-50/70 border border-blue-200 rounded-lg space-y-2.5 animate-fadeIn">
+            <div className="mt-3 p-3 sm:p-3.5 bg-blue-50/70 border border-blue-200 rounded-xl space-y-2.5 animate-fadeIn overflow-hidden">
               <div className="flex items-center justify-between text-xs font-bold text-blue-950">
                 <span className="flex items-center gap-1.5">
-                  <KeyRound className="w-4 h-4 text-blue-900" />
+                  <KeyRound className="w-4 h-4 text-blue-900 shrink-0" />
                   <span>{t.otpLabel}</span>
                 </span>
                 <span className="text-[11px] font-normal text-slate-500">
@@ -681,7 +681,7 @@ const GrievanceForm = ({ onSuccessClose }) => {
                 </span>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full">
                 <input
                   ref={otpInputRef}
                   type="text"
@@ -691,18 +691,18 @@ const GrievanceForm = ({ onSuccessClose }) => {
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
                   placeholder="------"
-                  className="flex-1 min-h-[42px] px-3 py-2 bg-white border border-blue-300 rounded-lg text-slate-900 font-mono text-center text-lg tracking-widest font-bold focus:outline-none focus:ring-1 focus:ring-blue-900 focus:border-blue-900"
+                  className="flex-1 min-w-0 w-full sm:w-auto min-h-[42px] px-3 py-2 bg-white border border-blue-300 rounded-lg text-slate-900 font-mono text-center text-lg tracking-widest font-bold focus:outline-none focus:ring-1 focus:ring-blue-900 focus:border-blue-900"
                 />
                 <button
                   type="button"
                   disabled={otpCode.length !== 6 || isVerifyingOtp}
                   onClick={handleVerifyOtp}
-                  className="min-h-[42px] px-4 py-2 bg-blue-900 hover:bg-blue-950 disabled:bg-slate-300 text-white font-semibold text-xs sm:text-sm rounded-lg transition-all flex items-center gap-1.5 shadow-xs active:scale-95"
+                  className="w-full sm:w-auto shrink-0 min-h-[42px] px-4 py-2 bg-blue-900 hover:bg-blue-950 disabled:bg-slate-300 text-white font-semibold text-xs sm:text-sm rounded-lg transition-all flex items-center justify-center gap-1.5 shadow-xs active:scale-95 whitespace-nowrap cursor-pointer disabled:cursor-not-allowed"
                 >
                   {isVerifyingOtp ? (
-                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    <RefreshCw className="w-4 h-4 animate-spin shrink-0" />
                   ) : (
-                    <Check className="w-4 h-4" />
+                    <Check className="w-4 h-4 shrink-0" />
                   )}
                   <span>{isVerifyingOtp ? t.verifyingOtp : t.verifyOtp}</span>
                 </button>
