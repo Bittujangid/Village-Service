@@ -461,10 +461,8 @@ const AdminDashboard = () => {
               aria-label="Toggle Language"
             >
               <Languages className="w-4 h-4 text-blue-900 shrink-0" />
-              <span className="inline-flex items-center">
-                <span>{lang === 'hi' ? 'EN' : 'हि'}</span>
-                <span className="hidden md:inline">{lang === 'hi' ? 'glish' : 'ंदी'}</span>
-              </span>
+              <span className="md:hidden">{lang === 'hi' ? 'EN' : 'हि'}</span>
+              <span className="hidden md:inline">{lang === 'hi' ? 'English' : 'हिंदी'}</span>
             </button>
 
             <button

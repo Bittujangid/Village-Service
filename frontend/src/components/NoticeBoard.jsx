@@ -3,30 +3,103 @@ import { Megaphone, ChevronLeft, ChevronRight, Share2, Sparkles, BellRing } from
 import { getNotices } from '../api/notices';
 import { useLang } from '../context/LanguageContext';
 
+const CACHE_KEY = 'cached_public_notices';
+
+const getDefaultFallbackNotices = (currentLang) => [
+  {
+    _id: 'default-welcome-notice',
+    title: currentLang === 'hi'
+      ? 'ग्राम पंचायत सहरी में आपका स्वागत है'
+      : 'Welcome to Gram Panchayat Sahari',
+    description: currentLang === 'hi'
+      ? 'ग्राम पंचायत सहरी में आपका स्वागत है | किसी भी समस्या के समाधान हेतु नागरिक शिकायत दर्ज करें'
+      : 'Welcome to Gram Panchayat Sahari | Submit your grievance online for quick resolution of civic issues',
+    category: currentLang === 'hi' ? 'सामान्य सूचना' : 'General Notice',
+    isImportant: false,
+    priority: 'normal',
+  }
+];
+
+const getInitialNotices = () => {
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to parse cached notices:', e);
+  }
+  return [];
+};
+
 const NoticeBoard = () => {
   const { lang, t } = useLang();
-  const [notices, setNotices] = useState([]);
+  const [notices, setNotices] = useState(getInitialNotices);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => getInitialNotices().length === 0);
 
+  // Default fallback notice trigger after 1.5s if cache was empty and server response is still pending
+  useEffect(() => {
+    if (!loading || notices.length > 0) return;
+
+    const fallbackTimer = setTimeout(() => {
+      setNotices((current) => {
+        if (current.length === 0) {
+          return getDefaultFallbackNotices(lang);
+        }
+        return current;
+      });
+      setLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(fallbackTimer);
+  }, [loading, notices.length, lang]);
+
+  // Sync fallback notice language when user switches language
+  useEffect(() => {
+    setNotices((prev) => {
+      if (prev.length === 1 && prev[0]._id === 'default-welcome-notice') {
+        return getDefaultFallbackNotices(lang);
+      }
+      return prev;
+    });
+  }, [lang]);
+
+  // Stale-While-Revalidate: fetch fresh notices asynchronously
   useEffect(() => {
     let isMounted = true;
     const fetchNoticesData = async () => {
       try {
-        setLoading(true);
         const data = await getNotices();
         if (isMounted) {
           // Backend returns { success: true, count, notices, data: [...] }
           const list = Array.isArray(data)
             ? data
             : data?.notices || data?.data || [];
-          setNotices(list);
-          setCurrentIndex(0);
+
+          if (list.length > 0) {
+            setNotices(list);
+            setCurrentIndex(0);
+            try {
+              localStorage.setItem(CACHE_KEY, JSON.stringify(list));
+            } catch (err) {
+              console.warn('Failed to cache notices in localStorage:', err);
+            }
+          } else if (notices.length === 0) {
+            setNotices(getDefaultFallbackNotices(lang));
+          }
         }
       } catch (err) {
-        console.warn('Notice fetch error:', err);
+        console.warn('Notice fetch error (maintaining cached/fallback notices):', err);
         if (isMounted) {
-          setNotices([]);
+          // Maintain existing cached notices on error, fallback only if empty
+          setNotices((prev) => {
+            if (prev.length > 0) return prev;
+            return getDefaultFallbackNotices(lang);
+          });
         }
       } finally {
         if (isMounted) setLoading(false);

@@ -62,8 +62,8 @@ const Navbar = () => {
               aria-label="Toggle language"
             >
               <Languages className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-600 transition-transform group-hover:rotate-12 group-hover:text-blue-900" />
-              <span className="hidden sm:inline">{lang === 'hi' ? 'English' : 'हिंदी'}</span>
-              <span className="sm:hidden">{lang === 'hi' ? 'EN' : 'हि'}</span>
+              <span className="md:hidden">{lang === 'hi' ? 'EN' : 'हि'}</span>
+              <span className="hidden md:inline">{lang === 'hi' ? 'English' : 'हिंदी'}</span>
             </button>
 
             {/* Admin actions */}
