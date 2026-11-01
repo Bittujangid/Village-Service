@@ -10,6 +10,8 @@ import {
   ExternalLink,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   PlusCircle,
   Trash2,
   CheckCircle,
@@ -92,6 +94,7 @@ const AdminDashboard = () => {
   const setSelectedWard = setWardFilter;
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [showFilters, setShowFilters] = useState(false);
   const [totalComplaints, setTotalComplaints] = useState(() => {
     try {
       const cached = sessionStorage.getItem('cached_admin_complaints');
@@ -520,84 +523,148 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="w-full max-w-full overflow-x-hidden min-h-screen bg-slate-50 px-3 sm:px-6 py-3">
-      <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-6">
-        {/* Header & Action Controls */}
-        <header className="bg-white rounded-2xl p-3 sm:p-4 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center justify-between w-full sm:w-auto">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-900 border border-blue-200 shrink-0">
-                <LayoutDashboard className="w-4 h-4 sm:w-5 sm:h-5" />
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <h1 className="text-base sm:text-xl font-bold text-slate-800 truncate">ग्राम पंचायत सहरी</h1>
-                  <span className="text-[11px] sm:text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-bold border border-blue-200 shrink-0">
-                    Admin
-                  </span>
-                </div>
-              </div>
+    <div className="w-full max-w-full overflow-x-hidden min-h-screen bg-slate-50 flex flex-col">
+      {/* 1. Sleek Edge-to-Edge Sticky Navbar (~54px) */}
+      <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 px-3 sm:px-6 py-2.5">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+          {/* Left: Branding & Title */}
+          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-900 border border-blue-200 shrink-0">
+              <LayoutDashboard className="w-4 h-4" />
+            </div>
+            <div className="flex items-center gap-1.5 min-w-0">
+              <h1 className="text-sm sm:text-base font-bold text-slate-800 truncate">
+                ग्राम पंचायत सहरी
+              </h1>
+              <span className="text-[10px] sm:text-xs px-2 py-0.5 font-medium rounded-full bg-blue-50 text-blue-700 border border-blue-200 shrink-0">
+                Admin
+              </span>
             </div>
           </div>
 
-          <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto pt-2 sm:pt-0 border-t border-slate-100 sm:border-0">
-            <div className="text-[11px] text-slate-500 font-semibold sm:hidden flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
-              <span>{lang === 'hi' ? 'लाइव पोर्टल' : 'Live Portal'}</span>
-            </div>
+          {/* Right Action Controls */}
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            {/* Live Citizen Portal Link */}
+            <a
+              href="/"
+              className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-slate-600 hover:text-blue-900 hover:bg-slate-100 text-xs font-semibold flex items-center gap-1 transition-colors"
+              title={lang === 'hi' ? 'नागरिक पोर्टल देखें' : 'View Citizen Portal'}
+            >
+              <ExternalLink className="w-4 h-4 shrink-0" />
+              <span className="hidden md:inline">{lang === 'hi' ? 'नागरिक पोर्टल' : 'Citizen Portal'}</span>
+            </a>
 
-            <div className="flex items-center gap-1.5 sm:gap-2 ml-auto sm:ml-0 shrink-0">
-              <button
-                type="button"
-                onClick={toggleLang}
-                className="p-1.5 sm:px-3 sm:py-1.5 rounded-xl text-slate-700 hover:text-blue-900 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors touch-target-min"
-                title={lang === 'hi' ? 'Switch to English' : 'हिंदी में देखें'}
-                aria-label="Toggle Language"
-              >
-                <Languages className="w-4 h-4 text-blue-900 shrink-0" />
-                <span className="md:hidden">{lang === 'hi' ? 'EN' : 'हि'}</span>
-                <span className="hidden md:inline">{lang === 'hi' ? 'English' : 'हिंदी'}</span>
-              </button>
+            {/* Language Toggle */}
+            <button
+              type="button"
+              onClick={toggleLang}
+              className="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 flex items-center gap-1 transition-colors"
+              title={lang === 'hi' ? 'Switch to English' : 'हिंदी में देखें'}
+              aria-label="Toggle Language"
+            >
+              <Languages className="w-3.5 h-3.5 text-blue-900 shrink-0" />
+              <span>{lang === 'hi' ? 'EN' : 'हि'}</span>
+            </button>
 
-              <button
-                type="button"
-                onClick={() => {
-                  fetchDashboardStats();
-                  fetchComplaintsList(page);
-                  fetchNoticesList();
-                  fetchWardAnalyticsData();
-                  toast.success(lang === 'hi' ? 'डेटा रीफ्रेश किया गया' : 'Data refreshed');
-                }}
-                className="p-1.5 sm:px-3 sm:py-1.5 rounded-xl text-slate-600 hover:text-blue-900 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors touch-target-min"
-                title={lang === 'hi' ? 'रीफ्रेश करें' : 'Refresh'}
-                aria-label="Refresh"
-              >
-                <RefreshCw className="w-4 h-4 shrink-0" />
-                <span className="hidden sm:inline">{lang === 'hi' ? 'रीफ्रेश' : 'Refresh'}</span>
-              </button>
+            {/* Refresh Button */}
+            <button
+              type="button"
+              onClick={() => {
+                fetchDashboardStats();
+                fetchComplaintsList(page);
+                fetchNoticesList();
+                fetchWardAnalyticsData();
+                toast.success(lang === 'hi' ? 'डेटा रीफ्रेश किया गया' : 'Data refreshed');
+              }}
+              disabled={loadingStats || loadingComplaints}
+              className="p-2 text-slate-600 hover:text-blue-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+              title={lang === 'hi' ? 'डेटा रीफ्रेश करें' : 'Refresh Data'}
+              aria-label="Refresh"
+            >
+              <RefreshCw className={`w-4 h-4 shrink-0 ${(loadingStats || loadingComplaints) ? 'animate-spin text-blue-900' : ''}`} />
+            </button>
 
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="px-2.5 sm:px-4 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors touch-target-min"
-                aria-label={lang === 'hi' ? 'लॉगआउट' : 'Logout'}
-              >
-                <LogOut className="w-4 h-4 shrink-0" />
-                <span>{lang === 'hi' ? 'लॉगआउट' : 'Logout'}</span>
-              </button>
-            </div>
+            {/* Logout Button */}
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="px-2.5 py-1.5 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+              aria-label={lang === 'hi' ? 'लॉगआउट' : 'Logout'}
+              title={lang === 'hi' ? 'लॉगआउट' : 'Logout'}
+            >
+              <LogOut className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden sm:inline">{lang === 'hi' ? 'लॉगआउट' : 'Logout'}</span>
+            </button>
           </div>
-        </header>
+        </div>
+      </header>
 
+      {/* 2. Streamlined Horizontal Navigation Tabs */}
+      <div className="w-full bg-white border-b border-slate-200 px-3 sm:px-6 py-2">
+        <div className="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth">
+          <button
+            type="button"
+            onClick={() => setActiveTab('complaints')}
+            className={`shrink-0 px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg whitespace-nowrap transition-all inline-flex items-center gap-1.5 cursor-pointer ${(activeTab === 'complaints' || activeTab === 'grievances')
+                ? 'bg-blue-600 text-white shadow-sm ring-1 ring-blue-600'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+              }`}
+          >
+            <FileText className="w-3.5 h-3.5 shrink-0" />
+            <span>{lang === 'hi' ? 'शिकायतें' : 'Complaints'}</span>
+            {totalComplaints > 0 && (
+              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                (activeTab === 'complaints' || activeTab === 'grievances') ? 'bg-blue-700 text-white' : 'bg-slate-200 text-slate-700'
+              }`}>
+                {totalComplaints}
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('analytics')}
+            className={`shrink-0 px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg whitespace-nowrap transition-all inline-flex items-center gap-1.5 cursor-pointer ${activeTab === 'analytics'
+                ? 'bg-blue-600 text-white shadow-sm ring-1 ring-blue-600'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+              }`}
+          >
+            <Activity className="w-3.5 h-3.5 shrink-0" />
+            <span>{lang === 'hi' ? 'वार्ड एनालिटिक्स' : 'Ward Analytics'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('notices')}
+            className={`shrink-0 px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg whitespace-nowrap transition-all inline-flex items-center gap-1.5 cursor-pointer ${activeTab === 'notices'
+                ? 'bg-blue-600 text-white shadow-sm ring-1 ring-blue-600'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+              }`}
+          >
+            <Bell className="w-3.5 h-3.5 shrink-0" />
+            <span>{lang === 'hi' ? 'सूचनाएं' : 'Notices'}</span>
+            {notices.length > 0 && (
+              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                activeTab === 'notices' ? 'bg-blue-700 text-white' : 'bg-slate-200 text-slate-700'
+              }`}>
+                {notices.length}
+              </span>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* 3. Main Body Container */}
+      <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-5 flex-1 space-y-3 sm:space-y-4">
         {/* Cold-Start Background Sync Notice */}
         {syncNotice && (
-          <div className="bg-amber-50/90 border border-amber-200 text-amber-900 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center justify-between gap-3 shadow-xs animate-fadeIn">
+          <div className="bg-amber-50/90 border border-amber-200 text-amber-900 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium flex items-center justify-between gap-3 shadow-xs animate-fadeIn">
             <div className="flex items-center gap-2 min-w-0">
-              <RefreshCw className="w-4 h-4 text-amber-700 animate-spin shrink-0" />
+              <RefreshCw className="w-3.5 h-3.5 text-amber-700 animate-spin shrink-0" />
               <span className="truncate">
                 {lang === 'hi'
-                  ? 'सर्वर से कनेक्ट हो रहा है (Render बैकएंड सक्रिय हो रहा है, कृपया प्रतीक्षा करें)...'
-                  : 'Connecting to server (Render backend is waking up, please wait)...'}
+                  ? 'सर्वर से कनेक्ट हो रहा है (कृपया प्रतीक्षा करें)...'
+                  : 'Connecting to server (please wait)...'}
               </span>
             </div>
             <button
@@ -608,186 +675,177 @@ const AdminDashboard = () => {
                 fetchWardAnalyticsData();
                 fetchNoticesList();
               }}
-              className="px-3 py-1 bg-amber-200 hover:bg-amber-300 text-amber-900 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer"
+              className="px-2.5 py-1 bg-amber-200 hover:bg-amber-300 text-amber-900 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer"
             >
               {lang === 'hi' ? 'पुनः प्रयास' : 'Retry'}
             </button>
           </div>
         )}
 
-        {/* Main Body */}
-        <main className="w-full max-w-full space-y-4 sm:space-y-6">
-
-        {/* Navigation Tabs */}
-        <div className="bg-white rounded-2xl p-1.5 border border-slate-200 shadow-xs w-full overflow-hidden">
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 px-1 w-full scroll-smooth">
-            <button
-              type="button"
-              onClick={() => setActiveTab('complaints')}
-              className={`shrink-0 px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-xl whitespace-nowrap transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer touch-target-min ${(activeTab === 'complaints' || activeTab === 'grievances')
-                  ? 'bg-blue-900 text-white shadow-sm ring-1 ring-blue-900'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                }`}
-            >
-              <FileText className="w-4 h-4 shrink-0" />
-              <span className="sm:hidden">{lang === 'hi' ? 'शिकायतें' : 'Complaints'}</span>
-              <span className="hidden sm:inline">{t.grievanceManagementTab}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('analytics')}
-              className={`shrink-0 px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-xl whitespace-nowrap transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer touch-target-min ${activeTab === 'analytics'
-                  ? 'bg-blue-900 text-white shadow-sm ring-1 ring-blue-900'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                }`}
-            >
-              <Activity className="w-4 h-4 shrink-0" />
-              <span className="sm:hidden">{lang === 'hi' ? 'वार्ड एनालिटिक्स' : 'Ward Analytics'}</span>
-              <span className="hidden sm:inline">{t.wardAnalyticsTab}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('notices')}
-              className={`shrink-0 px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-xl whitespace-nowrap transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer touch-target-min ${activeTab === 'notices'
-                  ? 'bg-blue-900 text-white shadow-sm ring-1 ring-blue-900'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                }`}
-            >
-              <Bell className="w-4 h-4 shrink-0" />
-              <span className="sm:hidden">{lang === 'hi' ? 'सूचनाएं' : 'Notices'}</span>
-              <span className="hidden sm:inline">{lang === 'hi' ? 'सार्वजनिक सूचनाएं (Notices)' : 'Public Notices'}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* ================= TAB 1: COMPLAINTS / GRIEVANCES ================= */}
-        {(activeTab === 'complaints' || activeTab === 'grievances') && (
-          <div className="space-y-4 sm:space-y-6 animate-fadeIn">
-            {/* Stat Cards Row */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
-              {/* Card 1: Total */}
-              <div className="min-w-0 bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between gap-2 sm:gap-3">
-                <div className="min-w-0">
-                  <p className="text-[11px] sm:text-xs uppercase font-bold text-slate-500 tracking-wider truncate">
-                    कुल शिकायतें
-                  </p>
-                  <p className="text-xl sm:text-3xl font-black text-slate-900 mt-0.5 sm:mt-1">
-                    {stats.total}
-                  </p>
+        <main className="w-full max-w-full">
+          {/* ================= TAB 1: COMPLAINTS / GRIEVANCES ================= */}
+          {(activeTab === 'complaints' || activeTab === 'grievances') && (
+            <div className="space-y-3 sm:space-y-4 animate-fadeIn">
+              {/* Stat Cards: Compact 2x2 Grid on Mobile, 4 Columns on Desktop */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3.5 mb-3 sm:mb-4">
+                {/* Card 1: Total */}
+                <div className="min-w-0 bg-white p-2.5 sm:p-4 rounded-xl border border-slate-200 shadow-2xs flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-[10px] sm:text-xs uppercase font-bold text-slate-500 tracking-wider truncate">
+                      कुल शिकायतें
+                    </p>
+                    <p className="text-lg sm:text-2xl font-black text-slate-900 mt-0.5">
+                      {stats.total}
+                    </p>
+                  </div>
+                  <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
+                    <FileText className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
+                  </div>
                 </div>
-                <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
-                  <FileText className="w-4 h-4 sm:w-6 sm:h-6" />
-                </div>
-              </div>
 
-              {/* Card 2: Pending (Amber) */}
-              <div className="min-w-0 bg-amber-50/70 p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-amber-200 shadow-xs flex items-center justify-between gap-2 sm:gap-3">
-                <div className="min-w-0">
-                  <p className="text-[11px] sm:text-xs uppercase font-bold text-amber-800 tracking-wider truncate">
-                    लंबित
-                  </p>
-                  <p className="text-xl sm:text-3xl font-black text-amber-700 mt-0.5 sm:mt-1">
-                    {stats.pending}
-                  </p>
+                {/* Card 2: Pending (Amber) */}
+                <div className="min-w-0 bg-amber-50/60 p-2.5 sm:p-4 rounded-xl border border-amber-200/80 shadow-2xs flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-[10px] sm:text-xs uppercase font-bold text-amber-800 tracking-wider truncate">
+                      लंबित
+                    </p>
+                    <p className="text-lg sm:text-2xl font-black text-amber-700 mt-0.5">
+                      {stats.pending}
+                    </p>
+                  </div>
+                  <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                    <Clock className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
+                  </div>
                 </div>
-                <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
-                  <Clock className="w-4 h-4 sm:w-6 sm:h-6" />
+
+                {/* Card 3: In Progress (Blue) */}
+                <div className="min-w-0 bg-blue-50/60 p-2.5 sm:p-4 rounded-xl border border-blue-200/80 shadow-2xs flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-[10px] sm:text-xs uppercase font-bold text-blue-800 tracking-wider truncate">
+                      प्रगति पर
+                    </p>
+                    <p className="text-lg sm:text-2xl font-black text-blue-700 mt-0.5">
+                      {stats.inProgress}
+                    </p>
+                  </div>
+                  <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                    <RefreshCw className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
+                  </div>
+                </div>
+
+                {/* Card 4: Resolved (Green) */}
+                <div className="min-w-0 bg-emerald-50/60 p-2.5 sm:p-4 rounded-xl border border-emerald-200/80 shadow-2xs flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-[10px] sm:text-xs uppercase font-bold text-emerald-800 tracking-wider truncate">
+                      समाधान पूर्ण
+                    </p>
+                    <p className="text-lg sm:text-2xl font-black text-emerald-700 mt-0.5">
+                      {stats.resolved}
+                    </p>
+                  </div>
+                  <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                    <CheckCircle className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
+                  </div>
                 </div>
               </div>
 
-              {/* Card 3: In Progress (Blue) */}
-              <div className="min-w-0 bg-blue-50/70 p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-blue-200 shadow-xs flex items-center justify-between gap-2 sm:gap-3">
-                <div className="min-w-0">
-                  <p className="text-[11px] sm:text-xs uppercase font-bold text-blue-800 tracking-wider truncate">
-                    प्रगति पर
-                  </p>
-                  <p className="text-xl sm:text-3xl font-black text-blue-700 mt-0.5 sm:mt-1">
-                    {stats.inProgress}
-                  </p>
-                </div>
-                <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
-                  <RefreshCw className="w-4 h-4 sm:w-6 sm:h-6" />
-                </div>
-              </div>
+              {/* Collapsible / Expandable Filter Bar */}
+              <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200 shadow-2xs overflow-hidden mb-3 sm:mb-4">
+                <div className="p-3 sm:p-4 flex items-center justify-between bg-slate-50/60 sm:bg-white border-b sm:border-b-0 border-slate-100">
+                  <div className="flex items-center gap-2">
+                    <Filter className="w-4 h-4 text-blue-900" />
+                    <span className="text-xs sm:text-sm font-bold text-slate-800">
+                      फ़िल्टर एवं खोज (Filters)
+                    </span>
+                    {(statusFilter || wardFilter) && (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200">
+                        सक्रिय (Active)
+                      </span>
+                    )}
+                  </div>
 
-              {/* Card 4: Resolved (Green) */}
-              <div className="min-w-0 bg-emerald-50/70 p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-emerald-200 shadow-xs flex items-center justify-between gap-2 sm:gap-3">
-                <div className="min-w-0">
-                  <p className="text-[11px] sm:text-xs uppercase font-bold text-emerald-800 tracking-wider truncate">
-                    समाधान पूर्ण
-                  </p>
-                  <p className="text-xl sm:text-3xl font-black text-emerald-700 mt-0.5 sm:mt-1">
-                    {stats.resolved}
-                  </p>
-                </div>
-                <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                  <CheckCircle className="w-4 h-4 sm:w-6 sm:h-6" />
-                </div>
-              </div>
-            </div>
-
-            {/* Filter Controls Row */}
-            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
-              <form onSubmit={handleApplyFilter} className="flex flex-col md:flex-row items-stretch md:items-end gap-3 sm:gap-4">
-                {/* Status Dropdown */}
-                <div className="flex-1">
-                  <label htmlFor="filter-status" className="block text-xs font-bold text-slate-700 mb-1">
-                    स्थिति फ़िल्टर (Status)
-                  </label>
-                  <select
-                    id="filter-status"
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="w-full min-h-[48px] px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  >
-                    <option value="">सभी स्थितियां (All Status)</option>
-                    <option value="Pending">लंबित (Pending)</option>
-                    <option value="In Progress">प्रगति पर (In Progress)</option>
-                    <option value="Resolved">समाधान पूर्ण (Resolved)</option>
-                  </select>
-                </div>
-
-                {/* Ward Number Input */}
-                <div className="flex-1">
-                  <label htmlFor="filter-ward" className="block text-xs font-bold text-slate-700 mb-1">
-                    {lang === 'hi' ? 'वार्ड संख्या (वार्ड 1-7)' : 'Ward Number (Ward 1-7)'}
-                  </label>
-                  <input
-                    id="filter-ward"
-                    type="number"
-                    min="1"
-                    max="7"
-                    value={wardFilter}
-                    onChange={(e) => setWardFilter(e.target.value)}
-                    placeholder={lang === 'hi' ? 'वार्ड 1-7 (उदा. 4)' : 'Ward 1-7 (e.g. 4)'}
-                    className="w-full min-h-[48px] px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
-                </div>
-
-                {/* Filter Buttons */}
-                <div className="flex items-center gap-2">
-                  <button
-                    type="submit"
-                    className="flex-1 md:flex-none min-h-[48px] px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm shadow-sm flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 touch-target-min transition-all"
-                  >
-                    <Filter className="w-4 h-4" />
-                    <span>लागू करें (Apply)</span>
-                  </button>
-
-                  {(statusFilter || wardFilter) && (
+                  <div className="flex items-center gap-2">
+                    {(statusFilter || wardFilter) && (
+                      <button
+                        type="button"
+                        onClick={handleResetFilter}
+                        className="text-xs font-semibold text-rose-600 hover:text-rose-800 hover:underline px-2 py-1"
+                      >
+                        रीसेट
+                      </button>
+                    )}
                     <button
                       type="button"
-                      onClick={handleResetFilter}
-                      className="min-h-[48px] px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm border border-slate-300 transition-colors touch-target-min"
+                      onClick={() => setShowFilters((prev) => !prev)}
+                      className="sm:hidden px-2.5 py-1 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg flex items-center gap-1 shadow-2xs cursor-pointer"
                     >
-                      रीसेट
+                      <span>{showFilters ? 'छिपाएं' : 'फ़िल्टर'}</span>
+                      {showFilters ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                     </button>
-                  )}
+                  </div>
                 </div>
-              </form>
-            </div>
+
+                {/* Form Body - Collapsed by default on mobile, always open on sm+ */}
+                <div className={`${showFilters ? 'block' : 'hidden'} sm:block p-3 sm:p-4 pt-0 sm:pt-0`}>
+                  <form onSubmit={handleApplyFilter} className="flex flex-col md:flex-row items-stretch md:items-end gap-2.5 sm:gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                    {/* Status Dropdown */}
+                    <div className="flex-1 min-w-0">
+                      <label htmlFor="filter-status" className="block text-[11px] sm:text-xs font-bold text-slate-700 mb-1">
+                        स्थिति फ़िल्टर (Status)
+                      </label>
+                      <select
+                        id="filter-status"
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="w-full min-h-[40px] px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-blue-900"
+                      >
+                        <option value="">सभी स्थितियां (All Status)</option>
+                        <option value="Pending">लंबित (Pending)</option>
+                        <option value="In Progress">प्रगति पर (In Progress)</option>
+                        <option value="Resolved">समाधान पूर्ण (Resolved)</option>
+                      </select>
+                    </div>
+
+                    {/* Ward Number Input */}
+                    <div className="flex-1 min-w-0">
+                      <label htmlFor="filter-ward" className="block text-[11px] sm:text-xs font-bold text-slate-700 mb-1">
+                        {lang === 'hi' ? 'वार्ड संख्या (वार्ड 1-7)' : 'Ward Number (Ward 1-7)'}
+                      </label>
+                      <input
+                        id="filter-ward"
+                        type="number"
+                        min="1"
+                        max="7"
+                        value={wardFilter}
+                        onChange={(e) => setWardFilter(e.target.value)}
+                        placeholder={lang === 'hi' ? 'वार्ड 1-7 (उदा. 4)' : 'Ward 1-7 (e.g. 4)'}
+                        className="w-full min-h-[40px] px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-blue-900"
+                      />
+                    </div>
+
+                    {/* Filter Buttons */}
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        type="submit"
+                        className="flex-1 md:flex-none min-h-[40px] px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-xs flex items-center justify-center gap-1.5 focus:outline-none transition-all cursor-pointer"
+                      >
+                        <Filter className="w-3.5 h-3.5" />
+                        <span>लागू करें (Apply)</span>
+                      </button>
+
+                      {(statusFilter || wardFilter) && (
+                        <button
+                          type="button"
+                          onClick={handleResetFilter}
+                          className="min-h-[40px] px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-200 transition-colors"
+                        >
+                          रीसेट
+                        </button>
+                      )}
+                    </div>
+                  </form>
+                </div>
+              </div>
 
             {/* Complaints Table Container (horizontally scrollable on mobile) */}
             <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
