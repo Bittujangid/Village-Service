@@ -5,14 +5,13 @@ const api = axios.create({
   timeout: 30000,
 });
 
-// Request interceptor to attach Bearer token
+// Request interceptor to attach Bearer token (session-only)
 api.interceptors.request.use(
   (config) => {
+    // Strictly session-only: read ONLY from sessionStorage
     const token =
       sessionStorage.getItem('gramseva_token') ||
-      localStorage.getItem('gramseva_token') ||
-      sessionStorage.getItem('token') ||
-      localStorage.getItem('token');
+      sessionStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -28,8 +27,22 @@ api.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       sessionStorage.removeItem('gramseva_token');
       sessionStorage.removeItem('token');
-      localStorage.removeItem('gramseva_token');
-      localStorage.removeItem('token');
+      sessionStorage.removeItem('gramseva_token_expires_at');
+      sessionStorage.removeItem('adminToken');
+      sessionStorage.removeItem('user');
+      sessionStorage.removeItem('isAuthenticated');
+
+      try {
+        localStorage.removeItem('gramseva_token');
+        localStorage.removeItem('token');
+        localStorage.removeItem('gramseva_token_expires_at');
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('user');
+        localStorage.removeItem('isAuthenticated');
+      } catch {
+        // ignore
+      }
+
       // If unauthorized and currently in admin route, redirect to admin login
       if (window.location.pathname.startsWith('/admin') && window.location.pathname !== '/admin/login') {
         window.location.href = '/admin/login';

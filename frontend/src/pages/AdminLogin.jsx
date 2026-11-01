@@ -14,7 +14,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { setPersistence, browserSessionPersistence } from 'firebase/auth';
+import { setPersistence, browserSessionPersistence, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
 import { useLang } from '../context/LanguageContext';
@@ -51,12 +51,10 @@ const AdminLogin = () => {
     setErrorMsg('');
 
     try {
-      // Enforce session-only persistence in Firebase Auth
-      try {
-        await setPersistence(auth, browserSessionPersistence);
-      } catch (fbErr) {
+      // Enforce session-only persistence in Firebase Auth explicitly awaited
+      await setPersistence(auth, browserSessionPersistence).catch((fbErr) => {
         console.warn('Firebase setPersistence notice:', fbErr?.message);
-      }
+      });
 
       // Send credentials to backend to verify step 1
       const res = await adminLoginApi({
@@ -105,11 +103,18 @@ const AdminLogin = () => {
     setErrorMsg('');
 
     try {
-      // Enforce session-only persistence in Firebase Auth
-      try {
-        await setPersistence(auth, browserSessionPersistence);
-      } catch (fbErr) {
+      // Enforce session-only persistence in Firebase Auth explicitly awaited BEFORE any sign-in
+      await setPersistence(auth, browserSessionPersistence).catch((fbErr) => {
         console.warn('Firebase setPersistence notice:', fbErr?.message);
+      });
+
+      // If email/password login is also used with Firebase Auth:
+      if (username.trim().includes('@')) {
+        try {
+          await signInWithEmailAndPassword(auth, username.trim(), password.trim());
+        } catch (fbErr) {
+          console.warn('Firebase Auth email sign-in notice:', fbErr?.message);
+        }
       }
 
       // Step 2: Send username, password, and pin together
