@@ -374,13 +374,21 @@ export const translations = {
 
 export const LanguageProvider = ({ children }) => {
   const [lang, setLang] = useState(() => {
-    return localStorage.getItem('gramseva_lang') || 'hi';
+    try {
+      return localStorage.getItem('gramseva_lang') || 'hi';
+    } catch {
+      return 'hi';
+    }
   });
 
   const toggleLang = () => {
     const newLang = lang === 'hi' ? 'en' : 'hi';
     setLang(newLang);
-    localStorage.setItem('gramseva_lang', newLang);
+    try {
+      localStorage.setItem('gramseva_lang', newLang);
+    } catch {
+      // ignore
+    }
   };
 
   const t = translations[lang] || translations.hi;
