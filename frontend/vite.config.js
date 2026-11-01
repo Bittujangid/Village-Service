@@ -19,7 +19,26 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+            if (
+              id.includes('/recharts/') ||
+              id.includes('\\recharts\\') ||
+              id.includes('/d3-') ||
+              id.includes('\\d3-') ||
+              id.includes('victory-') ||
+              id.includes('react-smooth')
+            ) {
+              return 'vendor-charts';
+            }
+            if (
+              id.includes('/react/') ||
+              id.includes('\\react\\') ||
+              id.includes('/react-dom/') ||
+              id.includes('\\react-dom\\') ||
+              id.includes('/react-router/') ||
+              id.includes('\\react-router\\') ||
+              id.includes('/react-router-dom/') ||
+              id.includes('\\react-router-dom\\')
+            ) {
               return 'vendor-react';
             }
             if (id.includes('firebase')) {

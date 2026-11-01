@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -25,6 +25,7 @@ import {
   Flame,
   Building,
   TrendingUp,
+  Download,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
@@ -34,8 +35,10 @@ import { getNotices, createNotice, deleteNotice } from '../api/notices';
 import StatusBadge from '../components/ui/StatusBadge';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import WardHeatmap from '../components/admin/WardHeatmap';
-import WardCharts from '../components/admin/WardCharts';
-import ExportReportButton from '../components/admin/ExportReportButton';
+
+// Lazy-load heavy chart & PDF export dependencies so dashboard shell renders instantly
+const WardCharts = lazy(() => import('../components/admin/WardCharts'));
+const ExportReportButton = lazy(() => import('../components/admin/ExportReportButton'));
 
 const INITIAL_STATS = {
   total: 0,
@@ -58,15 +61,30 @@ const AdminDashboard = () => {
   const { lang, toggleLang, t } = useLang();
   const navigate = useNavigate();
 
-  // Active Tab: 'complaints' or 'notices'
+  // Active Tab: 'complaints' or 'notices' or 'analytics'
   const [activeTab, setActiveTab] = useState('complaints');
 
-  // Stats state
-  const [stats, setStats] = useState(INITIAL_STATS);
+  // Stats state (Stale-While-Revalidate with sessionStorage)
+  const [stats, setStats] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('cached_admin_stats');
+      if (cached) return JSON.parse(cached);
+    } catch (e) {}
+    return INITIAL_STATS;
+  });
   const [loadingStats, setLoadingStats] = useState(false);
 
-  // Complaints state
-  const [complaints, setComplaints] = useState([]);
+  // Complaints state (Stale-While-Revalidate with sessionStorage)
+  const [complaints, setComplaints] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('cached_admin_complaints');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return [];
+  });
   const [loadingComplaints, setLoadingComplaints] = useState(false);
   const [statusFilter, setStatusFilter] = useState('');
   const [wardFilter, setWardFilter] = useState('');
@@ -74,13 +92,31 @@ const AdminDashboard = () => {
   const setSelectedWard = setWardFilter;
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalComplaints, setTotalComplaints] = useState(0);
+  const [totalComplaints, setTotalComplaints] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('cached_admin_complaints');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed)) return parsed.length;
+      }
+    } catch (e) {}
+    return 0;
+  });
 
   // Status edit inline state map { [complaintId]: { status, adminRemarks, saving: boolean } }
   const [editState, setEditState] = useState({});
 
-  // Notices state
-  const [notices, setNotices] = useState([]);
+  // Notices state (Stale-While-Revalidate with sessionStorage)
+  const [notices, setNotices] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('cached_admin_notices');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return [];
+  });
   const [loadingNotices, setLoadingNotices] = useState(false);
   const [newNotice, setNewNotice] = useState({
     title: '',
@@ -90,17 +126,45 @@ const AdminDashboard = () => {
   });
   const [creatingNotice, setCreatingNotice] = useState(false);
 
-  // Ward Analytics & Heatmap state
-  const [analyticsData, setAnalyticsData] = useState({
-    wardBreakdown: [],
-    categoryDistribution: [],
-    resolutionMetrics: {},
-    criticalWard: 1,
+  // Ward Analytics & Heatmap state (Stale-While-Revalidate with sessionStorage)
+  const [analyticsData, setAnalyticsData] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('cached_admin_analytics');
+      if (cached) return JSON.parse(cached);
+    } catch (e) {}
+    return {
+      wardBreakdown: [],
+      categoryDistribution: [],
+      resolutionMetrics: {},
+      criticalWard: 1,
+    };
   });
   const [loadingAnalytics, setLoadingAnalytics] = useState(false);
+  const [syncNotice, setSyncNotice] = useState(false);
+
+  // Cold start timer indicator
+  useEffect(() => {
+    let timer = null;
+    if (loadingStats || loadingComplaints || loadingAnalytics) {
+      timer = setTimeout(() => {
+        setSyncNotice(true);
+      }, 5000);
+    } else {
+      setSyncNotice(false);
+    }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [loadingStats, loadingComplaints, loadingAnalytics]);
 
   // Logout handler
   const handleLogout = () => {
+    try {
+      sessionStorage.removeItem('cached_admin_stats');
+      sessionStorage.removeItem('cached_admin_complaints');
+      sessionStorage.removeItem('cached_admin_notices');
+      sessionStorage.removeItem('cached_admin_analytics');
+    } catch (e) {}
     logout();
     toast.success('आप सफलतापूर्वक लॉगआउट हो गए हैं');
     navigate('/admin/login');
@@ -143,16 +207,20 @@ const AdminDashboard = () => {
         statsData &&
         (statsData.total !== undefined || statsData.totalComplaints !== undefined)
       ) {
-        setStats({
+        const nextStats = {
           total: Number(statsData.total ?? statsData.totalComplaints ?? 0),
           pending: Number(statsData.pending ?? 0),
           inProgress: Number(statsData.inProgress ?? statsData.in_progress ?? 0),
           resolved: Number(statsData.resolved ?? 0),
-        });
+        };
+        setStats(nextStats);
+        try {
+          sessionStorage.setItem('cached_admin_stats', JSON.stringify(nextStats));
+        } catch (e) {}
         return;
       }
     } catch (err) {
-      console.warn('Stats fetch error:', err);
+      console.warn('Stats fetch notice:', err?.message);
     } finally {
       setLoadingStats(false);
     }
@@ -163,6 +231,9 @@ const AdminDashboard = () => {
       const derived = calculateStatsFromComplaints(listToCompute);
       if (derived) {
         setStats(derived);
+        try {
+          sessionStorage.setItem('cached_admin_stats', JSON.stringify(derived));
+        } catch (e) {}
       }
     }
   };
@@ -195,26 +266,41 @@ const AdminDashboard = () => {
       if (items.length > 0) {
         setComplaints(items);
         setTotalPages(data?.totalPages || data?.pages || 1);
-        setTotalComplaints(data?.total || data?.pagination?.total || items.length);
+        const count = data?.total || data?.pagination?.total || items.length;
+        setTotalComplaints(count);
+
+        if (!activeStatus && !activeWard && pageNumber === 1) {
+          try {
+            sessionStorage.setItem('cached_admin_complaints', JSON.stringify(items));
+          } catch (e) {}
+        }
 
         // If global stats haven't been loaded yet or are 0, dynamically derive if no filters active
         if (!activeStatus && !activeWard) {
           setStats((prev) => {
             if (prev.total === 0) {
               const derived = calculateStatsFromComplaints(items);
-              return derived || prev;
+              if (derived) {
+                try {
+                  sessionStorage.setItem('cached_admin_stats', JSON.stringify(derived));
+                } catch (e) {}
+                return derived;
+              }
             }
             return prev;
           });
         }
       } else {
-        setComplaints([]);
-        setTotalPages(1);
-        setTotalComplaints(0);
+        // If filter is active or page is beyond 1, it's normal to have 0 results
+        if (activeStatus || activeWard || pageNumber > 1) {
+          setComplaints([]);
+          setTotalPages(1);
+          setTotalComplaints(0);
+        }
       }
     } catch (err) {
-      console.warn('Complaints fetch error:', err);
-      setComplaints([]);
+      console.warn('Complaints fetch notice:', err?.message);
+      // Keep existing cached complaints if network failed during cold-start
     } finally {
       setLoadingComplaints(false);
     }
@@ -228,10 +314,14 @@ const AdminDashboard = () => {
       const list = Array.isArray(data)
         ? data
         : data?.notices || data?.data || [];
-      setNotices(list);
+      if (list.length > 0) {
+        setNotices(list);
+        try {
+          sessionStorage.setItem('cached_admin_notices', JSON.stringify(list));
+        } catch (e) {}
+      }
     } catch (err) {
-      console.warn('Notices fetch error:', err);
-      setNotices([]);
+      console.warn('Notices fetch notice:', err?.message);
     } finally {
       setLoadingNotices(false);
     }
@@ -244,9 +334,12 @@ const AdminDashboard = () => {
       const res = await getWardInsights();
       if (res?.data) {
         setAnalyticsData(res.data);
+        try {
+          sessionStorage.setItem('cached_admin_analytics', JSON.stringify(res.data));
+        } catch (e) {}
       }
     } catch (err) {
-      console.warn('Ward analytics fetch error:', err);
+      console.warn('Ward analytics fetch notice:', err?.message);
     } finally {
       setLoadingAnalytics(false);
     }
@@ -496,6 +589,32 @@ const AdminDashboard = () => {
           </div>
         </header>
 
+        {/* Cold-Start Background Sync Notice */}
+        {syncNotice && (
+          <div className="bg-amber-50/90 border border-amber-200 text-amber-900 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center justify-between gap-3 shadow-xs animate-fadeIn">
+            <div className="flex items-center gap-2 min-w-0">
+              <RefreshCw className="w-4 h-4 text-amber-700 animate-spin shrink-0" />
+              <span className="truncate">
+                {lang === 'hi'
+                  ? 'सर्वर से कनेक्ट हो रहा है (Render बैकएंड सक्रिय हो रहा है, कृपया प्रतीक्षा करें)...'
+                  : 'Connecting to server (Render backend is waking up, please wait)...'}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                fetchDashboardStats();
+                fetchComplaintsList(page);
+                fetchWardAnalyticsData();
+                fetchNoticesList();
+              }}
+              className="px-3 py-1 bg-amber-200 hover:bg-amber-300 text-amber-900 rounded-lg text-xs font-bold shrink-0 transition-colors cursor-pointer"
+            >
+              {lang === 'hi' ? 'पुनः प्रयास' : 'Retry'}
+            </button>
+          </div>
+        )}
+
         {/* Main Body */}
         <main className="w-full max-w-full space-y-4 sm:space-y-6">
 
@@ -681,8 +800,16 @@ const AdminDashboard = () => {
                 </span>
               </div>
 
-              {loadingComplaints ? (
-                <LoadingSpinner label="शिकायतें लोड हो रही हैं..." />
+              {loadingComplaints && complaints.length === 0 ? (
+                <div className="p-6 space-y-3">
+                  {[1, 2, 3, 4, 5].map((idx) => (
+                    <div key={idx} className="h-12 bg-slate-100 rounded-xl animate-pulse"></div>
+                  ))}
+                  <div className="flex items-center justify-center gap-2 pt-2 text-xs font-semibold text-slate-500">
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-700" />
+                    <span>शिकायतें लोड हो रही हैं... (Loading complaints...)</span>
+                  </div>
+                </div>
               ) : complaints.length === 0 ? (
                 <div className="p-12 text-center text-slate-500">
                   <AlertCircle className="w-12 h-12 mx-auto text-slate-400 mb-3" />
@@ -690,6 +817,14 @@ const AdminDashboard = () => {
                   <p className="text-xs text-slate-400 mt-1">
                     वर्तमान फ़िल्टर के अनुसार कोई रिकॉर्ड नहीं मिला।
                   </p>
+                  <button
+                    type="button"
+                    onClick={() => fetchComplaintsList(page)}
+                    className="mt-4 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    <span>पुनः लोड करें (Retry)</span>
+                  </button>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
@@ -887,10 +1022,23 @@ const AdminDashboard = () => {
 
               {/* Action Buttons: Download PDF Report & Refresh */}
               <div className="flex items-center gap-2 sm:gap-3 shrink-0 w-full sm:w-auto justify-between sm:justify-end">
-                <ExportReportButton
-                  analyticsData={analyticsData}
-                  stats={stats}
-                />
+                <Suspense
+                  fallback={
+                    <button
+                      type="button"
+                      disabled
+                      className="min-h-[40px] px-3.5 sm:px-4 py-2 rounded-xl bg-blue-900/60 text-white text-xs sm:text-sm font-bold flex items-center gap-2 opacity-70 cursor-not-allowed"
+                    >
+                      <Download className="w-4 h-4 shrink-0" />
+                      <span>{lang === 'hi' ? 'रिपोर्ट लोड हो रही है...' : 'Loading PDF...'}</span>
+                    </button>
+                  }
+                >
+                  <ExportReportButton
+                    analyticsData={analyticsData}
+                    stats={stats}
+                  />
+                </Suspense>
                 <button
                   type="button"
                   onClick={() => {
@@ -983,10 +1131,21 @@ const AdminDashboard = () => {
             </div>
 
             {/* Ward Visual Charts (Clustered Bar + Category Donut) */}
-            <WardCharts
-              wardBreakdown={analyticsData.wardBreakdown}
-              categoryDistribution={analyticsData.categoryDistribution}
-            />
+            <Suspense
+              fallback={
+                <div className="bg-white p-8 rounded-2xl border border-slate-200 text-center">
+                  <div className="w-8 h-8 border-3 border-blue-900 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                  <p className="text-xs font-semibold text-slate-500">
+                    {lang === 'hi' ? 'एनालिटिक्स चार्ट लोड हो रहे हैं...' : 'Loading analytics charts...'}
+                  </p>
+                </div>
+              }
+            >
+              <WardCharts
+                wardBreakdown={analyticsData.wardBreakdown}
+                categoryDistribution={analyticsData.categoryDistribution}
+              />
+            </Suspense>
           </div>
         )}
 
@@ -1090,8 +1249,16 @@ const AdminDashboard = () => {
                 </span>
               </div>
 
-              {loadingNotices ? (
-                <LoadingSpinner label="सूचनाएं लोड हो रही हैं..." />
+              {loadingNotices && notices.length === 0 ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((idx) => (
+                    <div key={idx} className="h-20 bg-slate-100 rounded-xl animate-pulse"></div>
+                  ))}
+                  <div className="flex items-center justify-center gap-2 pt-2 text-xs font-semibold text-slate-500">
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-700" />
+                    <span>सूचनाएं लोड हो रही हैं... (Loading notices...)</span>
+                  </div>
+                </div>
               ) : notices.length === 0 ? (
                 <div className="bg-white p-8 sm:p-10 rounded-xl sm:rounded-2xl border border-slate-200 text-center text-slate-500">
                   <Bell className="w-10 h-10 mx-auto text-slate-300 mb-2" />

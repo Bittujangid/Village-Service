@@ -1,24 +1,46 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
 import ErrorBoundary from './components/ErrorBoundary';
+
+// Direct synchronous imports for main routes:
+// Eliminates lazy-chunk download delays and connection-reset freezes on navigation
 import CitizenHome from './pages/CitizenHome';
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
-// Lazy-load Admin routes to keep citizen landing bundle ultra-light
-const AdminLogin = lazy(() => import('./pages/AdminLogin'));
-const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
-const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
-const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+// Resilient fallback loader with timeout failsafe
+const RouteLoader = () => {
+  const [showRefresh, setShowRefresh] = React.useState(false);
 
-// Clean fallback loader for lazy routes
-const RouteLoader = () => (
-  <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 text-slate-800 p-4 font-devanagari">
-    <div className="w-10 h-10 border-4 border-slate-200 border-t-emerald-700 rounded-full animate-spin"></div>
-    <p className="mt-3 text-sm font-semibold text-slate-600">लोड हो रहा है...</p>
-  </div>
-);
+  React.useEffect(() => {
+    const timer = setTimeout(() => setShowRefresh(true), 8000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 text-slate-800 p-4 font-devanagari">
+      <div className="w-10 h-10 border-4 border-slate-200 border-t-emerald-700 rounded-full animate-spin"></div>
+      <p className="mt-3 text-sm font-semibold text-slate-600">लोड हो रहा है...</p>
+      {showRefresh && (
+        <div className="mt-4 text-center">
+          <p className="text-xs text-slate-500 mb-2">नेटवर्क लोड होने में समय लग रहा है...</p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-emerald-700 text-white rounded-xl text-xs font-bold hover:bg-emerald-800 transition-colors"
+          >
+            पुनः लोड करें (Reload)
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
 
 // ProtectedRoute guard component
 const ProtectedRoute = ({ children }) => {
