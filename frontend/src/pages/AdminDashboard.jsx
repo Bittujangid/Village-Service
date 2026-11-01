@@ -427,36 +427,25 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
-      {/* Top Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 sm:p-5">
-          {/* Left: Brand & Admin Indicator */}
-          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-900 border border-blue-200 shrink-0">
-              <LayoutDashboard className="w-5 h-5" />
+    <div className="w-full max-w-full overflow-x-hidden min-h-screen bg-slate-50 px-3 sm:px-6 py-3">
+      <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-6">
+        {/* Header & Action Controls */}
+        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 pb-3 border-b border-slate-200">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-900 border border-blue-200 shrink-0">
+              <LayoutDashboard className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-                <h1 className="text-base sm:text-xl font-bold text-slate-900 leading-tight truncate">
-                  ग्राम पंचायत सहरी
-                </h1>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-blue-50 text-blue-900 border border-blue-200 shrink-0">
-                  (Admin)
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 truncate hidden xs:block">
-                शिकायत निवारण एवं नागरिक सूचना नियंत्रण कक्ष
-              </p>
-            </div>
+            <h1 className="text-lg sm:text-xl font-bold text-slate-800 truncate">ग्राम पंचायत सहरी</h1>
+            <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-semibold border border-blue-200 shrink-0">
+              (Admin)
+            </span>
           </div>
 
-          {/* Right: Language, Refresh & Logout */}
           <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
             <button
               type="button"
               onClick={toggleLang}
-              className="p-2 sm:px-3 sm:py-2 rounded-xl text-slate-700 hover:text-blue-900 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors touch-target-min"
+              className="p-2 sm:px-3 sm:py-1.5 rounded-xl text-slate-700 hover:text-blue-900 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors touch-target-min"
               title={lang === 'hi' ? 'Switch to English' : 'हिंदी में देखें'}
               aria-label="Toggle Language"
             >
@@ -474,7 +463,7 @@ const AdminDashboard = () => {
                 fetchWardAnalyticsData();
                 toast.success(lang === 'hi' ? 'डेटा रीफ्रेश किया गया' : 'Data refreshed');
               }}
-              className="p-2 sm:px-3 sm:py-2 rounded-xl text-slate-600 hover:text-blue-900 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors touch-target-min"
+              className="p-2 sm:px-3 sm:py-1.5 rounded-xl text-slate-600 hover:text-blue-900 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors touch-target-min"
               title={lang === 'hi' ? 'रीफ्रेश करें' : 'Refresh'}
               aria-label="Refresh"
             >
@@ -485,18 +474,17 @@ const AdminDashboard = () => {
             <button
               type="button"
               onClick={handleLogout}
-              className="px-3 sm:px-4 py-2 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors touch-target-min"
+              className="px-3 sm:px-4 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors touch-target-min"
               aria-label={lang === 'hi' ? 'लॉगआउट' : 'Logout'}
             >
               <LogOut className="w-4 h-4 shrink-0" />
               <span>{lang === 'hi' ? 'लॉगआउट' : 'Logout'}</span>
             </button>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main Body */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
+        {/* Main Body */}
+        <main className="w-full max-w-full space-y-4 sm:space-y-6">
 
         {/* Navigation Tabs */}
         <div className="bg-white rounded-2xl p-1.5 border border-slate-200 shadow-xs w-full">
@@ -1145,6 +1133,7 @@ const AdminDashboard = () => {
         )}
 
       </main>
+      </div>
     </div>
   );
 };
