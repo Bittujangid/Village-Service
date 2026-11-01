@@ -8,7 +8,11 @@ const api = axios.create({
 // Request interceptor to attach Bearer token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('gramseva_token') || localStorage.getItem('token');
+    const token =
+      sessionStorage.getItem('gramseva_token') ||
+      localStorage.getItem('gramseva_token') ||
+      sessionStorage.getItem('token') ||
+      localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -22,6 +26,8 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
+      sessionStorage.removeItem('gramseva_token');
+      sessionStorage.removeItem('token');
       localStorage.removeItem('gramseva_token');
       localStorage.removeItem('token');
       // If unauthorized and currently in admin route, redirect to admin login

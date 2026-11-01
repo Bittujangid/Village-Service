@@ -14,6 +14,8 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { setPersistence, browserSessionPersistence } from 'firebase/auth';
+import { auth } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
 import { useLang } from '../context/LanguageContext';
 import { login as adminLoginApi } from '../api/admin';
@@ -49,6 +51,13 @@ const AdminLogin = () => {
     setErrorMsg('');
 
     try {
+      // Enforce session-only persistence in Firebase Auth
+      try {
+        await setPersistence(auth, browserSessionPersistence);
+      } catch (fbErr) {
+        console.warn('Firebase setPersistence notice:', fbErr?.message);
+      }
+
       // Send credentials to backend to verify step 1
       const res = await adminLoginApi({
         username: username.trim(),
@@ -96,6 +105,13 @@ const AdminLogin = () => {
     setErrorMsg('');
 
     try {
+      // Enforce session-only persistence in Firebase Auth
+      try {
+        await setPersistence(auth, browserSessionPersistence);
+      } catch (fbErr) {
+        console.warn('Firebase setPersistence notice:', fbErr?.message);
+      }
+
       // Step 2: Send username, password, and pin together
       const response = await adminLoginApi({
         username: username.trim(),
