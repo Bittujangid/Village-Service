@@ -58,6 +58,50 @@ const GrievanceForm = ({ onSuccessClose }) => {
   const [resendCooldown, setResendCooldown] = useState(0);
 
   const otpInputRef = useRef(null);
+  const recaptchaVerifierRef = useRef(null);
+
+  // Helper to completely clean up and hide reCAPTCHA badge from DOM
+  const cleanupRecaptcha = () => {
+    try {
+      if (recaptchaVerifierRef.current) {
+        recaptchaVerifierRef.current.clear();
+        recaptchaVerifierRef.current = null;
+      }
+    } catch (e) {
+      console.warn('recaptchaVerifierRef clear notice:', e?.message);
+    }
+
+    try {
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = null;
+      }
+    } catch (e) {
+      console.warn('window.recaptchaVerifier clear notice:', e?.message);
+    }
+
+    try {
+      // Find all reCAPTCHA badges in DOM and hide / disable pointer events
+      const badges = document.querySelectorAll('.grecaptcha-badge');
+      badges.forEach((badge) => {
+        badge.style.display = 'none';
+        badge.style.visibility = 'hidden';
+        badge.style.pointerEvents = 'none';
+        badge.style.opacity = '0';
+        badge.style.zIndex = '-9999';
+        badge.classList.add('recaptcha-hidden');
+      });
+
+      document.body.classList.add('recaptcha-verified');
+
+      const container = document.getElementById('recaptcha-container');
+      if (container) {
+        container.innerHTML = '';
+      }
+    } catch (e) {
+      console.warn('Recaptcha DOM cleanup notice:', e?.message);
+    }
+  };
 
   // OTP Resend Cooldown Timer
   useEffect(() => {
@@ -73,14 +117,17 @@ const GrievanceForm = ({ onSuccessClose }) => {
   // Clean up reCAPTCHA verifier on unmount
   useEffect(() => {
     return () => {
-      if (window.recaptchaVerifier) {
-        try {
-          window.recaptchaVerifier.clear();
-        } catch (e) {}
-        window.recaptchaVerifier = null;
-      }
+      cleanupRecaptcha();
+      document.body.classList.remove('recaptcha-verified');
     };
   }, []);
+
+  // Ensure reCAPTCHA badge is permanently hidden whenever phone is verified
+  useEffect(() => {
+    if (isPhoneVerified) {
+      cleanupRecaptcha();
+    }
+  }, [isPhoneVerified]);
 
   // Autofocus OTP input when OTP is sent
   useEffect(() => {
@@ -94,18 +141,14 @@ const GrievanceForm = ({ onSuccessClose }) => {
 
   // Initialize Firebase RecaptchaVerifier
   const initRecaptchaVerifier = () => {
-    if (window.recaptchaVerifier) {
-      try {
-        window.recaptchaVerifier.clear();
-      } catch (e) {}
-      window.recaptchaVerifier = null;
-    }
+    cleanupRecaptcha();
+    document.body.classList.remove('recaptcha-verified');
 
     const container = document.getElementById('recaptcha-container');
     if (!container) return null;
 
     try {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         size: 'invisible',
         callback: () => {
           // reCAPTCHA solved
@@ -118,7 +161,9 @@ const GrievanceForm = ({ onSuccessClose }) => {
           );
         }
       });
-      return window.recaptchaVerifier;
+      recaptchaVerifierRef.current = verifier;
+      window.recaptchaVerifier = verifier;
+      return verifier;
     } catch (err) {
       console.error('Recaptcha init error:', err);
       return null;
@@ -257,6 +302,13 @@ const GrievanceForm = ({ onSuccessClose }) => {
           setOtpSent(false);
           setOtpCode('');
           setErrors((prev) => ({ ...prev, phone: '' }));
+          cleanupRecaptcha();
+          if (document.activeElement && typeof document.activeElement.blur === 'function') {
+            document.activeElement.blur();
+          }
+          if (window.visualViewport) {
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+          }
           toast.success(
             lang === 'hi'
               ? 'नंबर सफलतापूर्वक सत्यापित (Dev Mode)'
@@ -279,6 +331,13 @@ const GrievanceForm = ({ onSuccessClose }) => {
         setOtpSent(false);
         setOtpCode('');
         setErrors((prev) => ({ ...prev, phone: '' }));
+        cleanupRecaptcha();
+        if (document.activeElement && typeof document.activeElement.blur === 'function') {
+          document.activeElement.blur();
+        }
+        if (window.visualViewport) {
+          window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        }
         toast.success(
           t.otpVerifySuccess ||
           (lang === 'hi'
@@ -463,6 +522,8 @@ const GrievanceForm = ({ onSuccessClose }) => {
   };
 
   const handleResetForm = () => {
+    cleanupRecaptcha();
+    document.body.classList.remove('recaptcha-verified');
     setFormData({
       name: '',
       phone: '',
@@ -690,6 +751,12 @@ const GrievanceForm = ({ onSuccessClose }) => {
                   autoFocus
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                  onBlur={() => {
+                    // Reset mobile viewport shift caused by soft keyboard
+                    if (window.visualViewport) {
+                      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+                    }
+                  }}
                   placeholder="------"
                   className="flex-1 min-w-0 w-full sm:w-auto min-h-[42px] px-3 py-2 bg-white border border-blue-300 rounded-lg text-slate-900 font-mono text-center text-lg tracking-widest font-bold focus:outline-none focus:ring-1 focus:ring-blue-900 focus:border-blue-900"
                 />

@@ -49,3 +49,16 @@
     scrollbar-width: none;
   }
 }
+
+/* Prevent invisible reCAPTCHA badge from floating and intercepting touch/click events */
+body.recaptcha-verified .grecaptcha-badge,
+.grecaptcha-badge.recaptcha-hidden,
+.grecaptcha-badge[style*="display: none"],
+.grecaptcha-badge[style*="visibility: hidden"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+  z-index: -9999 !important;
+}
+
