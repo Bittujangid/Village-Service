@@ -46,6 +46,10 @@ export default {
           '0%': { transform: 'translateY(100%)', opacity: '0' },
           '100%': { transform: 'translateY(0)', opacity: '1' },
         },
+        slideLeft: {
+          '0%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(0)' },
+        },
         zoomIn: {
           '0%': { transform: 'scale(0.95)', opacity: '0' },
           '100%': { transform: 'scale(1)', opacity: '1' },
@@ -54,6 +58,7 @@ export default {
       animation: {
         fadeIn: 'fadeIn 0.25s ease-out forwards',
         slideUp: 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        slideLeft: 'slideLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         zoomIn: 'zoomIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards',
       },
     },

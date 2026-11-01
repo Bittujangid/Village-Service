@@ -27,7 +27,10 @@ const CitizenHome = () => {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 overflow-x-hidden">
       {/* 1. Navbar */}
-      <Navbar />
+      <Navbar
+        onOpenGrievance={() => setShowGrievanceModal(true)}
+        onOpenTrack={() => setShowTrackModal(true)}
+      />
 
       <main className="flex-1">
         {/* 2. Notice Board Announcement Banner */}
