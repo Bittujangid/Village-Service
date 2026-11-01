@@ -61,6 +61,8 @@ export const AuthProvider = ({ children }) => {
     // Purge localStorage again on mount
     purgeLocalStorageAuth();
 
+    if (!auth) return;
+
     // Enforce Firebase session-only persistence
     setPersistence(auth, browserSessionPersistence).catch((err) => {
       console.warn('Firebase session persistence init notice:', err?.message);

@@ -1,7 +1,5 @@
 import React, { useRef, useState } from 'react';
 import { Download, FileText, Loader2, CheckCircle2, Landmark, ShieldCheck } from 'lucide-react';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 import toast from 'react-hot-toast';
 import { useLang } from '../../context/LanguageContext';
 
@@ -28,6 +26,12 @@ const ExportReportButton = ({
     const toastId = toast.loading(lang === 'hi' ? 'पीडीएफ रिपोर्ट तैयार की जा रही है...' : 'Generating PDF Report...');
 
     try {
+      // Dynamically load html2canvas and jspdf on demand
+      const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
+        import('html2canvas'),
+        import('jspdf')
+      ]);
+
       // Allow DOM to settle
       await new Promise((resolve) => setTimeout(resolve, 300));
 

@@ -37,26 +37,12 @@ const getInitialNotices = () => {
 
 const NoticeBoard = () => {
   const { lang, t } = useLang();
-  const [notices, setNotices] = useState(getInitialNotices);
+  const [notices, setNotices] = useState(() => {
+    const cached = getInitialNotices();
+    return cached.length > 0 ? cached : getDefaultFallbackNotices('hi');
+  });
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [loading, setLoading] = useState(() => getInitialNotices().length === 0);
-
-  // Default fallback notice trigger after 1.5s if cache was empty and server response is still pending
-  useEffect(() => {
-    if (!loading || notices.length > 0) return;
-
-    const fallbackTimer = setTimeout(() => {
-      setNotices((current) => {
-        if (current.length === 0) {
-          return getDefaultFallbackNotices(lang);
-        }
-        return current;
-      });
-      setLoading(false);
-    }, 1500);
-
-    return () => clearTimeout(fallbackTimer);
-  }, [loading, notices.length, lang]);
+  const [loading, setLoading] = useState(false);
 
   // Sync fallback notice language when user switches language
   useEffect(() => {

@@ -1,14 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import Navbar from '../components/Navbar';
 import NoticeBoard from '../components/NoticeBoard';
 import HeroSection from '../components/HeroSection';
-import GrievanceForm from '../components/GrievanceForm';
-import StatusTracker from '../components/StatusTracker';
 import VillageDirectory from '../components/VillageDirectory';
 import Footer from '../components/Footer';
 import Modal from '../components/ui/Modal';
 import { useLang } from '../context/LanguageContext';
 import { SearchCheck, FilePlus2, Sparkles } from 'lucide-react';
+
+// Lazy-load modal forms so landing page loads instantly without heavy scripts
+const GrievanceForm = lazy(() => import('../components/GrievanceForm'));
+const StatusTracker = lazy(() => import('../components/StatusTracker'));
+
+const ModalLoader = () => (
+  <div className="p-8 text-center">
+    <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+    <p className="mt-2 text-sm text-slate-500">लोड हो रहा है...</p>
+  </div>
+);
 
 const CitizenHome = () => {
   const { lang, t } = useLang();
@@ -47,7 +56,9 @@ const CitizenHome = () => {
         title={t.formModalTitle}
         maxWidth="max-w-3xl"
       >
-        <GrievanceForm onSuccessClose={() => setShowGrievanceModal(false)} />
+        <Suspense fallback={<ModalLoader />}>
+          {showGrievanceModal && <GrievanceForm onSuccessClose={() => setShowGrievanceModal(false)} />}
+        </Suspense>
       </Modal>
 
       {/* MODAL 2: Complaint Status Tracker */}
@@ -57,7 +68,9 @@ const CitizenHome = () => {
         title={t.trackModalTitle}
         maxWidth="max-w-2xl"
       >
-        <StatusTracker />
+        <Suspense fallback={<ModalLoader />}>
+          {showTrackModal && <StatusTracker />}
+        </Suspense>
       </Modal>
     </div>
   );

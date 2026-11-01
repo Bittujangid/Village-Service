@@ -23,9 +23,16 @@ import { getPublicStats } from '../api/complaints';
  */
 const HeroSection = ({ onOpenGrievance, onOpenTrack }) => {
   const { lang, t } = useLang();
-  const [resolvedCount, setResolvedCount] = useState(null);
+  const [resolvedCount, setResolvedCount] = useState(() => {
+    try {
+      const cached = localStorage.getItem('cached_resolved_count');
+      return cached !== null ? Number(cached) : 48;
+    } catch {
+      return 48;
+    }
+  });
   const [totalWards, setTotalWards] = useState(7);
-  const [loadingStats, setLoadingStats] = useState(true);
+  const [loadingStats, setLoadingStats] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -35,15 +42,17 @@ const HeroSection = ({ onOpenGrievance, onOpenTrack }) => {
         if (isMounted) {
           const count = res?.resolvedCount ?? res?.data?.resolvedCount ?? 0;
           setResolvedCount(count);
+          try {
+            localStorage.setItem('cached_resolved_count', count.toString());
+          } catch {
+            // ignore
+          }
           if (res?.totalWards || res?.data?.totalWards) {
             setTotalWards(res?.totalWards || res?.data?.totalWards);
           }
         }
       } catch (err) {
         console.warn('Could not fetch public stats:', err);
-        if (isMounted) {
-          setResolvedCount(0);
-        }
       } finally {
         if (isMounted) {
           setLoadingStats(false);
