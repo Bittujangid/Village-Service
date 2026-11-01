@@ -430,179 +430,180 @@ const AdminDashboard = () => {
     <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Top Header */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-20">
-            {/* Left: Brand & Admin Indicator */}
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-900 border border-blue-200">
-                <LayoutDashboard className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-lg sm:text-xl font-bold text-slate-900 leading-tight">
-                    ग्राम पंचायत सहरी
-                  </h1>
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-blue-900 border border-blue-200">
-                    प्रशासन पोर्टल (Admin)
-                  </span>
-                </div>
-                <p className="text-xs text-slate-500">
-                  शिकायत निवारण एवं नागरिक सूचना नियंत्रण कक्ष
-                </p>
-              </div>
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 sm:p-5">
+          {/* Left: Brand & Admin Indicator */}
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-900 border border-blue-200 shrink-0">
+              <LayoutDashboard className="w-5 h-5" />
             </div>
-
-            {/* Right: Language, Refresh & Logout */}
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={toggleLang}
-                className="p-2 sm:px-3 sm:py-2 rounded-xl text-slate-700 hover:text-emerald-700 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors touch-target-min"
-                title={lang === 'hi' ? 'Switch to English' : 'हिंदी में देखें'}
-                aria-label="Toggle Language"
-              >
-                <Languages className="w-4 h-4 text-emerald-600" />
-                <span className="hidden sm:inline">{lang === 'hi' ? 'English' : 'हिंदी'}</span>
-                <span className="sm:hidden">{lang === 'hi' ? 'EN' : 'हि'}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  fetchDashboardStats();
-                  fetchComplaintsList(page);
-                  fetchNoticesList();
-                  fetchWardAnalyticsData();
-                  toast.success(lang === 'hi' ? 'डेटा रीफ्रेश किया गया' : 'Data refreshed');
-                }}
-                className="p-2 sm:px-3 sm:py-2 rounded-xl text-slate-600 hover:text-emerald-700 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors touch-target-min"
-                title={lang === 'hi' ? 'रीफ्रेश करें' : 'Refresh'}
-              >
-                <RefreshCw className="w-4 h-4" />
-                <span className="hidden sm:inline">{lang === 'hi' ? 'रीफ्रेश' : 'Refresh'}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="min-h-[44px] px-3 sm:px-4 py-2 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors touch-target-min"
-                aria-label={lang === 'hi' ? 'लॉगआउट' : 'Logout'}
-              >
-                <LogOut className="w-4 h-4" />
-                <span>{lang === 'hi' ? 'लॉगआउट' : 'Logout'}</span>
-              </button>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                <h1 className="text-base sm:text-xl font-bold text-slate-900 leading-tight truncate">
+                  ग्राम पंचायत सहरी
+                </h1>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-blue-50 text-blue-900 border border-blue-200 shrink-0">
+                  (Admin)
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 truncate hidden xs:block">
+                शिकायत निवारण एवं नागरिक सूचना नियंत्रण कक्ष
+              </p>
             </div>
+          </div>
+
+          {/* Right: Language, Refresh & Logout */}
+          <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+            <button
+              type="button"
+              onClick={toggleLang}
+              className="p-2 sm:px-3 sm:py-2 rounded-xl text-slate-700 hover:text-blue-900 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors touch-target-min"
+              title={lang === 'hi' ? 'Switch to English' : 'हिंदी में देखें'}
+              aria-label="Toggle Language"
+            >
+              <Languages className="w-4 h-4 text-blue-900 shrink-0" />
+              <span>{lang === 'hi' ? 'EN' : 'हि'}</span>
+              <span className="hidden md:inline">{lang === 'hi' ? 'glish' : 'ंदी'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                fetchDashboardStats();
+                fetchComplaintsList(page);
+                fetchNoticesList();
+                fetchWardAnalyticsData();
+                toast.success(lang === 'hi' ? 'डेटा रीफ्रेश किया गया' : 'Data refreshed');
+              }}
+              className="p-2 sm:px-3 sm:py-2 rounded-xl text-slate-600 hover:text-blue-900 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors touch-target-min"
+              title={lang === 'hi' ? 'रीफ्रेश करें' : 'Refresh'}
+              aria-label="Refresh"
+            >
+              <RefreshCw className="w-4 h-4 shrink-0" />
+              <span className="hidden sm:inline">{lang === 'hi' ? 'रीफ्रेश' : 'Refresh'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="px-3 sm:px-4 py-2 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors touch-target-min"
+              aria-label={lang === 'hi' ? 'लॉगआउट' : 'Logout'}
+            >
+              <LogOut className="w-4 h-4 shrink-0" />
+              <span>{lang === 'hi' ? 'लॉगआउट' : 'Logout'}</span>
+            </button>
           </div>
         </div>
       </header>
 
       {/* Main Body */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
         
         {/* Navigation Tabs */}
-        <div className="flex border-b border-slate-200 bg-white rounded-2xl p-1.5 shadow-xs gap-1.5">
-          <button
-            type="button"
-            onClick={() => setActiveTab('complaints')}
-            className={`flex-1 min-h-[48px] py-2.5 px-3 sm:px-4 rounded-xl text-xs sm:text-sm md:text-base font-bold transition-all flex items-center justify-center gap-2 ${
-              (activeTab === 'complaints' || activeTab === 'grievances')
-                ? 'bg-emerald-700 text-white shadow-sm'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-            }`}
-          >
-            <FileText className="w-4 h-4" />
-            <span>{t.grievanceManagementTab}</span>
-          </button>
+        <div className="bg-white rounded-2xl p-1.5 border border-slate-200 shadow-xs w-full">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 px-1 w-full">
+            <button
+              type="button"
+              onClick={() => setActiveTab('complaints')}
+              className={`shrink-0 flex-1 min-w-fit px-3 py-2 text-xs sm:text-sm font-medium rounded-xl whitespace-nowrap transition-all flex items-center justify-center gap-2 touch-target-min cursor-pointer ${
+                (activeTab === 'complaints' || activeTab === 'grievances')
+                  ? 'bg-blue-900 text-white font-bold shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <FileText className="w-4 h-4 shrink-0" />
+              <span>{t.grievanceManagementTab}</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={() => setActiveTab('analytics')}
-            className={`flex-1 min-h-[48px] py-2.5 px-3 sm:px-4 rounded-xl text-xs sm:text-sm md:text-base font-bold transition-all flex items-center justify-center gap-2 ${
-              activeTab === 'analytics'
-                ? 'bg-emerald-700 text-white shadow-sm'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-            }`}
-          >
-            <Activity className="w-4 h-4" />
-            <span>{t.wardAnalyticsTab}</span>
-          </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('analytics')}
+              className={`shrink-0 flex-1 min-w-fit px-3 py-2 text-xs sm:text-sm font-medium rounded-xl whitespace-nowrap transition-all flex items-center justify-center gap-2 touch-target-min cursor-pointer ${
+                activeTab === 'analytics'
+                  ? 'bg-blue-900 text-white font-bold shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <Activity className="w-4 h-4 shrink-0" />
+              <span>{t.wardAnalyticsTab}</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={() => setActiveTab('notices')}
-            className={`flex-1 min-h-[48px] py-2.5 px-3 sm:px-4 rounded-xl text-xs sm:text-sm md:text-base font-bold transition-all flex items-center justify-center gap-2 ${
-              activeTab === 'notices'
-                ? 'bg-emerald-700 text-white shadow-sm'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-            }`}
-          >
-            <Bell className="w-4 h-4" />
-            <span>{lang === 'hi' ? 'सार्वजनिक सूचनाएं (Notices)' : 'Public Notices'}</span>
-          </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('notices')}
+              className={`shrink-0 flex-1 min-w-fit px-3 py-2 text-xs sm:text-sm font-medium rounded-xl whitespace-nowrap transition-all flex items-center justify-center gap-2 touch-target-min cursor-pointer ${
+                activeTab === 'notices'
+                  ? 'bg-blue-900 text-white font-bold shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <Bell className="w-4 h-4 shrink-0" />
+              <span>{lang === 'hi' ? 'सार्वजनिक सूचनाएं (Notices)' : 'Public Notices'}</span>
+            </button>
+          </div>
         </div>
 
         {/* ================= TAB 1: COMPLAINTS / GRIEVANCES ================= */}
         {(activeTab === 'complaints' || activeTab === 'grievances') && (
-          <div className="space-y-6 animate-fadeIn">
+          <div className="space-y-4 sm:space-y-6 animate-fadeIn">
             {/* Stat Cards Row */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {/* Card 1: Total */}
-              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
-                <div>
-                  <p className="text-xs uppercase font-bold text-slate-500 tracking-wider">
+              <div className="min-w-0 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs uppercase font-bold text-slate-500 tracking-wider truncate">
                     कुल शिकायतें (Total)
                   </p>
                   <p className="text-2xl sm:text-3xl font-black text-slate-900 mt-1">
                     {stats.total}
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center">
-                  <FileText className="w-6 h-6" />
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
+                  <FileText className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
               </div>
 
               {/* Card 2: Pending (Amber) */}
-              <div className="bg-amber-50/70 p-5 rounded-2xl border border-amber-200 shadow-xs flex items-center justify-between">
-                <div>
-                  <p className="text-xs uppercase font-bold text-amber-800 tracking-wider">
+              <div className="min-w-0 bg-amber-50/70 p-4 sm:p-5 rounded-2xl border border-amber-200 shadow-xs flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs uppercase font-bold text-amber-800 tracking-wider truncate">
                     लंबित (Pending)
                   </p>
                   <p className="text-2xl sm:text-3xl font-black text-amber-700 mt-1">
                     {stats.pending}
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
-                  <Clock className="w-6 h-6" />
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                  <Clock className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
               </div>
 
               {/* Card 3: In Progress (Blue) */}
-              <div className="bg-blue-50/70 p-5 rounded-2xl border border-blue-200 shadow-xs flex items-center justify-between">
-                <div>
-                  <p className="text-xs uppercase font-bold text-blue-800 tracking-wider">
+              <div className="min-w-0 bg-blue-50/70 p-4 sm:p-5 rounded-2xl border border-blue-200 shadow-xs flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs uppercase font-bold text-blue-800 tracking-wider truncate">
                     प्रगति पर (In Progress)
                   </p>
                   <p className="text-2xl sm:text-3xl font-black text-blue-700 mt-1">
                     {stats.inProgress}
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center">
-                  <RefreshCw className="w-6 h-6" />
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                  <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
               </div>
 
               {/* Card 4: Resolved (Green) */}
-              <div className="bg-emerald-50/70 p-5 rounded-2xl border border-emerald-200 shadow-xs flex items-center justify-between">
-                <div>
-                  <p className="text-xs uppercase font-bold text-emerald-800 tracking-wider">
+              <div className="min-w-0 bg-emerald-50/70 p-4 sm:p-5 rounded-2xl border border-emerald-200 shadow-xs flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs uppercase font-bold text-emerald-800 tracking-wider truncate">
                     समाधान पूर्ण (Resolved)
                   </p>
                   <p className="text-2xl sm:text-3xl font-black text-emerald-700 mt-1">
                     {stats.resolved}
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
-                  <CheckCircle className="w-6 h-6" />
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                  <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
               </div>
             </div>
@@ -867,24 +868,24 @@ const AdminDashboard = () => {
         {activeTab === 'analytics' && (
           <div className="space-y-6 animate-fadeIn">
             {/* Header / Sub-nav bar */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-lg sm:text-xl font-black text-slate-900 flex items-center gap-2">
-                    <Activity className="w-6 h-6 text-emerald-700" />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
+              <div className="w-full sm:w-auto">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-2.5 mb-1">
+                  <h2 className="text-base sm:text-xl font-black text-slate-900 flex items-center gap-2">
+                    <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-blue-900 shrink-0" />
                     <span>{t.analyticsHeading}</span>
                   </h2>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                  <span className="self-start sm:self-auto inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-bold bg-blue-50 text-blue-900 border border-blue-200 shrink-0">
                     Wards 1–7
                   </span>
                 </div>
-                <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                <p className="text-xs sm:text-sm text-slate-500">
                   {t.analyticsSubtitle}
                 </p>
               </div>
 
               {/* Action Buttons: Download PDF Report & Refresh */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3 self-end sm:self-auto shrink-0 w-full sm:w-auto justify-end">
                 <ExportReportButton
                   analyticsData={analyticsData}
                   stats={stats}
@@ -896,10 +897,10 @@ const AdminDashboard = () => {
                     toast.success(lang === 'hi' ? 'एनालिटिक्स रीफ्रेश किया गया' : 'Analytics refreshed');
                   }}
                   disabled={loadingAnalytics}
-                  className="min-h-[44px] px-3.5 py-2 rounded-xl text-slate-600 hover:text-emerald-700 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors touch-target-min"
+                  className="min-h-[40px] px-3 sm:px-3.5 py-2 rounded-xl text-slate-600 hover:text-blue-900 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors touch-target-min shrink-0"
                   title={lang === 'hi' ? 'एनालिटिक्स रीफ्रेश करें' : 'Refresh Analytics'}
                 >
-                  <RefreshCw className={`w-4 h-4 ${loadingAnalytics ? 'animate-spin' : ''}`} />
+                  <RefreshCw className={`w-4 h-4 shrink-0 ${loadingAnalytics ? 'animate-spin' : ''}`} />
                   <span className="hidden sm:inline">{lang === 'hi' ? 'रीफ्रेश' : 'Refresh'}</span>
                 </button>
               </div>
@@ -908,63 +909,63 @@ const AdminDashboard = () => {
             {/* Top 5 KPI Summary Cards */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
               {/* Card 1: Total Wards */}
-              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+              <div className="min-w-0 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-xs">
                 <div className="flex items-center justify-between text-slate-400 mb-1">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">{t.kpiTotalWards}</span>
-                  <Building className="w-4 h-4 text-emerald-600" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 truncate">{t.kpiTotalWards}</span>
+                  <Building className="w-4 h-4 text-emerald-600 shrink-0" />
                 </div>
-                <div className="text-2xl font-black text-slate-900">7</div>
-                <span className="text-[11px] text-slate-400 block mt-0.5">{lang === 'hi' ? 'वार्ड 1 से 7 सक्रिय' : 'Wards 1 to 7 active'}</span>
+                <div className="text-xl sm:text-2xl font-black text-slate-900">7</div>
+                <span className="text-[11px] text-slate-400 block mt-0.5 truncate">{lang === 'hi' ? 'वार्ड 1 से 7 सक्रिय' : 'Wards 1 to 7 active'}</span>
               </div>
 
               {/* Card 2: Total Complaints */}
-              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+              <div className="min-w-0 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-xs">
                 <div className="flex items-center justify-between text-slate-400 mb-1">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">{lang === 'hi' ? 'कुल शिकायतें' : 'Total Grievances'}</span>
-                  <FileText className="w-4 h-4 text-blue-600" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 truncate">{lang === 'hi' ? 'कुल शिकायतें' : 'Total Grievances'}</span>
+                  <FileText className="w-4 h-4 text-blue-600 shrink-0" />
                 </div>
-                <div className="text-2xl font-black text-slate-900">
+                <div className="text-xl sm:text-2xl font-black text-slate-900">
                   {analyticsData.resolutionMetrics?.totalAllComplaints || stats.total || 0}
                 </div>
-                <span className="text-[11px] text-slate-400 block mt-0.5">{lang === 'hi' ? 'सभी 7 वार्डों से' : 'Across all 7 wards'}</span>
+                <span className="text-[11px] text-slate-400 block mt-0.5 truncate">{lang === 'hi' ? 'सभी 7 वार्डों से' : 'Across all 7 wards'}</span>
               </div>
 
               {/* Card 3: Overall Resolution Rate */}
-              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+              <div className="min-w-0 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-xs">
                 <div className="flex items-center justify-between text-slate-400 mb-1">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700">{t.kpiOverallRate}</span>
-                  <TrendingUp className="w-4 h-4 text-emerald-600" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 truncate">{t.kpiOverallRate}</span>
+                  <TrendingUp className="w-4 h-4 text-emerald-600 shrink-0" />
                 </div>
-                <div className="text-2xl font-black text-emerald-700">
+                <div className="text-xl sm:text-2xl font-black text-emerald-700">
                   {analyticsData.resolutionMetrics?.overallResolutionRate ?? 0}%
                 </div>
-                <span className="text-[11px] text-slate-400 block mt-0.5">
+                <span className="text-[11px] text-slate-400 block mt-0.5 truncate">
                   {analyticsData.resolutionMetrics?.totalResolvedAll || stats.resolved || 0} {lang === 'hi' ? 'निस्तारित' : 'resolved'}
                 </span>
               </div>
 
               {/* Card 4: Critical Ward */}
-              <div className="bg-rose-50/70 p-4 rounded-2xl border border-rose-200 shadow-xs">
+              <div className="min-w-0 bg-rose-50/70 p-3.5 sm:p-4 rounded-2xl border border-rose-200 shadow-xs">
                 <div className="flex items-center justify-between text-rose-500 mb-1">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-rose-800">{t.kpiCriticalWard}</span>
-                  <Flame className="w-4 h-4 text-rose-600 animate-pulse" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-rose-800 truncate">{t.kpiCriticalWard}</span>
+                  <Flame className="w-4 h-4 text-rose-600 animate-pulse shrink-0" />
                 </div>
-                <div className="text-2xl font-black text-rose-700">
+                <div className="text-xl sm:text-2xl font-black text-rose-700">
                   {lang === 'hi' ? `वार्ड ${analyticsData.criticalWard || 1}` : `Ward ${analyticsData.criticalWard || 1}`}
                 </div>
-                <span className="text-[11px] text-rose-600 font-semibold block mt-0.5">{lang === 'hi' ? 'अधिकतम लंबित मामले' : 'Highest open volume'}</span>
+                <span className="text-[11px] text-rose-600 font-semibold block mt-0.5 truncate">{lang === 'hi' ? 'अधिकतम लंबित मामले' : 'Highest open volume'}</span>
               </div>
 
               {/* Card 5: Average Resolution Time */}
-              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+              <div className="min-w-0 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-xs col-span-2 md:col-span-1">
                 <div className="flex items-center justify-between text-slate-400 mb-1">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">{t.kpiAvgDays}</span>
-                  <Clock className="w-4 h-4 text-amber-600" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 truncate">{t.kpiAvgDays}</span>
+                  <Clock className="w-4 h-4 text-amber-600 shrink-0" />
                 </div>
-                <div className="text-2xl font-black text-slate-900">
+                <div className="text-xl sm:text-2xl font-black text-slate-900">
                   {analyticsData.resolutionMetrics?.averageResolutionDays || 2.4} <span className="text-xs font-normal text-slate-500">{t.kpiDaysUnit}</span>
                 </div>
-                <span className="text-[11px] text-slate-400 block mt-0.5">{lang === 'hi' ? 'औसत निस्तारण अवधि' : 'Average time to resolve'}</span>
+                <span className="text-[11px] text-slate-400 block mt-0.5 truncate">{lang === 'hi' ? 'औसत निस्तारण अवधि' : 'Average time to resolve'}</span>
               </div>
             </div>
 

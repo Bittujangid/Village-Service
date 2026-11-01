@@ -74,36 +74,36 @@ const WardHeatmap = ({
   return (
     <div className="space-y-4">
       {/* Heatmap Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 mb-4">
+        <div className="w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-2.5">
             <h3 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
-              <Activity className="w-5 h-5 text-emerald-700" />
+              <Activity className="w-5 h-5 text-blue-900 shrink-0" />
               <span>{t.wardHeatmapTitle} (Wards 1–7)</span>
             </h3>
             {criticalWard && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-rose-100 text-rose-800 border border-rose-300 animate-pulse">
-                <Flame className="w-3.5 h-3.5 text-rose-600" />
+              <span className="self-start sm:self-auto inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-extrabold bg-rose-100 text-rose-800 border border-rose-300 animate-pulse shrink-0">
+                <Flame className="w-3.5 h-3.5 text-rose-600 shrink-0" />
                 <span>{lang === 'hi' ? `वार्ड ${criticalWard} सर्वाधिक संवेदनशील` : `Ward ${criticalWard} Highest Priority`}</span>
               </span>
             )}
           </div>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-500 mt-1">
             {t.wardHeatmapDesc}
           </p>
         </div>
 
         {/* Legend */}
-        <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-slate-600">
-          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-100/80 border border-emerald-300 text-emerald-800">
+        <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-slate-600 self-start sm:self-auto pt-1 sm:pt-0">
+          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-100/80 border border-emerald-300 text-emerald-800 shrink-0">
             <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
             {t.normalStatus}
           </span>
-          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-100/80 border border-amber-300 text-amber-800">
+          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-100/80 border border-amber-300 text-amber-800 shrink-0">
             <span className="w-2 h-2 rounded-full bg-amber-600"></span>
             {t.moderateStatus}
           </span>
-          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-100/80 border border-rose-300 text-rose-800">
+          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-100/80 border border-rose-300 text-rose-800 shrink-0">
             <span className="w-2 h-2 rounded-full bg-rose-600"></span>
             {t.criticalStatus}
           </span>
