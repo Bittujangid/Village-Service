@@ -461,8 +461,10 @@ const AdminDashboard = () => {
               aria-label="Toggle Language"
             >
               <Languages className="w-4 h-4 text-blue-900 shrink-0" />
-              <span>{lang === 'hi' ? 'EN' : 'हि'}</span>
-              <span className="hidden md:inline">{lang === 'hi' ? 'glish' : 'ंदी'}</span>
+              <span className="inline-flex items-center">
+                <span>{lang === 'hi' ? 'EN' : 'हि'}</span>
+                <span className="hidden md:inline">{lang === 'hi' ? 'glish' : 'ंदी'}</span>
+              </span>
             </button>
 
             <button
@@ -497,18 +499,17 @@ const AdminDashboard = () => {
 
       {/* Main Body */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
-        
+
         {/* Navigation Tabs */}
         <div className="bg-white rounded-2xl p-1.5 border border-slate-200 shadow-xs w-full">
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 px-1 w-full">
             <button
               type="button"
               onClick={() => setActiveTab('complaints')}
-              className={`shrink-0 flex-1 min-w-fit px-3 py-2 text-xs sm:text-sm font-medium rounded-xl whitespace-nowrap transition-all flex items-center justify-center gap-2 touch-target-min cursor-pointer ${
-                (activeTab === 'complaints' || activeTab === 'grievances')
+              className={`shrink-0 flex-1 min-w-fit px-3 py-2 text-xs sm:text-sm font-medium rounded-xl whitespace-nowrap transition-all flex items-center justify-center gap-2 touch-target-min cursor-pointer ${(activeTab === 'complaints' || activeTab === 'grievances')
                   ? 'bg-blue-900 text-white font-bold shadow-sm'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
+                }`}
             >
               <FileText className="w-4 h-4 shrink-0" />
               <span>{t.grievanceManagementTab}</span>
@@ -517,11 +518,10 @@ const AdminDashboard = () => {
             <button
               type="button"
               onClick={() => setActiveTab('analytics')}
-              className={`shrink-0 flex-1 min-w-fit px-3 py-2 text-xs sm:text-sm font-medium rounded-xl whitespace-nowrap transition-all flex items-center justify-center gap-2 touch-target-min cursor-pointer ${
-                activeTab === 'analytics'
+              className={`shrink-0 flex-1 min-w-fit px-3 py-2 text-xs sm:text-sm font-medium rounded-xl whitespace-nowrap transition-all flex items-center justify-center gap-2 touch-target-min cursor-pointer ${activeTab === 'analytics'
                   ? 'bg-blue-900 text-white font-bold shadow-sm'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
+                }`}
             >
               <Activity className="w-4 h-4 shrink-0" />
               <span>{t.wardAnalyticsTab}</span>
@@ -530,11 +530,10 @@ const AdminDashboard = () => {
             <button
               type="button"
               onClick={() => setActiveTab('notices')}
-              className={`shrink-0 flex-1 min-w-fit px-3 py-2 text-xs sm:text-sm font-medium rounded-xl whitespace-nowrap transition-all flex items-center justify-center gap-2 touch-target-min cursor-pointer ${
-                activeTab === 'notices'
+              className={`shrink-0 flex-1 min-w-fit px-3 py-2 text-xs sm:text-sm font-medium rounded-xl whitespace-nowrap transition-all flex items-center justify-center gap-2 touch-target-min cursor-pointer ${activeTab === 'notices'
                   ? 'bg-blue-900 text-white font-bold shadow-sm'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
+                }`}
             >
               <Bell className="w-4 h-4 shrink-0" />
               <span>{lang === 'hi' ? 'सार्वजनिक सूचनाएं (Notices)' : 'Public Notices'}</span>
