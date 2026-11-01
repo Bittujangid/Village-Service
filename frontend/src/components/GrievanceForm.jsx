@@ -103,6 +103,11 @@ const GrievanceForm = ({ onSuccessClose }) => {
     }
   };
 
+  // Prevent mobile keyboard scroll displacement on blur
+  const handleInputBlur = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // OTP Resend Cooldown Timer
   useEffect(() => {
     let timer;
@@ -548,7 +553,7 @@ const GrievanceForm = ({ onSuccessClose }) => {
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
 
     return (
-      <div className="py-6 px-2 text-center animate-fadeIn">
+      <div className="flex-1 overflow-y-auto overscroll-contain p-4 pb-8 text-center animate-fadeIn">
         {/* Checkmark Icon */}
         <div className="w-20 h-20 mx-auto rounded-3xl bg-emerald-100/90 border-4 border-emerald-200 text-emerald-600 flex items-center justify-center shadow-lg mb-4">
           <CheckCircle2 className="w-12 h-12 stroke-[2.5]" />
@@ -606,28 +611,31 @@ const GrievanceForm = ({ onSuccessClose }) => {
   const isPhoneComplete = /^[6-9]\d{9}$/.test(formData.phone.trim());
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+    <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden" noValidate>
       {/* Invisible reCAPTCHA container for Firebase Phone Auth */}
       <div id="recaptcha-container"></div>
 
-      {/* 1. Name & Mobile Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Full Name */}
-        <div>
-          <label htmlFor="grievance-name" className="block text-sm font-bold text-slate-800 mb-1">
-            {t.labelName} <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="grievance-name"
-            type="text"
-            required
-            value={formData.name}
-            onChange={(e) => handleChange('name', e.target.value)}
-            placeholder={t.labelNameHint}
-            className={`w-full min-h-[48px] px-4 py-2.5 rounded-lg border ${
-              errors.name ? 'border-red-500 bg-red-50/30' : 'border-slate-300 bg-white'
-            } text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-900 focus:border-blue-900 transition-colors text-base`}
-          />
+      {/* Scrollable Form Body Container */}
+      <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 space-y-4 sm:space-y-5">
+        {/* 1. Name & Mobile Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Full Name */}
+          <div>
+            <label htmlFor="grievance-name" className="block text-sm font-bold text-slate-800 mb-1">
+              {t.labelName} <span className="text-red-500">*</span>
+            </label>
+            <input
+              id="grievance-name"
+              type="text"
+              required
+              value={formData.name}
+              onChange={(e) => handleChange('name', e.target.value)}
+              onBlur={handleInputBlur}
+              placeholder={t.labelNameHint}
+              className={`w-full min-h-[48px] px-4 py-2.5 rounded-lg border ${
+                errors.name ? 'border-red-500 bg-red-50/30' : 'border-slate-300 bg-white'
+              } text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-900 focus:border-blue-900 transition-colors text-base`}
+            />
           {errors.name && (
             <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
               <AlertCircle className="w-3.5 h-3.5" />
@@ -677,6 +685,7 @@ const GrievanceForm = ({ onSuccessClose }) => {
                   setOtpCode('');
                 }
               }}
+              onBlur={handleInputBlur}
               placeholder={t.labelPhoneHint}
               className={`w-full min-h-[48px] pl-12 ${
                 isPhoneVerified ? 'pr-20 bg-slate-50 border-slate-300' : 'pr-28 bg-white'
@@ -751,12 +760,7 @@ const GrievanceForm = ({ onSuccessClose }) => {
                   autoFocus
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                  onBlur={() => {
-                    // Reset mobile viewport shift caused by soft keyboard
-                    if (window.visualViewport) {
-                      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-                    }
-                  }}
+                  onBlur={handleInputBlur}
                   placeholder="------"
                   className="flex-1 min-w-0 w-full sm:w-auto min-h-[42px] px-3 py-2 bg-white border border-blue-300 rounded-lg text-slate-900 font-mono text-center text-lg tracking-widest font-bold focus:outline-none focus:ring-1 focus:ring-blue-900 focus:border-blue-900"
                 />
@@ -901,6 +905,7 @@ const GrievanceForm = ({ onSuccessClose }) => {
           required
           value={formData.description}
           onChange={(e) => handleChange('description', e.target.value)}
+          onBlur={handleInputBlur}
           placeholder={t.labelDescriptionHint}
           className={`w-full p-3.5 rounded-lg border ${
             errors.description ? 'border-red-500 bg-red-50/30' : 'border-slate-300 bg-white'
@@ -980,13 +985,14 @@ const GrievanceForm = ({ onSuccessClose }) => {
           </p>
         )}
       </div>
+      </div>
 
-      {/* 6. Submit Button */}
-      <div className="pt-2">
+      {/* Sticky Bottom Submit Button Footer */}
+      <div className="shrink-0 p-4 border-t border-slate-100 bg-white/95 backdrop-blur-sm pb-6 md:pb-4">
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full min-h-[50px] sm:min-h-[54px] px-6 py-3.5 rounded-xl bg-blue-900 hover:bg-blue-950 active:scale-[0.98] disabled:opacity-60 text-white font-bold text-base sm:text-lg shadow-sm transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-4 focus:ring-blue-900/30"
+          className="w-full min-h-[50px] sm:min-h-[54px] px-6 py-3.5 rounded-xl bg-blue-900 hover:bg-blue-950 active:scale-[0.98] disabled:opacity-60 text-white font-bold text-base sm:text-lg shadow-sm transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-4 focus:ring-blue-900/30 cursor-pointer"
         >
           {isSubmitting ? (
             <>

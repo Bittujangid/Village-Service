@@ -102,8 +102,12 @@ const StatusTracker = ({ initialQuery = '' }) => {
     }
   };
 
+  const handleInputBlur = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <div className="w-full space-y-6">
+    <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 space-y-6">
       {/* Search Input Box */}
       <form onSubmit={handleSearch} className="space-y-3">
         <label htmlFor="track-query" className="block text-sm font-bold text-slate-800">
@@ -120,6 +124,7 @@ const StatusTracker = ({ initialQuery = '' }) => {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
+              onBlur={handleInputBlur}
               placeholder={t.trackerPlaceholder}
               className="w-full min-h-[48px] pl-11 pr-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-900 focus:border-blue-900 text-sm sm:text-base transition-colors"
             />

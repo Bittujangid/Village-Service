@@ -13,7 +13,7 @@ const GrievanceForm = lazy(() => import('../components/GrievanceForm'));
 const StatusTracker = lazy(() => import('../components/StatusTracker'));
 
 const ModalLoader = () => (
-  <div className="p-8 text-center">
+  <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
     <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
     <p className="mt-2 text-sm text-slate-500">लोड हो रहा है...</p>
   </div>
