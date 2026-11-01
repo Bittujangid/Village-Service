@@ -74,44 +74,47 @@ const WardHeatmap = ({
   return (
     <div className="space-y-4">
       {/* Heatmap Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 mb-3 sm:mb-4">
         <div className="w-full sm:w-auto">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-2.5">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2.5">
             <h3 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
               <Activity className="w-5 h-5 text-blue-900 shrink-0" />
               <span>{t.wardHeatmapTitle} (Wards 1–7)</span>
             </h3>
             {criticalWard && (
-              <span className="self-start sm:self-auto inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-extrabold bg-rose-100 text-rose-800 border border-rose-300 animate-pulse shrink-0">
-                <Flame className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+              <span className="self-start sm:self-auto inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-extrabold bg-rose-100 text-rose-800 border border-rose-300 animate-pulse shrink-0">
+                <Flame className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-rose-600 shrink-0" />
                 <span>{lang === 'hi' ? `वार्ड ${criticalWard} सर्वाधिक संवेदनशील` : `Ward ${criticalWard} Highest Priority`}</span>
               </span>
             )}
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 mt-0.5 sm:mt-1">
             {t.wardHeatmapDesc}
           </p>
         </div>
 
         {/* Legend */}
-        <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-slate-600 self-start sm:self-auto pt-1 sm:pt-0">
-          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-100/80 border border-emerald-300 text-emerald-800 shrink-0">
-            <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
-            {t.normalStatus}
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] font-semibold text-slate-600 self-start sm:self-auto pt-1 sm:pt-0">
+          <span className="flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-emerald-100/80 border border-emerald-300 text-emerald-800 shrink-0">
+            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-600 shrink-0"></span>
+            <span className="sm:hidden">{lang === 'hi' ? 'सामान्य (>80%)' : 'Optimal (>80%)'}</span>
+            <span className="hidden sm:inline">{t.normalStatus}</span>
           </span>
-          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-100/80 border border-amber-300 text-amber-800 shrink-0">
-            <span className="w-2 h-2 rounded-full bg-amber-600"></span>
-            {t.moderateStatus}
+          <span className="flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-amber-100/80 border border-amber-300 text-amber-800 shrink-0">
+            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-amber-600 shrink-0"></span>
+            <span className="sm:hidden">{lang === 'hi' ? 'मध्यम (20-50%)' : 'Moderate (20-50%)'}</span>
+            <span className="hidden sm:inline">{t.moderateStatus}</span>
           </span>
-          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-100/80 border border-rose-300 text-rose-800 shrink-0">
-            <span className="w-2 h-2 rounded-full bg-rose-600"></span>
-            {t.criticalStatus}
+          <span className="flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-rose-100/80 border border-rose-300 text-rose-800 shrink-0">
+            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-rose-600 shrink-0"></span>
+            <span className="sm:hidden">{lang === 'hi' ? 'गंभीर (>50%)' : 'Critical (>50%)'}</span>
+            <span className="hidden sm:inline">{t.criticalStatus}</span>
           </span>
         </div>
       </div>
 
       {/* Grid of 7 Wards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
         {wardBreakdown.map((ward) => {
           const config = getSeverityTier(ward);
           const TierIcon = config.icon;
@@ -121,14 +124,14 @@ const WardHeatmap = ({
             <div
               key={ward.wardNumber}
               onClick={() => onSelectWard(ward.wardNumber)}
-              className={`min-w-0 cursor-pointer rounded-2xl border-2 p-3.5 sm:p-4 transition-all duration-200 shadow-xs hover:shadow-md ${config.bgClass} ${config.borderClass} ${
+              className={`min-w-0 cursor-pointer rounded-xl sm:rounded-2xl border-2 p-3 sm:p-4 transition-all duration-200 shadow-xs hover:shadow-md ${config.bgClass} ${config.borderClass} ${
                 isSelected ? 'ring-3 ring-emerald-500 ring-offset-2 scale-[1.02]' : ''
               }`}
             >
               {/* Card Header: Ward Number + Status Badge */}
-              <div className="flex items-center justify-between gap-2 mb-3">
+              <div className="flex items-center justify-between gap-2 mb-2 sm:mb-3">
                 <div className="flex items-center gap-2 min-w-0">
-                  <div className="w-8 h-8 rounded-xl bg-white shadow-xs border border-slate-200/80 flex items-center justify-center font-black text-slate-800 text-sm shrink-0">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-white shadow-xs border border-slate-200/80 flex items-center justify-center font-black text-slate-800 text-xs sm:text-sm shrink-0">
                     W{ward.wardNumber}
                   </div>
                   <span className="font-bold text-slate-900 text-sm sm:text-base truncate">
@@ -143,12 +146,12 @@ const WardHeatmap = ({
               </div>
 
               {/* Metrics Grid */}
-              <div className="grid grid-cols-3 gap-1.5 p-2 bg-white/80 rounded-xl border border-slate-200/60 text-center mb-3">
+              <div className="grid grid-cols-3 gap-1.5 p-1.5 sm:p-2 bg-white/80 rounded-lg sm:rounded-xl border border-slate-200/60 text-center mb-2 sm:mb-3">
                 <div className="min-w-0">
                   <span className="text-[10px] uppercase font-bold text-slate-400 block truncate">
                     {lang === 'hi' ? 'कुल' : 'Total'}
                   </span>
-                  <span className="text-base font-black text-slate-900">
+                  <span className="text-sm sm:text-base font-black text-slate-900">
                     {ward.totalComplaints}
                   </span>
                 </div>
@@ -156,7 +159,7 @@ const WardHeatmap = ({
                   <span className="text-[10px] uppercase font-bold text-amber-700 block truncate">
                     {lang === 'hi' ? 'लंबित' : 'Pending'}
                   </span>
-                  <span className="text-base font-black text-amber-700">
+                  <span className="text-sm sm:text-base font-black text-amber-700">
                     {ward.pending}
                   </span>
                 </div>
@@ -164,18 +167,18 @@ const WardHeatmap = ({
                   <span className="text-[10px] uppercase font-bold text-emerald-700 block truncate">
                     {lang === 'hi' ? 'निस्तारित' : 'Solved'}
                   </span>
-                  <span className="text-base font-black text-emerald-700">
+                  <span className="text-sm sm:text-base font-black text-emerald-700">
                     {ward.resolved}
                   </span>
                 </div>
               </div>
 
               {/* Top Issue Category */}
-              <div className="flex items-center justify-between text-xs text-slate-600 mb-2 gap-1 min-w-0">
-                <span className="text-slate-500 text-[11px] font-medium shrink-0">
+              <div className="flex items-center justify-between text-xs text-slate-600 mb-1.5 sm:mb-2 gap-1 min-w-0">
+                <span className="text-slate-500 text-[10px] sm:text-[11px] font-medium shrink-0">
                   {t.topProblemCategory}:
                 </span>
-                <span className="font-bold text-slate-800 flex items-center gap-1 truncate min-w-0 max-w-[120px] sm:max-w-[140px]">
+                <span className="font-bold text-slate-800 flex items-center gap-1 truncate min-w-0 max-w-[120px] sm:max-w-[140px] text-[11px] sm:text-xs">
                   <span className="shrink-0">{getCategoryEmoji(ward.topCategory)}</span>
                   <span className="truncate">{ward.topCategory}</span>
                 </span>
@@ -183,7 +186,7 @@ const WardHeatmap = ({
 
               {/* Progress Bar (Resolution %) */}
               <div>
-                <div className="flex justify-between text-[11px] font-semibold text-slate-500 mb-1">
+                <div className="flex justify-between text-[10px] sm:text-[11px] font-semibold text-slate-500 mb-1">
                   <span>{t.resolutionRate}</span>
                   <span className="font-bold text-slate-800">{ward.resolutionRate}%</span>
                 </div>
@@ -202,7 +205,7 @@ const WardHeatmap = ({
               </div>
 
               {/* Action Link */}
-              <div className="mt-3 pt-2.5 border-t border-slate-200/60 flex items-center justify-between text-xs font-bold text-emerald-800 hover:text-emerald-950">
+              <div className="mt-2.5 sm:mt-3 pt-2 sm:pt-2.5 border-t border-slate-200/60 flex items-center justify-between text-[11px] sm:text-xs font-bold text-emerald-800 hover:text-emerald-950">
                 <span>{t.filterByWard}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </div>

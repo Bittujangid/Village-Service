@@ -72,18 +72,20 @@ const ExportReportButton = ({
         type="button"
         onClick={handleDownloadPdf}
         disabled={exporting}
-        className="min-h-[44px] px-4 py-2.5 rounded-lg bg-blue-900 hover:bg-blue-950 active:scale-[0.98] disabled:opacity-60 text-white font-bold text-xs sm:text-sm shadow-sm flex items-center justify-center gap-2 transition-all focus:outline-none focus:ring-2 focus:ring-blue-900"
+        className="min-h-[40px] px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-blue-900 hover:bg-blue-950 active:scale-[0.98] disabled:opacity-60 text-white font-bold text-xs sm:text-sm shadow-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all focus:outline-none focus:ring-2 focus:ring-blue-900 shrink-0 touch-target-min"
         title={t.downloadPdfReport}
       >
         {exporting ? (
           <>
-            <Loader2 className="w-4 h-4 animate-spin" />
-            <span>{t.generatingPdf}</span>
+            <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+            <span className="sm:hidden">{lang === 'hi' ? 'तैयार हो रहा है...' : 'PDF...'}</span>
+            <span className="hidden sm:inline">{t.generatingPdf}</span>
           </>
         ) : (
           <>
-            <Download className="w-4 h-4" />
-            <span>{t.downloadPdfReport}</span>
+            <Download className="w-4 h-4 shrink-0" />
+            <span className="sm:hidden">{lang === 'hi' ? 'मासिक रिपोर्ट (PDF)' : 'Monthly Report (PDF)'}</span>
+            <span className="hidden sm:inline">{t.downloadPdfReport}</span>
           </>
         )}
       </button>

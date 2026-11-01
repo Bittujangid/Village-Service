@@ -430,56 +430,69 @@ const AdminDashboard = () => {
     <div className="w-full max-w-full overflow-x-hidden min-h-screen bg-slate-50 px-3 sm:px-6 py-3">
       <div className="w-full max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* Header & Action Controls */}
-        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 pb-3 border-b border-slate-200">
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-900 border border-blue-200 shrink-0">
-              <LayoutDashboard className="w-4 h-4 sm:w-5 sm:h-5" />
+        <header className="bg-white rounded-2xl p-3 sm:p-4 border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center justify-between w-full sm:w-auto">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-900 border border-blue-200 shrink-0">
+                <LayoutDashboard className="w-4 h-4 sm:w-5 sm:h-5" />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <h1 className="text-base sm:text-xl font-bold text-slate-800 truncate">ग्राम पंचायत सहरी</h1>
+                  <span className="text-[11px] sm:text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-bold border border-blue-200 shrink-0">
+                    Admin
+                  </span>
+                </div>
+              </div>
             </div>
-            <h1 className="text-lg sm:text-xl font-bold text-slate-800 truncate">ग्राम पंचायत सहरी</h1>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-semibold border border-blue-200 shrink-0">
-              (Admin)
-            </span>
           </div>
 
-          <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
-            <button
-              type="button"
-              onClick={toggleLang}
-              className="p-2 sm:px-3 sm:py-1.5 rounded-xl text-slate-700 hover:text-blue-900 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors touch-target-min"
-              title={lang === 'hi' ? 'Switch to English' : 'हिंदी में देखें'}
-              aria-label="Toggle Language"
-            >
-              <Languages className="w-4 h-4 text-blue-900 shrink-0" />
-              <span className="md:hidden">{lang === 'hi' ? 'EN' : 'हि'}</span>
-              <span className="hidden md:inline">{lang === 'hi' ? 'English' : 'हिंदी'}</span>
-            </button>
+          <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto pt-2 sm:pt-0 border-t border-slate-100 sm:border-0">
+            <div className="text-[11px] text-slate-500 font-semibold sm:hidden flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+              <span>{lang === 'hi' ? 'लाइव पोर्टल' : 'Live Portal'}</span>
+            </div>
 
-            <button
-              type="button"
-              onClick={() => {
-                fetchDashboardStats();
-                fetchComplaintsList(page);
-                fetchNoticesList();
-                fetchWardAnalyticsData();
-                toast.success(lang === 'hi' ? 'डेटा रीफ्रेश किया गया' : 'Data refreshed');
-              }}
-              className="p-2 sm:px-3 sm:py-1.5 rounded-xl text-slate-600 hover:text-blue-900 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors touch-target-min"
-              title={lang === 'hi' ? 'रीफ्रेश करें' : 'Refresh'}
-              aria-label="Refresh"
-            >
-              <RefreshCw className="w-4 h-4 shrink-0" />
-              <span className="hidden sm:inline">{lang === 'hi' ? 'रीफ्रेश' : 'Refresh'}</span>
-            </button>
+            <div className="flex items-center gap-1.5 sm:gap-2 ml-auto sm:ml-0 shrink-0">
+              <button
+                type="button"
+                onClick={toggleLang}
+                className="p-1.5 sm:px-3 sm:py-1.5 rounded-xl text-slate-700 hover:text-blue-900 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors touch-target-min"
+                title={lang === 'hi' ? 'Switch to English' : 'हिंदी में देखें'}
+                aria-label="Toggle Language"
+              >
+                <Languages className="w-4 h-4 text-blue-900 shrink-0" />
+                <span className="md:hidden">{lang === 'hi' ? 'EN' : 'हि'}</span>
+                <span className="hidden md:inline">{lang === 'hi' ? 'English' : 'हिंदी'}</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="px-3 sm:px-4 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors touch-target-min"
-              aria-label={lang === 'hi' ? 'लॉगआउट' : 'Logout'}
-            >
-              <LogOut className="w-4 h-4 shrink-0" />
-              <span>{lang === 'hi' ? 'लॉगआउट' : 'Logout'}</span>
-            </button>
+              <button
+                type="button"
+                onClick={() => {
+                  fetchDashboardStats();
+                  fetchComplaintsList(page);
+                  fetchNoticesList();
+                  fetchWardAnalyticsData();
+                  toast.success(lang === 'hi' ? 'डेटा रीफ्रेश किया गया' : 'Data refreshed');
+                }}
+                className="p-1.5 sm:px-3 sm:py-1.5 rounded-xl text-slate-600 hover:text-blue-900 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors touch-target-min"
+                title={lang === 'hi' ? 'रीफ्रेश करें' : 'Refresh'}
+                aria-label="Refresh"
+              >
+                <RefreshCw className="w-4 h-4 shrink-0" />
+                <span className="hidden sm:inline">{lang === 'hi' ? 'रीफ्रेश' : 'Refresh'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="px-2.5 sm:px-4 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors touch-target-min"
+                aria-label={lang === 'hi' ? 'लॉगआउट' : 'Logout'}
+              >
+                <LogOut className="w-4 h-4 shrink-0" />
+                <span>{lang === 'hi' ? 'लॉगआउट' : 'Logout'}</span>
+              </button>
+            </div>
           </div>
         </header>
 
@@ -487,42 +500,45 @@ const AdminDashboard = () => {
         <main className="w-full max-w-full space-y-4 sm:space-y-6">
 
         {/* Navigation Tabs */}
-        <div className="bg-white rounded-2xl p-1.5 border border-slate-200 shadow-xs w-full">
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 px-1 w-full">
+        <div className="bg-white rounded-2xl p-1.5 border border-slate-200 shadow-xs w-full overflow-hidden">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 px-1 w-full scroll-smooth">
             <button
               type="button"
               onClick={() => setActiveTab('complaints')}
-              className={`shrink-0 flex-1 min-w-fit px-3 py-2 text-xs sm:text-sm font-medium rounded-xl whitespace-nowrap transition-all flex items-center justify-center gap-2 touch-target-min cursor-pointer ${(activeTab === 'complaints' || activeTab === 'grievances')
-                  ? 'bg-blue-900 text-white font-bold shadow-sm'
+              className={`shrink-0 px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-xl whitespace-nowrap transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer touch-target-min ${(activeTab === 'complaints' || activeTab === 'grievances')
+                  ? 'bg-blue-900 text-white shadow-sm ring-1 ring-blue-900'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
             >
               <FileText className="w-4 h-4 shrink-0" />
-              <span>{t.grievanceManagementTab}</span>
+              <span className="sm:hidden">{lang === 'hi' ? 'शिकायतें' : 'Complaints'}</span>
+              <span className="hidden sm:inline">{t.grievanceManagementTab}</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab('analytics')}
-              className={`shrink-0 flex-1 min-w-fit px-3 py-2 text-xs sm:text-sm font-medium rounded-xl whitespace-nowrap transition-all flex items-center justify-center gap-2 touch-target-min cursor-pointer ${activeTab === 'analytics'
-                  ? 'bg-blue-900 text-white font-bold shadow-sm'
+              className={`shrink-0 px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-xl whitespace-nowrap transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer touch-target-min ${activeTab === 'analytics'
+                  ? 'bg-blue-900 text-white shadow-sm ring-1 ring-blue-900'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
             >
               <Activity className="w-4 h-4 shrink-0" />
-              <span>{t.wardAnalyticsTab}</span>
+              <span className="sm:hidden">{lang === 'hi' ? 'वार्ड एनालिटिक्स' : 'Ward Analytics'}</span>
+              <span className="hidden sm:inline">{t.wardAnalyticsTab}</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab('notices')}
-              className={`shrink-0 flex-1 min-w-fit px-3 py-2 text-xs sm:text-sm font-medium rounded-xl whitespace-nowrap transition-all flex items-center justify-center gap-2 touch-target-min cursor-pointer ${activeTab === 'notices'
-                  ? 'bg-blue-900 text-white font-bold shadow-sm'
+              className={`shrink-0 px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-xl whitespace-nowrap transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer touch-target-min ${activeTab === 'notices'
+                  ? 'bg-blue-900 text-white shadow-sm ring-1 ring-blue-900'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
             >
               <Bell className="w-4 h-4 shrink-0" />
-              <span>{lang === 'hi' ? 'सार्वजनिक सूचनाएं (Notices)' : 'Public Notices'}</span>
+              <span className="sm:hidden">{lang === 'hi' ? 'सूचनाएं' : 'Notices'}</span>
+              <span className="hidden sm:inline">{lang === 'hi' ? 'सार्वजनिक सूचनाएं (Notices)' : 'Public Notices'}</span>
             </button>
           </div>
         </div>
@@ -531,64 +547,64 @@ const AdminDashboard = () => {
         {(activeTab === 'complaints' || activeTab === 'grievances') && (
           <div className="space-y-4 sm:space-y-6 animate-fadeIn">
             {/* Stat Cards Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
               {/* Card 1: Total */}
-              <div className="min-w-0 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between gap-3">
+              <div className="min-w-0 bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between gap-2 sm:gap-3">
                 <div className="min-w-0">
-                  <p className="text-xs uppercase font-bold text-slate-500 tracking-wider truncate">
-                    कुल शिकायतें (Total)
+                  <p className="text-[11px] sm:text-xs uppercase font-bold text-slate-500 tracking-wider truncate">
+                    कुल शिकायतें
                   </p>
-                  <p className="text-2xl sm:text-3xl font-black text-slate-900 mt-1">
+                  <p className="text-xl sm:text-3xl font-black text-slate-900 mt-0.5 sm:mt-1">
                     {stats.total}
                   </p>
                 </div>
-                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
-                  <FileText className="w-5 h-5 sm:w-6 sm:h-6" />
+                <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
+                  <FileText className="w-4 h-4 sm:w-6 sm:h-6" />
                 </div>
               </div>
 
               {/* Card 2: Pending (Amber) */}
-              <div className="min-w-0 bg-amber-50/70 p-4 sm:p-5 rounded-2xl border border-amber-200 shadow-xs flex items-center justify-between gap-3">
+              <div className="min-w-0 bg-amber-50/70 p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-amber-200 shadow-xs flex items-center justify-between gap-2 sm:gap-3">
                 <div className="min-w-0">
-                  <p className="text-xs uppercase font-bold text-amber-800 tracking-wider truncate">
-                    लंबित (Pending)
+                  <p className="text-[11px] sm:text-xs uppercase font-bold text-amber-800 tracking-wider truncate">
+                    लंबित
                   </p>
-                  <p className="text-2xl sm:text-3xl font-black text-amber-700 mt-1">
+                  <p className="text-xl sm:text-3xl font-black text-amber-700 mt-0.5 sm:mt-1">
                     {stats.pending}
                   </p>
                 </div>
-                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
-                  <Clock className="w-5 h-5 sm:w-6 sm:h-6" />
+                <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                  <Clock className="w-4 h-4 sm:w-6 sm:h-6" />
                 </div>
               </div>
 
               {/* Card 3: In Progress (Blue) */}
-              <div className="min-w-0 bg-blue-50/70 p-4 sm:p-5 rounded-2xl border border-blue-200 shadow-xs flex items-center justify-between gap-3">
+              <div className="min-w-0 bg-blue-50/70 p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-blue-200 shadow-xs flex items-center justify-between gap-2 sm:gap-3">
                 <div className="min-w-0">
-                  <p className="text-xs uppercase font-bold text-blue-800 tracking-wider truncate">
-                    प्रगति पर (In Progress)
+                  <p className="text-[11px] sm:text-xs uppercase font-bold text-blue-800 tracking-wider truncate">
+                    प्रगति पर
                   </p>
-                  <p className="text-2xl sm:text-3xl font-black text-blue-700 mt-1">
+                  <p className="text-xl sm:text-3xl font-black text-blue-700 mt-0.5 sm:mt-1">
                     {stats.inProgress}
                   </p>
                 </div>
-                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
-                  <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6" />
+                <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                  <RefreshCw className="w-4 h-4 sm:w-6 sm:h-6" />
                 </div>
               </div>
 
               {/* Card 4: Resolved (Green) */}
-              <div className="min-w-0 bg-emerald-50/70 p-4 sm:p-5 rounded-2xl border border-emerald-200 shadow-xs flex items-center justify-between gap-3">
+              <div className="min-w-0 bg-emerald-50/70 p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-emerald-200 shadow-xs flex items-center justify-between gap-2 sm:gap-3">
                 <div className="min-w-0">
-                  <p className="text-xs uppercase font-bold text-emerald-800 tracking-wider truncate">
-                    समाधान पूर्ण (Resolved)
+                  <p className="text-[11px] sm:text-xs uppercase font-bold text-emerald-800 tracking-wider truncate">
+                    समाधान पूर्ण
                   </p>
-                  <p className="text-2xl sm:text-3xl font-black text-emerald-700 mt-1">
+                  <p className="text-xl sm:text-3xl font-black text-emerald-700 mt-0.5 sm:mt-1">
                     {stats.resolved}
                   </p>
                 </div>
-                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                  <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+                <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                  <CheckCircle className="w-4 h-4 sm:w-6 sm:h-6" />
                 </div>
               </div>
             </div>
@@ -853,9 +869,9 @@ const AdminDashboard = () => {
         {activeTab === 'analytics' && (
           <div className="space-y-6 animate-fadeIn">
             {/* Header / Sub-nav bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
               <div className="w-full sm:w-auto">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-2.5 mb-1">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2.5 mb-1">
                   <h2 className="text-base sm:text-xl font-black text-slate-900 flex items-center gap-2">
                     <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-blue-900 shrink-0" />
                     <span>{t.analyticsHeading}</span>
@@ -870,7 +886,7 @@ const AdminDashboard = () => {
               </div>
 
               {/* Action Buttons: Download PDF Report & Refresh */}
-              <div className="flex items-center gap-2 sm:gap-3 self-end sm:self-auto shrink-0 w-full sm:w-auto justify-end">
+              <div className="flex items-center gap-2 sm:gap-3 shrink-0 w-full sm:w-auto justify-between sm:justify-end">
                 <ExportReportButton
                   analyticsData={analyticsData}
                   stats={stats}
@@ -892,9 +908,9 @@ const AdminDashboard = () => {
             </div>
 
             {/* Top 5 KPI Summary Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-4">
               {/* Card 1: Total Wards */}
-              <div className="min-w-0 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-xs">
+              <div className="min-w-0 bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 shadow-xs">
                 <div className="flex items-center justify-between text-slate-400 mb-1">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 truncate">{t.kpiTotalWards}</span>
                   <Building className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -904,7 +920,7 @@ const AdminDashboard = () => {
               </div>
 
               {/* Card 2: Total Complaints */}
-              <div className="min-w-0 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-xs">
+              <div className="min-w-0 bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 shadow-xs">
                 <div className="flex items-center justify-between text-slate-400 mb-1">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 truncate">{lang === 'hi' ? 'कुल शिकायतें' : 'Total Grievances'}</span>
                   <FileText className="w-4 h-4 text-blue-600 shrink-0" />
@@ -916,7 +932,7 @@ const AdminDashboard = () => {
               </div>
 
               {/* Card 3: Overall Resolution Rate */}
-              <div className="min-w-0 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-xs">
+              <div className="min-w-0 bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 shadow-xs">
                 <div className="flex items-center justify-between text-slate-400 mb-1">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 truncate">{t.kpiOverallRate}</span>
                   <TrendingUp className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -930,7 +946,7 @@ const AdminDashboard = () => {
               </div>
 
               {/* Card 4: Critical Ward */}
-              <div className="min-w-0 bg-rose-50/70 p-3.5 sm:p-4 rounded-2xl border border-rose-200 shadow-xs">
+              <div className="min-w-0 bg-rose-50/70 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-rose-200 shadow-xs">
                 <div className="flex items-center justify-between text-rose-500 mb-1">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-rose-800 truncate">{t.kpiCriticalWard}</span>
                   <Flame className="w-4 h-4 text-rose-600 animate-pulse shrink-0" />
@@ -942,20 +958,22 @@ const AdminDashboard = () => {
               </div>
 
               {/* Card 5: Average Resolution Time */}
-              <div className="min-w-0 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-xs col-span-2 md:col-span-1">
+              <div className="min-w-0 bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 shadow-xs col-span-2 md:col-span-1">
                 <div className="flex items-center justify-between text-slate-400 mb-1">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 truncate">{t.kpiAvgDays}</span>
                   <Clock className="w-4 h-4 text-amber-600 shrink-0" />
                 </div>
-                <div className="text-xl sm:text-2xl font-black text-slate-900">
-                  {analyticsData.resolutionMetrics?.averageResolutionDays || 2.4} <span className="text-xs font-normal text-slate-500">{t.kpiDaysUnit}</span>
+                <div className="flex items-baseline justify-between mt-1 sm:block">
+                  <div className="text-xl sm:text-2xl font-black text-slate-900">
+                    {analyticsData.resolutionMetrics?.averageResolutionDays || 2.4} <span className="text-xs font-normal text-slate-500">{t.kpiDaysUnit}</span>
+                  </div>
+                  <span className="text-[11px] text-slate-400 block sm:mt-0.5 truncate">{lang === 'hi' ? 'औसत निस्तारण अवधि' : 'Average time to resolve'}</span>
                 </div>
-                <span className="text-[11px] text-slate-400 block mt-0.5 truncate">{lang === 'hi' ? 'औसत निस्तारण अवधि' : 'Average time to resolve'}</span>
               </div>
             </div>
 
             {/* Ward Severity Heatmap */}
-            <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-xs">
+            <div className="bg-white p-3.5 sm:p-6 rounded-2xl border border-slate-200 shadow-xs">
               <WardHeatmap
                 wardBreakdown={analyticsData.wardBreakdown}
                 criticalWard={analyticsData.criticalWard}
@@ -974,9 +992,9 @@ const AdminDashboard = () => {
 
         {/* ================= TAB 3: NOTICES ================= */}
         {activeTab === 'notices' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fadeIn">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 animate-fadeIn">
             {/* Left: Create Notice Form */}
-            <div className="lg:col-span-1 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs h-fit">
+            <div className="lg:col-span-1 bg-white p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200 shadow-xs h-fit">
               <h3 className="text-base sm:text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <PlusCircle className="w-5 h-5 text-emerald-700" />
                 <span>नई सार्वजनिक सूचना बनाएं</span>
@@ -1062,8 +1080,8 @@ const AdminDashboard = () => {
             </div>
 
             {/* Right: Existing Notices List */}
-            <div className="lg:col-span-2 space-y-4">
-              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+            <div className="lg:col-span-2 space-y-3 sm:space-y-4">
+              <div className="bg-white p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
                 <h3 className="text-base sm:text-lg font-bold text-slate-800">
                   वर्तमान सक्रिय सूचनाएं (Active Notices)
                 </h3>
@@ -1075,7 +1093,7 @@ const AdminDashboard = () => {
               {loadingNotices ? (
                 <LoadingSpinner label="सूचनाएं लोड हो रही हैं..." />
               ) : notices.length === 0 ? (
-                <div className="bg-white p-10 rounded-2xl border border-slate-200 text-center text-slate-500">
+                <div className="bg-white p-8 sm:p-10 rounded-xl sm:rounded-2xl border border-slate-200 text-center text-slate-500">
                   <Bell className="w-10 h-10 mx-auto text-slate-300 mb-2" />
                   <p className="font-bold">कोई सूचना प्रकाशित नहीं है</p>
                   <p className="text-xs text-slate-400 mt-1">
@@ -1089,7 +1107,7 @@ const AdminDashboard = () => {
                     return (
                       <div
                         key={noticeId}
-                        className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+                        className="bg-white p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4"
                       >
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
