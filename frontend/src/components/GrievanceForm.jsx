@@ -615,10 +615,10 @@ const GrievanceForm = ({ onSuccessClose }) => {
       {/* Invisible reCAPTCHA container for Firebase Phone Auth */}
       <div id="recaptcha-container"></div>
 
-      {/* Scrollable Form Body Container */}
-      <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 space-y-4 sm:space-y-5">
+      {/* ── Scrollable Form Body ── */}
+      <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 space-y-5">
 
-        {/* 1. Name Field */}
+        {/* 1. Full Name */}
         <div>
           <label htmlFor="grievance-name" className="block text-sm font-bold text-slate-800 mb-1">
             {t.labelName} <span className="text-red-500">*</span>
@@ -643,7 +643,7 @@ const GrievanceForm = ({ onSuccessClose }) => {
           )}
         </div>
 
-        {/* Mobile Number with Firebase OTP Authentication */}
+        {/* 2. Mobile Number with OTP */}
         <div>
           <div className="flex items-center justify-between mb-1">
             <label htmlFor="grievance-phone" className="block text-sm font-bold text-slate-800">
@@ -805,193 +805,193 @@ const GrievanceForm = ({ onSuccessClose }) => {
             </div>
           )}
         </div>
-      </div>
 
-      {/* 2. Ward Selection (Pills strictly 1-7) */}
-      <div>
-        <label className="block text-sm font-bold text-slate-800 mb-1">
-          {t.labelWard} (1-7) <span className="text-red-500">*</span>
-        </label>
-        <p className="text-xs text-slate-500 mb-2.5">
-          {lang === 'hi'
-            ? 'कृपया ग्राम पंचायत सहरी का वह वार्ड चुनें जहां यह समस्या उत्पन्न हुई है:'
-            : 'Please select the ward in Gram Panchayat Sahari where the problem is located:'}
-        </p>
-        <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
-          {WARDS.map((w) => {
-            const isSelected = formData.ward === w;
-            return (
-              <button
-                key={w}
-                type="button"
-                onClick={() => handleChange('ward', w)}
-                className={`min-h-[44px] px-3 py-2 rounded-lg text-xs sm:text-sm font-bold border transition-all flex items-center justify-center ${
-                  isSelected
-                    ? 'bg-blue-900 text-white border-blue-900 shadow-xs ring-2 ring-blue-900/20'
-                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-slate-300'
-                }`}
-              >
-                {lang === 'hi' ? `वार्ड ${w}` : `Ward ${w}`}
-              </button>
-            );
-          })}
-        </div>
-        {errors.ward && (
-          <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
-            <AlertCircle className="w-3.5 h-3.5" />
-            {errors.ward}
-          </p>
-        )}
-      </div>
-
-      {/* 3. Category Radio Cards */}
-      <div>
-        <label className="block text-sm font-bold text-slate-800 mb-1.5">
-          {t.labelCategory} <span className="text-red-500">*</span>
-        </label>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-          {categories.map((cat) => {
-            const isSelected = formData.category === cat.id;
-            return (
-              <label
-                key={cat.id}
-                onClick={() => handleChange('category', cat.id)}
-                className={`flex items-center gap-3 p-3.5 rounded-xl border-2 cursor-pointer transition-all ${
-                  isSelected
-                    ? 'border-blue-900 bg-blue-50/60 shadow-2xs'
-                    : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="category"
-                  value={cat.id}
-                  checked={isSelected}
-                  onChange={() => handleChange('category', cat.id)}
-                  className="sr-only"
-                />
-                <span className="text-2xl flex-shrink-0" role="img" aria-label={cat.label}>
-                  {cat.emoji}
-                </span>
-                <div className="min-w-0">
-                  <p className={`text-sm font-bold leading-tight ${isSelected ? 'text-blue-950' : 'text-slate-800'}`}>
-                    {cat.label}
-                  </p>
-                  <span className="text-[11px] text-slate-400 block mt-0.5">
-                    {cat.sublabel}
-                  </span>
-                </div>
-              </label>
-            );
-          })}
-        </div>
-        {errors.category && (
-          <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
-            <AlertCircle className="w-3.5 h-3.5" />
-            {errors.category}
-          </p>
-        )}
-      </div>
-
-      {/* 4. Description Textarea */}
-      <div>
-        <label htmlFor="grievance-desc" className="block text-sm font-bold text-slate-800 mb-1">
-          {t.labelDescription} <span className="text-red-500">*</span>
-        </label>
-        <textarea
-          id="grievance-desc"
-          rows={4}
-          required
-          value={formData.description}
-          onChange={(e) => handleChange('description', e.target.value)}
-          onBlur={handleInputBlur}
-          placeholder={t.labelDescriptionHint}
-          className={`w-full p-3.5 rounded-lg border ${
-            errors.description ? 'border-red-500 bg-red-50/30' : 'border-slate-300 bg-white'
-          } text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-900 focus:border-blue-900 transition-colors text-base`}
-        />
-        <div className="flex items-center justify-between mt-1">
-          {errors.description ? (
-            <p className="text-xs text-red-600 flex items-center gap-1">
-              <AlertCircle className="w-3.5 h-3.5" />
-              {errors.description}
-            </p>
-          ) : (
-            <span className="text-[11px] text-slate-400">
-              {lang === 'hi' ? 'न्यूनतम 10 अक्षर आवश्यक हैं' : 'Minimum 10 characters required'}
-            </span>
-          )}
-          <span className="text-[11px] text-slate-400">
-            {formData.description.length} {lang === 'hi' ? 'अक्षर' : 'chars'}
-          </span>
-        </div>
-      </div>
-
-      {/* 5. Photo Upload */}
-      <div>
-        <label className="block text-sm font-bold text-slate-800 mb-1">
-          {t.labelPhoto} <span className="text-red-500">*</span>
-        </label>
-        <p className="text-xs text-slate-500 mb-2">
-          {t.labelPhotoHint}
-        </p>
-
-        {imagePreview ? (
-          <div className="relative inline-block border-2 border-slate-300 rounded-xl overflow-hidden p-1 bg-white shadow-2xs">
-            <img
-              src={imagePreview}
-              alt="Selected Preview"
-              className="w-48 h-36 object-cover rounded-lg"
-            />
-            <button
-              type="button"
-              onClick={handleRemoveImage}
-              className="absolute top-2 right-2 bg-red-600 text-white p-1.5 rounded-full shadow-md hover:bg-red-700 transition-colors focus:outline-none"
-              title={lang === 'hi' ? 'फोटो हटाएं' : 'Remove photo'}
-            >
-              <X className="w-4 h-4" />
-            </button>
-            <p className="text-[11px] text-emerald-800 font-semibold text-center mt-1">
-              {lang === 'hi' ? 'फोटो जोड़ी गई' : 'Photo Attached'}
-            </p>
-          </div>
-        ) : (
-          <label className={`flex flex-col items-center justify-center border-2 border-dashed ${
-            errors.photo ? 'border-red-400 bg-red-50/20' : 'border-slate-300 bg-slate-50 hover:bg-blue-50/30 hover:border-blue-900'
-          } rounded-xl p-6 cursor-pointer transition-all group`}>
-            <div className="w-12 h-12 rounded-full bg-slate-100 text-blue-900 flex items-center justify-center group-hover:scale-105 transition-transform mb-2">
-              <Camera className="w-6 h-6" />
-            </div>
-            <span className="text-sm font-bold text-slate-700 group-hover:text-blue-950">
-              {lang === 'hi' ? 'फोटो चुनें या कैमरे से खींचें' : 'Select photo or take a picture'}
-            </span>
-            <span className="text-xs text-slate-400 mt-0.5">
-              PNG, JPG, JPEG (Max 10MB)
-            </span>
-            <input
-              type="file"
-              accept="image/*"
-              capture="environment"
-              onChange={handleImageChange}
-              className="sr-only"
-            />
+        {/* 3. Ward Selection (Pills 1-7) */}
+        <div>
+          <label className="block text-sm font-bold text-slate-800 mb-1">
+            {t.labelWard} (1-7) <span className="text-red-500">*</span>
           </label>
-        )}
-        {errors.photo && (
-          <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
-            <AlertCircle className="w-3.5 h-3.5" />
-            {errors.photo}
+          <p className="text-xs text-slate-500 mb-2.5">
+            {lang === 'hi'
+              ? 'कृपया ग्राम पंचायत सहरी का वह वार्ड चुनें जहां यह समस्या उत्पन्न हुई है:'
+              : 'Please select the ward in Gram Panchayat Sahari where the problem is located:'}
           </p>
-        )}
-      </div>
-      </div>
+          <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
+            {WARDS.map((w) => {
+              const isSelected = formData.ward === w;
+              return (
+                <button
+                  key={w}
+                  type="button"
+                  onClick={() => handleChange('ward', w)}
+                  className={`min-h-[44px] px-3 py-2 rounded-lg text-xs sm:text-sm font-bold border transition-all flex items-center justify-center ${
+                    isSelected
+                      ? 'bg-blue-900 text-white border-blue-900 shadow-xs ring-2 ring-blue-900/20'
+                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-slate-300'
+                  }`}
+                >
+                  {lang === 'hi' ? `वार्ड ${w}` : `Ward ${w}`}
+                </button>
+              );
+            })}
+          </div>
+          {errors.ward && (
+            <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+              <AlertCircle className="w-3.5 h-3.5" />
+              {errors.ward}
+            </p>
+          )}
+        </div>
 
-      {/* Sticky Bottom Submit Button Footer */}
-      <div className="shrink-0 p-4 border-t border-slate-100 bg-white/95 backdrop-blur-sm pb-6 md:pb-4">
+        {/* 4. Category Radio Cards */}
+        <div>
+          <label className="block text-sm font-bold text-slate-800 mb-1.5">
+            {t.labelCategory} <span className="text-red-500">*</span>
+          </label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            {categories.map((cat) => {
+              const isSelected = formData.category === cat.id;
+              return (
+                <label
+                  key={cat.id}
+                  onClick={() => handleChange('category', cat.id)}
+                  className={`flex items-center gap-3 p-3.5 rounded-xl border-2 cursor-pointer transition-all ${
+                    isSelected
+                      ? 'border-blue-900 bg-blue-50/60 shadow-2xs'
+                      : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="category"
+                    value={cat.id}
+                    checked={isSelected}
+                    onChange={() => handleChange('category', cat.id)}
+                    className="sr-only"
+                  />
+                  <span className="text-2xl flex-shrink-0" role="img" aria-label={cat.label}>
+                    {cat.emoji}
+                  </span>
+                  <div className="min-w-0">
+                    <p className={`text-sm font-bold leading-tight ${isSelected ? 'text-blue-950' : 'text-slate-800'}`}>
+                      {cat.label}
+                    </p>
+                    <span className="text-[11px] text-slate-400 block mt-0.5">
+                      {cat.sublabel}
+                    </span>
+                  </div>
+                </label>
+              );
+            })}
+          </div>
+          {errors.category && (
+            <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+              <AlertCircle className="w-3.5 h-3.5" />
+              {errors.category}
+            </p>
+          )}
+        </div>
+
+        {/* 5. Description Textarea */}
+        <div>
+          <label htmlFor="grievance-desc" className="block text-sm font-bold text-slate-800 mb-1">
+            {t.labelDescription} <span className="text-red-500">*</span>
+          </label>
+          <textarea
+            id="grievance-desc"
+            rows={4}
+            required
+            value={formData.description}
+            onChange={(e) => handleChange('description', e.target.value)}
+            onBlur={handleInputBlur}
+            placeholder={t.labelDescriptionHint}
+            className={`w-full p-3.5 rounded-lg border ${
+              errors.description ? 'border-red-500 bg-red-50/30' : 'border-slate-300 bg-white'
+            } text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-900 focus:border-blue-900 transition-colors text-base`}
+          />
+          <div className="flex items-center justify-between mt-1">
+            {errors.description ? (
+              <p className="text-xs text-red-600 flex items-center gap-1">
+                <AlertCircle className="w-3.5 h-3.5" />
+                {errors.description}
+              </p>
+            ) : (
+              <span className="text-[11px] text-slate-400">
+                {lang === 'hi' ? 'न्यूनतम 10 अक्षर आवश्यक हैं' : 'Minimum 10 characters required'}
+              </span>
+            )}
+            <span className="text-[11px] text-slate-400">
+              {formData.description.length} {lang === 'hi' ? 'अक्षर' : 'chars'}
+            </span>
+          </div>
+        </div>
+
+        {/* 6. Photo Upload */}
+        <div>
+          <label className="block text-sm font-bold text-slate-800 mb-1">
+            {t.labelPhoto} <span className="text-red-500">*</span>
+          </label>
+          <p className="text-xs text-slate-500 mb-2">
+            {t.labelPhotoHint}
+          </p>
+
+          {imagePreview ? (
+            <div className="relative inline-block border-2 border-slate-300 rounded-xl overflow-hidden p-1 bg-white shadow-2xs">
+              <img
+                src={imagePreview}
+                alt="Selected Preview"
+                className="w-48 h-36 object-cover rounded-lg"
+              />
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="absolute top-2 right-2 bg-red-600 text-white p-1.5 rounded-full shadow-md hover:bg-red-700 transition-colors focus:outline-none"
+                title={lang === 'hi' ? 'फोटो हटाएं' : 'Remove photo'}
+              >
+                <X className="w-4 h-4" />
+              </button>
+              <p className="text-[11px] text-emerald-800 font-semibold text-center mt-1">
+                {lang === 'hi' ? 'फोटो जोड़ी गई' : 'Photo Attached'}
+              </p>
+            </div>
+          ) : (
+            <label className={`flex flex-col items-center justify-center border-2 border-dashed ${
+              errors.photo ? 'border-red-400 bg-red-50/20' : 'border-slate-300 bg-slate-50 hover:bg-blue-50/30 hover:border-blue-900'
+            } rounded-xl p-6 cursor-pointer transition-all group`}>
+              <div className="w-12 h-12 rounded-full bg-slate-100 text-blue-900 flex items-center justify-center group-hover:scale-105 transition-transform mb-2">
+                <Camera className="w-6 h-6" />
+              </div>
+              <span className="text-sm font-bold text-slate-700 group-hover:text-blue-950">
+                {lang === 'hi' ? 'फोटो चुनें या कैमरे से खींचें' : 'Select photo or take a picture'}
+              </span>
+              <span className="text-xs text-slate-400 mt-0.5">
+                PNG, JPG, JPEG (Max 10MB)
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleImageChange}
+                className="sr-only"
+              />
+            </label>
+          )}
+          {errors.photo && (
+            <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+              <AlertCircle className="w-3.5 h-3.5" />
+              {errors.photo}
+            </p>
+          )}
+        </div>
+
+      </div>{/* end scrollable body */}
+
+      {/* ── Sticky Submit Footer ── */}
+      <div className="shrink-0 px-4 py-3 border-t border-slate-100 bg-white/95 backdrop-blur-sm pb-6 md:pb-4">
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full min-h-[50px] sm:min-h-[54px] px-6 py-3.5 rounded-xl bg-blue-900 hover:bg-blue-950 active:scale-[0.98] disabled:opacity-60 text-white font-bold text-base sm:text-lg shadow-sm transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-4 focus:ring-blue-900/30 cursor-pointer"
+          className="w-full min-h-[52px] px-6 py-3.5 rounded-xl bg-blue-900 hover:bg-blue-950 active:scale-[0.98] disabled:opacity-60 text-white font-bold text-base sm:text-lg shadow-sm transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-4 focus:ring-blue-900/30 cursor-pointer"
         >
           {isSubmitting ? (
             <>
