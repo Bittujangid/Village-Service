@@ -617,25 +617,24 @@ const GrievanceForm = ({ onSuccessClose }) => {
 
       {/* Scrollable Form Body Container */}
       <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 space-y-4 sm:space-y-5">
-        {/* 1. Name & Mobile Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Full Name */}
-          <div>
-            <label htmlFor="grievance-name" className="block text-sm font-bold text-slate-800 mb-1">
-              {t.labelName} <span className="text-red-500">*</span>
-            </label>
-            <input
-              id="grievance-name"
-              type="text"
-              required
-              value={formData.name}
-              onChange={(e) => handleChange('name', e.target.value)}
-              onBlur={handleInputBlur}
-              placeholder={t.labelNameHint}
-              className={`w-full min-h-[48px] px-4 py-2.5 rounded-lg border ${
-                errors.name ? 'border-red-500 bg-red-50/30' : 'border-slate-300 bg-white'
-              } text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-900 focus:border-blue-900 transition-colors text-base`}
-            />
+
+        {/* 1. Name Field */}
+        <div>
+          <label htmlFor="grievance-name" className="block text-sm font-bold text-slate-800 mb-1">
+            {t.labelName} <span className="text-red-500">*</span>
+          </label>
+          <input
+            id="grievance-name"
+            type="text"
+            required
+            value={formData.name}
+            onChange={(e) => handleChange('name', e.target.value)}
+            onBlur={handleInputBlur}
+            placeholder={t.labelNameHint}
+            className={`w-full min-h-[48px] px-4 py-2.5 rounded-lg border ${
+              errors.name ? 'border-red-500 bg-red-50/30' : 'border-slate-300 bg-white'
+            } text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-900 focus:border-blue-900 transition-colors text-base`}
+          />
           {errors.name && (
             <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
               <AlertCircle className="w-3.5 h-3.5" />
