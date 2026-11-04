@@ -197,15 +197,15 @@ export const translations = {
 
     // Hero
     heroBadge: 'Digital Gram Panchayat Sahari • Citizen Service Hub',
-    heroTitle1: 'Share Your Grievance,',
-    heroTitle2: 'We Will Resolve It',
-    heroSubtitle: 'Panchayat Services, Directly at Your Doorstep',
-    heroDesc: 'Register grievances regarding water, electricity, roads, drainage, sanitation or any public issue directly with the Panchayat office online and track real-time resolution progress.',
-    btnNewComplaint: 'File New Grievance',
-    btnTrackStatus: 'Check Grievance Status',
-    statComplaints: 'Grievances Resolved',
+    heroTitle1: 'Tell Us Your Problem,',
+    heroTitle2: 'We Will Solve It',
+    heroSubtitle: 'Panchayat Services, Right at Home',
+    heroDesc: 'Register complaints regarding water, electricity, roads, drainage, sanitation or any public issue directly with the Panchayat office online and track real-time resolution progress.',
+    btnNewComplaint: 'Register New Complaint',
+    btnTrackStatus: 'Track Complaint Status',
+    statComplaints: 'Complaints Solved',
     statWards: 'Total Wards',
-    statService: 'Citizen Support',
+    statService: '24×7 Citizen Support',
     featurePaperless: '100% Digital & Transparent',
     featureDirect: 'Direct to Sarpanch & Secretary',
     featureWhatsapp: 'Instant WhatsApp Updates',
@@ -222,7 +222,7 @@ export const translations = {
 
     // Quick Tracker Section
     quickTrackBadge: 'Instant Tracking',
-    quickTrackTitle: 'Check Grievance Status',
+    quickTrackTitle: 'Track Complaint Status',
     quickTrackSubtitle: 'Enter your Tracking ID (e.g. GR-1024) or 10-digit mobile number to track progress',
 
     // Grievance Form

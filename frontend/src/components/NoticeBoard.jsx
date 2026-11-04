@@ -13,7 +13,7 @@ const getDefaultFallbackNotices = (currentLang) => [
       : 'Welcome to Gram Panchayat Sahari',
     description: currentLang === 'hi'
       ? 'ग्राम पंचायत सहरी में आपका स्वागत है | किसी भी समस्या के समाधान हेतु नागरिक शिकायत दर्ज करें'
-      : 'Welcome to Gram Panchayat Sahari | Submit your grievance online for quick resolution of civic issues',
+      : 'Welcome to Gram Panchayat Sahari | Submit your complaint online for quick resolution of civic issues',
     category: currentLang === 'hi' ? 'सामान्य सूचना' : 'General Notice',
     isImportant: false,
     priority: 'normal',
@@ -181,11 +181,34 @@ const NoticeBoard = () => {
     ? (lang === 'hi' ? 'अति आवश्यक' : 'High Priority')
     : (activeNotice?.priority || (lang === 'hi' ? 'सामान्य' : 'General'));
 
+  const getCategoryDisplay = (cat) => {
+    if (!cat) return lang === 'hi' ? 'सामान्य सूचना' : 'General Notice';
+    if (cat === 'सामान्य सूचना' || cat === 'General Notice') {
+      return lang === 'hi' ? 'सामान्य सूचना' : 'General Notice';
+    }
+    if (cat === 'पेयजल व जल आपूर्ति' || cat === 'Water Supply') {
+      return lang === 'hi' ? 'पेयजल व जल आपूर्ति' : 'Water Supply';
+    }
+    if (cat === 'स्वच्छता अभियान' || cat === 'Sanitation') {
+      return lang === 'hi' ? 'स्वच्छता अभियान' : 'Sanitation';
+    }
+    if (cat === 'विद्युत आपूर्ति' || cat === 'Electricity') {
+      return lang === 'hi' ? 'विद्युत आपूर्ति' : 'Electricity';
+    }
+    if (cat === 'सड़क व निर्माण' || cat === 'Roads & Works') {
+      return lang === 'hi' ? 'सड़क व निर्माण' : 'Roads & Works';
+    }
+    if (cat === 'कृषि व योजनाएं' || cat === 'Agriculture & Schemes') {
+      return lang === 'hi' ? 'कृषि व योजनाएं' : 'Agriculture & Schemes';
+    }
+    return cat;
+  };
+
   const formattedWhatsAppText = lang === 'hi'
     ? `📢 *ग्राम पंचायत सहरी - आधिकारिक सूचना*
 ━━━━━━━━━━━━━━━━━━━━━
 📌 *विषय:* ${title}
-🏷️ *श्रेणी:* ${category || 'सामान्य सूचना'} | *प्राथमिकता:* ${priorityText}
+🏷️ *श्रेणी:* ${getCategoryDisplay(category)} | *प्राथमिकता:* ${priorityText}
 
 📝 *विवरण:*
 ${description}
@@ -196,7 +219,7 @@ ${description}
     : `📢 *Gram Panchayat Sahari - Official Notice*
 ━━━━━━━━━━━━━━━━━━━━━
 📌 *Subject:* ${title}
-🏷️ *Category:* ${category || 'General Notice'} | *Priority:* ${priorityText}
+🏷️ *Category:* ${getCategoryDisplay(category)} | *Priority:* ${priorityText}
 
 📝 *Details:*
 ${description}
@@ -264,7 +287,7 @@ ${description}
               </span>
               {category && (
                 <span className="bg-slate-100 text-slate-700 text-[9px] sm:text-[11px] font-medium px-1.5 py-0.5 rounded border border-slate-200 truncate">
-                  {category}
+                  {getCategoryDisplay(category)}
                 </span>
               )}
             </div>
