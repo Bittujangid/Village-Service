@@ -165,7 +165,7 @@ const AdminLogin = () => {
       <div className="w-full flex items-center justify-start px-4 pt-3 pb-2 max-w-4xl mx-auto">
         <Link
           to="/"
-          className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-semibold backdrop-blur-md transition-all touch-target-min"
+          className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-semibold backdrop-blur-md transition-transform duration-150 active:scale-[0.96] select-none touch-manipulation touch-target-min"
         >
           <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
           <span>{lang === 'hi' ? 'मुख्य पृष्ठ पर लौटें' : 'Back to Home'}</span>

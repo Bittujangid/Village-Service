@@ -43,6 +43,8 @@ const NoticeBoard = () => {
   });
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [slideDirection, setSlideDirection] = useState('right');
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // Sync fallback notice language when user switches language
   useEffect(() => {
@@ -157,11 +159,21 @@ const NoticeBoard = () => {
   );
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % notices.length);
+    setSlideDirection('right');
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setCurrentIndex((prev) => (prev + 1) % notices.length);
+      setIsTransitioning(false);
+    }, 120);
   };
 
   const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + notices.length) % notices.length);
+    setSlideDirection('left');
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setCurrentIndex((prev) => (prev - 1 + notices.length) % notices.length);
+      setIsTransitioning(false);
+    }, 120);
   };
 
   const portalUrl = typeof window !== 'undefined' ? window.location.origin : 'https://gramseva.in';
@@ -227,14 +239,28 @@ ${description}
             )}
 
             <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 min-w-0">
-              <span className={
+              <span className={`inline-flex items-center ${
                 isHighPriority
                   ? 'bg-rose-700 text-white text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider'
                   : 'bg-blue-900 text-white text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider'
-              }>
-                {isHighPriority
-                  ? (lang === 'hi' ? '🚨 अति आवश्यक' : '🚨 HIGH PRIORITY')
-                  : (lang === 'hi' ? '📌 महत्वपूर्ण सूचना' : '📌 IMPORTANT NOTICE')}
+              }`}>
+                {isHighPriority ? (
+                  <>
+                    <span className="relative flex h-2 w-2 mr-1.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                    </span>
+                    <span>{lang === 'hi' ? 'अति आवश्यक' : 'HIGH PRIORITY'}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="relative flex h-1.5 w-1.5 mr-1.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-300 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-300"></span>
+                    </span>
+                    <span>{lang === 'hi' ? 'महत्वपूर्ण सूचना' : 'IMPORTANT NOTICE'}</span>
+                  </>
+                )}
               </span>
               {category && (
                 <span className="bg-slate-100 text-slate-700 text-[9px] sm:text-[11px] font-medium px-1.5 py-0.5 rounded border border-slate-200 truncate">
@@ -254,7 +280,7 @@ ${description}
                 <button
                   type="button"
                   onClick={handlePrev}
-                  className="p-1 hover:bg-slate-100 rounded text-slate-600 transition cursor-pointer"
+                  className="p-1 hover:bg-slate-100 rounded text-slate-600 transition-transform duration-150 active:scale-[0.92] select-none touch-manipulation cursor-pointer"
                   aria-label={t.prevNotice}
                   title={t.prevNotice}
                 >
@@ -263,7 +289,7 @@ ${description}
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="p-1 hover:bg-slate-100 rounded text-slate-600 transition cursor-pointer"
+                  className="p-1 hover:bg-slate-100 rounded text-slate-600 transition-transform duration-150 active:scale-[0.92] select-none touch-manipulation cursor-pointer"
                   aria-label={t.nextNotice}
                   title={t.nextNotice}
                 >
@@ -274,8 +300,16 @@ ${description}
           )}
         </div>
 
-        {/* Notice Info: Title & Description */}
-        <div className="min-w-0">
+        {/* Notice Info: Title & Description with Smooth Slide-Fade Transition */}
+        <div
+          className={`min-w-0 transition-all duration-200 ease-out transform transform-gpu ${
+            isTransitioning
+              ? slideDirection === 'right'
+                ? '-translate-x-2 opacity-0'
+                : 'translate-x-2 opacity-0'
+              : 'translate-x-0 opacity-100'
+          }`}
+        >
           <h2 className="text-xs sm:text-sm md:text-base font-bold text-slate-900 tracking-tight leading-snug break-words">
             {title}
           </h2>
@@ -284,13 +318,13 @@ ${description}
           </p>
         </div>
 
-        {/* Bottom: Centered Full-Width WhatsApp Share Button */}
+        {/* Bottom: Centered Full-Width WhatsApp Share Button with Native Mobile Tap Scale */}
         <div className="pt-1 w-full">
           <a
             href={whatsappUrl}
             target="_blank"
             rel="noreferrer"
-            className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs shadow-xs active:scale-[0.99] transition cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 transition-transform duration-150 active:scale-[0.98] select-none touch-manipulation text-white font-medium text-xs shadow-xs cursor-pointer"
             aria-label={t.whatsappShare}
           >
             <svg

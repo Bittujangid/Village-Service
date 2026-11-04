@@ -109,7 +109,7 @@ const Navbar = ({ onOpenGrievance, onOpenTrack }) => {
                 type="button"
                 onClick={handleRefresh}
                 disabled={isRefreshing}
-                className="p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 border border-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-900/30 cursor-pointer"
+                className="p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 border border-slate-200 transition-transform duration-150 active:scale-95 select-none touch-manipulation focus:outline-none focus:ring-2 focus:ring-blue-900/30 cursor-pointer"
                 title={lang === 'hi' ? 'पोर्टल रीफ्रेश करें' : 'Refresh portal'}
                 aria-label="Refresh Portal"
               >
@@ -120,7 +120,7 @@ const Navbar = ({ onOpenGrievance, onOpenTrack }) => {
               <button
                 type="button"
                 onClick={toggleLang}
-                className="bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-blue-900/30 cursor-pointer"
+                className="bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold transition-transform duration-150 active:scale-95 select-none touch-manipulation flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-blue-900/30 cursor-pointer"
                 title={lang === 'hi' ? 'Switch to English' : 'हिंदी में देखें'}
                 aria-label="Toggle language"
               >
@@ -133,7 +133,7 @@ const Navbar = ({ onOpenGrievance, onOpenTrack }) => {
                 <div className="flex items-center gap-2">
                   <Link
                     to="/admin/dashboard"
-                    className="bg-blue-900 hover:bg-blue-950 text-white font-bold text-xs sm:text-sm px-3.5 py-1.5 rounded-lg shadow-2xs transition-all flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-blue-900/40"
+                    className="bg-blue-900 hover:bg-blue-950 text-white font-bold text-xs sm:text-sm px-3.5 py-1.5 rounded-lg shadow-2xs transition-transform duration-150 active:scale-95 select-none touch-manipulation flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-blue-900/40"
                   >
                     <LayoutDashboard className="w-4 h-4 text-blue-200" />
                     <span>{t.adminDashboard}</span>
@@ -141,7 +141,7 @@ const Navbar = ({ onOpenGrievance, onOpenTrack }) => {
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs sm:text-sm font-bold px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 cursor-pointer"
+                    className="bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs sm:text-sm font-bold px-3 py-1.5 rounded-lg transition-transform duration-150 active:scale-95 select-none touch-manipulation flex items-center gap-1 cursor-pointer"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     <span>{t.logout}</span>
@@ -150,7 +150,7 @@ const Navbar = ({ onOpenGrievance, onOpenTrack }) => {
               ) : (
                 <Link
                   to="/admin/login"
-                  className="bg-blue-900 hover:bg-blue-950 text-white font-bold text-xs sm:text-sm px-3.5 py-1.5 rounded-lg shadow-2xs transition-all flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-blue-900/40"
+                  className="bg-blue-900 hover:bg-blue-950 text-white font-bold text-xs sm:text-sm px-3.5 py-1.5 rounded-lg shadow-2xs transition-transform duration-150 active:scale-95 select-none touch-manipulation flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-blue-900/40"
                 >
                   <Lock className="w-3.5 h-3.5 text-blue-200" />
                   <span>{t.adminLogin}</span>
@@ -164,7 +164,7 @@ const Navbar = ({ onOpenGrievance, onOpenTrack }) => {
               <button
                 type="button"
                 onClick={toggleLang}
-                className="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 transition-colors flex items-center gap-1"
+                className="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 transition-transform duration-150 active:scale-95 select-none touch-manipulation flex items-center gap-1"
                 aria-label="Toggle language"
               >
                 <Languages className="w-3.5 h-3.5 text-blue-900" />
@@ -175,7 +175,7 @@ const Navbar = ({ onOpenGrievance, onOpenTrack }) => {
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 rounded-lg text-slate-700 hover:bg-slate-100 border border-slate-200/90 focus:outline-none focus:ring-2 focus:ring-blue-900/30 transition-colors cursor-pointer"
+                className="p-2 rounded-lg text-slate-700 hover:bg-slate-100 border border-slate-200/90 focus:outline-none focus:ring-2 focus:ring-blue-900/30 transition-transform duration-150 active:scale-95 select-none touch-manipulation cursor-pointer"
                 aria-label={mobileMenuOpen ? 'Close Menu' : 'Open Menu'}
                 aria-expanded={mobileMenuOpen}
               >
