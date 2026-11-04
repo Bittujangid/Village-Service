@@ -318,13 +318,13 @@ ${description}
           </p>
         </div>
 
-        {/* Bottom: Centered Full-Width WhatsApp Share Button with Native Mobile Tap Scale */}
-        <div className="pt-1 w-full">
+        {/* Bottom: WhatsApp Action Button (Full-width on mobile, auto/compact on desktop) */}
+        <div className="pt-1 flex justify-start sm:justify-start">
           <a
             href={whatsappUrl}
             target="_blank"
             rel="noreferrer"
-            className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 transition-transform duration-150 active:scale-[0.98] select-none touch-manipulation text-white font-medium text-xs shadow-xs cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 transition-transform duration-150 active:scale-[0.98] select-none touch-manipulation text-white font-medium text-xs shadow-xs cursor-pointer"
             aria-label={t.whatsappShare}
           >
             <svg

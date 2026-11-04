@@ -73,19 +73,19 @@ export default function Footer({ onOpenGrievance, onOpenTracker, onOpenTrack, on
               {isHi ? 'आपातकालीन नंबर' : 'Emergency Helplines'}
             </p>
             <ul className="space-y-1.5 font-mono text-[11px]">
-              <li className="flex items-center justify-between pr-2">
+              <li className="flex items-center gap-2">
                 <span className="text-slate-400 font-sans">{isHi ? 'पुलिस:' : 'Police:'}</span>
                 <a href="tel:112" className="text-blue-400 hover:underline">112</a>
               </li>
-              <li className="flex items-center justify-between pr-2">
+              <li className="flex items-center gap-2">
                 <span className="text-slate-400 font-sans">{isHi ? 'एम्बुलेंस:' : 'Ambulance:'}</span>
                 <a href="tel:108" className="text-amber-400 hover:underline">108</a>
               </li>
-              <li className="flex items-center justify-between pr-2">
+              <li className="flex items-center gap-2">
                 <span className="text-slate-400 font-sans">{isHi ? 'महिला हेल्प:' : 'Women:'}</span>
                 <a href="tel:1090" className="text-rose-400 hover:underline">1090</a>
               </li>
-              <li className="flex items-center justify-between pr-2">
+              <li className="flex items-center gap-2">
                 <span className="text-slate-400 font-sans">{isHi ? 'अग्निशमन:' : 'Fire:'}</span>
                 <a href="tel:101" className="text-orange-400 hover:underline">101</a>
               </li>
