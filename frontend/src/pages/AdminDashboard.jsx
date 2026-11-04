@@ -1,7 +1,6 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard,
   Bell,
   LogOut,
   Filter,
@@ -524,26 +523,29 @@ const AdminDashboard = () => {
 
   return (
     <div className="w-full max-w-full overflow-x-hidden min-h-screen bg-slate-50 flex flex-col">
-      {/* 1. Sleek Edge-to-Edge Sticky Navbar (~54px) */}
-      <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 px-3 sm:px-6 py-2.5">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
-          {/* Left: Branding & Title */}
-          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-900 border border-blue-200 shrink-0">
-              <LayoutDashboard className="w-4 h-4" />
+      {/* 1. Sleek Sticky Navbar with gradient accent strip */}
+      <header className="sticky top-0 z-40 w-full bg-white border-b border-slate-100">
+        {/* Top gradient accent strip */}
+        <div className="h-[2px] w-full bg-gradient-to-r from-blue-600 via-indigo-500 to-emerald-500" />
+
+        <div className="max-w-7xl mx-auto px-4 py-2.5 flex items-center justify-between gap-3">
+          {/* Left: Branding */}
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm border border-blue-100 shrink-0 select-none">
+              प
             </div>
             <div className="flex items-center gap-1.5 min-w-0">
-              <h1 className="text-sm sm:text-base font-bold text-slate-800 truncate">
-                ग्राम पंचायत सहरी
+              <h1 className="text-sm font-bold text-slate-800 tracking-tight truncate">
+                पंचायत सहरी
               </h1>
-              <span className="text-[10px] sm:text-xs px-2 py-0.5 font-medium rounded-full bg-blue-50 text-blue-700 border border-blue-200 shrink-0">
+              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 border border-blue-200 shrink-0">
                 Admin
               </span>
             </div>
           </div>
 
           {/* Right Action Controls */}
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-1 shrink-0">
             {/* Language Toggle */}
             <button
               type="button"
@@ -552,7 +554,7 @@ const AdminDashboard = () => {
               title={lang === 'hi' ? 'Switch to English' : 'हिंदी में देखें'}
               aria-label="Toggle Language"
             >
-              <Languages className="w-3.5 h-3.5 text-blue-900 shrink-0" />
+              <Languages className="w-3.5 h-3.5 text-blue-600 shrink-0" />
               <span>{lang === 'hi' ? 'EN' : 'हि'}</span>
             </button>
 
@@ -567,11 +569,11 @@ const AdminDashboard = () => {
                 toast.success(lang === 'hi' ? 'डेटा रीफ्रेश किया गया' : 'Data refreshed');
               }}
               disabled={loadingStats || loadingComplaints}
-              className="p-2 text-slate-600 hover:text-blue-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+              className="p-2 text-slate-500 hover:text-blue-600 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
               title={lang === 'hi' ? 'डेटा रीफ्रेश करें' : 'Refresh Data'}
               aria-label="Refresh"
             >
-              <RefreshCw className={`w-4 h-4 shrink-0 ${(loadingStats || loadingComplaints) ? 'animate-spin text-blue-900' : ''}`} />
+              <RefreshCw className={`w-4 h-4 shrink-0 ${(loadingStats || loadingComplaints) ? 'animate-spin text-blue-600' : ''}`} />
             </button>
 
             {/* Logout Button */}
