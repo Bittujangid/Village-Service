@@ -394,7 +394,7 @@ export const LanguageProvider = ({ children }) => {
   const t = translations[lang] || translations.hi;
 
   return (
-    <LanguageContext.Provider value={{ lang, toggleLang, t }}>
+    <LanguageContext.Provider value={{ lang, language: lang, toggleLang, t }}>
       {children}
     </LanguageContext.Provider>
   );
@@ -405,5 +405,7 @@ export const useLang = () => {
   if (!ctx) throw new Error('useLang must be used inside LanguageProvider');
   return ctx;
 };
+
+export const useLanguage = useLang;
 
 export default LanguageContext;
