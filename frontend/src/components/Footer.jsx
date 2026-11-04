@@ -16,11 +16,11 @@ export default function Footer({ onOpenGrievance, onOpenTracker, onOpenTrack, on
   const handleLogin = onOpenLogin || (() => navigate('/admin/login'));
 
   return (
-    <footer className="bg-slate-950 text-slate-400 border-t border-slate-900 py-6 px-4 sm:px-6">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <footer className="bg-slate-950 text-slate-400 border-t border-slate-900 py-5 px-4 sm:px-6">
+      <div className="max-w-6xl mx-auto space-y-4">
         
         {/* Top: Minimal Brand Header */}
-        <div className="flex items-center gap-2.5 border-b border-slate-900 pb-4">
+        <div className="flex items-center gap-2.5 border-b border-slate-900 pb-3">
           <div className="w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
             <Building2 className="w-4 h-4" />
           </div>
@@ -35,7 +35,7 @@ export default function Footer({ onOpenGrievance, onOpenTracker, onOpenTrack, on
         </div>
 
         {/* Middle: Clean Column-Wise Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 text-xs">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 text-xs">
           
           {/* Column 1: Citizen Services */}
           <div className="space-y-2.5">
@@ -92,8 +92,8 @@ export default function Footer({ onOpenGrievance, onOpenTracker, onOpenTrack, on
             </ul>
           </div>
 
-          {/* Column 3: Office & Timings */}
-          <div className="col-span-2 md:col-span-1 space-y-2.5 pt-2 md:pt-0 border-t md:border-t-0 border-slate-900">
+          {/* Column 3: Office & Timings (Desktop 3-Column View) */}
+          <div className="hidden md:block space-y-2.5">
             <p className="text-[11px] font-semibold text-slate-200 tracking-wider uppercase">
               {isHi ? 'कार्यालय एवं समय' : 'Office & Timings'}
             </p>
@@ -107,6 +107,18 @@ export default function Footer({ onOpenGrievance, onOpenTracker, onOpenTrack, on
             </div>
           </div>
 
+        </div>
+
+        {/* Mobile View: Sleek Single-Line Horizontal Strip for Office & Timings */}
+        <div className="md:hidden pt-3 border-t border-slate-900/80 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
+          <div className="flex items-center gap-1.5">
+            <span>📍</span>
+            <span>{isHi ? 'ग्राम पंचायत भवन, सहरी' : 'Gram Panchayat Bhawan, Sahari'}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span>🕒</span>
+            <span>{isHi ? '9:30 AM - 5:30 PM (सोम - शनि)' : '9:30 AM - 5:30 PM'}</span>
+          </div>
         </div>
 
         {/* Bottom Sub-Bar */}
