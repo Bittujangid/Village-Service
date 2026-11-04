@@ -103,9 +103,13 @@ const GrievanceForm = ({ onSuccessClose }) => {
     }
   };
 
-  // Prevent mobile keyboard scroll displacement on blur
+  // Scroll the modal's own scrollable container back to show the focused content.
+  // We intentionally do NOT call window.scrollTo() here — that triggers a
+  // viewport repaint on Android Chrome that collapses the modal height into a
+  // white dead-zone whenever the virtual keyboard dismisses.
   const handleInputBlur = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // No-op: the modal scroll container handles its own scroll position.
+    // Removing window.scrollTo() prevents the Android Chrome blank-gap bug.
   };
 
   // OTP Resend Cooldown Timer

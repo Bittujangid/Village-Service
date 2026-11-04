@@ -544,16 +544,6 @@ const AdminDashboard = () => {
 
           {/* Right Action Controls */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-            {/* Live Citizen Portal Link */}
-            <a
-              href="/"
-              className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-slate-600 hover:text-blue-900 hover:bg-slate-100 text-xs font-semibold flex items-center gap-1 transition-colors"
-              title={lang === 'hi' ? 'नागरिक पोर्टल देखें' : 'View Citizen Portal'}
-            >
-              <ExternalLink className="w-4 h-4 shrink-0" />
-              <span className="hidden md:inline">{lang === 'hi' ? 'नागरिक पोर्टल' : 'Citizen Portal'}</span>
-            </a>
-
             {/* Language Toggle */}
             <button
               type="button"
@@ -686,66 +676,23 @@ const AdminDashboard = () => {
           {/* ================= TAB 1: COMPLAINTS / GRIEVANCES ================= */}
           {(activeTab === 'complaints' || activeTab === 'grievances') && (
             <div className="space-y-3 sm:space-y-4 animate-fadeIn">
-              {/* Stat Cards: Compact 2x2 Grid on Mobile, 4 Columns on Desktop */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3.5 mb-3 sm:mb-4">
-                {/* Card 1: Total */}
-                <div className="min-w-0 bg-white p-2.5 sm:p-4 rounded-xl border border-slate-200 shadow-2xs flex items-center justify-between gap-2">
-                  <div className="min-w-0">
-                    <p className="text-[10px] sm:text-xs uppercase font-bold text-slate-500 tracking-wider truncate">
-                      कुल शिकायतें
-                    </p>
-                    <p className="text-lg sm:text-2xl font-black text-slate-900 mt-0.5">
-                      {stats.total}
-                    </p>
-                  </div>
-                  <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
-                    <FileText className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
-                  </div>
+              {/* Stat Bar: Slim 4-column horizontal on all screen sizes */}
+              <div className="grid grid-cols-4 gap-2 bg-white p-3 rounded-xl border border-slate-200/80 text-center shadow-xs mb-3">
+                <div className="min-w-0">
+                  <p className="text-lg font-black text-slate-900">{stats.total}</p>
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mt-0.5">कुल</p>
                 </div>
-
-                {/* Card 2: Pending (Amber) */}
-                <div className="min-w-0 bg-amber-50/60 p-2.5 sm:p-4 rounded-xl border border-amber-200/80 shadow-2xs flex items-center justify-between gap-2">
-                  <div className="min-w-0">
-                    <p className="text-[10px] sm:text-xs uppercase font-bold text-amber-800 tracking-wider truncate">
-                      लंबित
-                    </p>
-                    <p className="text-lg sm:text-2xl font-black text-amber-700 mt-0.5">
-                      {stats.pending}
-                    </p>
-                  </div>
-                  <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
-                    <Clock className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
-                  </div>
+                <div className="min-w-0">
+                  <p className="text-lg font-black text-amber-600">{stats.pending}</p>
+                  <p className="text-[10px] font-bold text-amber-700 uppercase tracking-wide mt-0.5">लंबित</p>
                 </div>
-
-                {/* Card 3: In Progress (Blue) */}
-                <div className="min-w-0 bg-blue-50/60 p-2.5 sm:p-4 rounded-xl border border-blue-200/80 shadow-2xs flex items-center justify-between gap-2">
-                  <div className="min-w-0">
-                    <p className="text-[10px] sm:text-xs uppercase font-bold text-blue-800 tracking-wider truncate">
-                      प्रगति पर
-                    </p>
-                    <p className="text-lg sm:text-2xl font-black text-blue-700 mt-0.5">
-                      {stats.inProgress}
-                    </p>
-                  </div>
-                  <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
-                    <RefreshCw className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
-                  </div>
+                <div className="min-w-0">
+                  <p className="text-lg font-black text-blue-600">{stats.inProgress}</p>
+                  <p className="text-[10px] font-bold text-blue-700 uppercase tracking-wide mt-0.5">प्रगति</p>
                 </div>
-
-                {/* Card 4: Resolved (Green) */}
-                <div className="min-w-0 bg-emerald-50/60 p-2.5 sm:p-4 rounded-xl border border-emerald-200/80 shadow-2xs flex items-center justify-between gap-2">
-                  <div className="min-w-0">
-                    <p className="text-[10px] sm:text-xs uppercase font-bold text-emerald-800 tracking-wider truncate">
-                      समाधान पूर्ण
-                    </p>
-                    <p className="text-lg sm:text-2xl font-black text-emerald-700 mt-0.5">
-                      {stats.resolved}
-                    </p>
-                  </div>
-                  <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                    <CheckCircle className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
-                  </div>
+                <div className="min-w-0">
+                  <p className="text-lg font-black text-emerald-600">{stats.resolved}</p>
+                  <p className="text-[10px] font-bold text-emerald-700 uppercase tracking-wide mt-0.5">पूर्ण</p>
                 </div>
               </div>
 
@@ -885,7 +832,75 @@ const AdminDashboard = () => {
                   </button>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
+                <>
+                  {/* ── Mobile Card List (< md) ── */}
+                  <div className="md:hidden divide-y divide-slate-100">
+                    {complaints.map((item) => {
+                      const id = item._id || item.id;
+                      const itemEdit = editState[id] || {};
+                      const selectedStatus = itemEdit.status !== undefined ? itemEdit.status : item.status;
+                      const isSaving = itemEdit.saving;
+
+                      return (
+                        <div key={id} className="px-4 py-3 hover:bg-slate-50/60 transition-colors">
+                          {/* Top row: name + ward + category + status */}
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold text-slate-900 truncate">
+                                {item.citizenName || item.name || 'गोपनीय'}
+                              </p>
+                              <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                                <span className="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                                  वार्ड {item.wardNumber ?? item.ward ?? '—'}
+                                </span>
+                                <span className="text-[10px] text-slate-500 truncate">{item.category}</span>
+                              </div>
+                            </div>
+                            <StatusBadge status={item.status} />
+                          </div>
+
+                          {/* Middle: phone call + tracking ID */}
+                          <div className="flex items-center justify-between gap-2 mb-2">
+                            <a
+                              href={`tel:+91${item.phone}`}
+                              className="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 hover:bg-emerald-100 transition-colors"
+                            >
+                              <Phone className="w-3.5 h-3.5" />
+                              <span>{item.phone}</span>
+                            </a>
+                            <span className="text-[11px] text-slate-400 font-mono">
+                              #{item.trackingId || id}
+                            </span>
+                          </div>
+
+                          {/* Bottom: status change select */}
+                          <select
+                            value={selectedStatus}
+                            onChange={(e) => handleStatusChange(id, e.target.value)}
+                            disabled={isSaving}
+                            className="w-full text-xs py-1.5 px-2 rounded-lg border border-slate-200 bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-900 disabled:opacity-60"
+                          >
+                            <option value="Pending">लंबित (Pending)</option>
+                            <option value="In Progress">प्रगति पर (In Progress)</option>
+                            <option value="Resolved">समाधान पूर्ण (Resolved)</option>
+                          </select>
+                          {(itemEdit.status !== undefined && itemEdit.status !== item.status) && (
+                            <button
+                              type="button"
+                              disabled={isSaving}
+                              onClick={() => handleSaveStatus(item)}
+                              className="mt-1.5 w-full min-h-[36px] rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-400 text-white font-bold text-xs transition-colors"
+                            >
+                              {isSaving ? 'सेव हो रहा है...' : 'स्थिति सेव करें'}
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* ── Desktop Table (≥ md) ── */}
+                  <div className="hidden md:block overflow-x-auto">
                   <table className="w-full text-left border-collapse min-w-[1000px]">
                     <thead>
                       <tr className="bg-slate-50/80 border-b border-slate-200 text-xs font-bold text-slate-600 uppercase tracking-wider">
@@ -1015,7 +1030,8 @@ const AdminDashboard = () => {
                       })}
                     </tbody>
                   </table>
-                </div>
+                </div>{/* end hidden md:block desktop table */}
+              </>
               )}
 
               {/* Pagination Controls */}
