@@ -987,7 +987,10 @@ const GrievanceForm = ({ onSuccessClose }) => {
       </div>{/* end scrollable body */}
 
       {/* ── Sticky Submit Footer ── */}
-      <div className="shrink-0 px-4 py-3 border-t border-slate-100 bg-white/95 backdrop-blur-sm pb-6 md:pb-4">
+      <div
+        className="shrink-0 px-4 pt-3 border-t border-slate-100 bg-white"
+        style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
+      >
         <button
           type="submit"
           disabled={isSubmitting}

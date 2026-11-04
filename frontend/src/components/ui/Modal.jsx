@@ -3,34 +3,28 @@ import { X } from 'lucide-react';
 
 /**
  * Responsive Modal Component
- * Fullscreen (100dvh) on mobile devices to prevent soft keyboard collapses,
- * centered card with controlled max-height on tablet/desktop.
- *
- * @param {object} props
- * @param {boolean} props.isOpen
- * @param {Function} props.onClose
- * @param {string} props.title
- * @param {React.ReactNode} props.children
- * @param {string} [props.maxWidth] - e.g. 'max-w-2xl' or 'max-w-3xl'
+ * On mobile: fills the overlay (fixed inset-0) via flex-1 — avoids dvh/svh
+ * mismatch with Android Chrome's collapsible address + nav bars.
+ * On tablet/desktop: centered card with max-height cap.
  */
 const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl' }) => {
-  // Close on Escape key press
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.key === 'Escape' && isOpen) {
-        onClose();
-      }
+      if (event.key === 'Escape' && isOpen) onClose();
     };
 
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
       window.addEventListener('keydown', handleKeyDown);
     } else {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
     }
 
     return () => {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, onClose]);
@@ -38,8 +32,13 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl' }) => 
   if (!isOpen) return null;
 
   return (
+    /*
+     * Overlay: fixed inset-0 means it's exactly the visible viewport on every
+     * browser/device — no viewport-unit tricks needed.
+     * flex flex-col so the inner card can use flex-1 to fill it.
+     */
     <div
-      className="fixed inset-0 z-50 flex flex-col md:items-center md:justify-center bg-black/70 backdrop-blur-sm overflow-hidden animate-fadeIn"
+      className="fixed inset-0 z-50 flex flex-col md:items-center md:justify-center bg-black/70 backdrop-blur-sm overflow-hidden"
       style={{ touchAction: 'pan-y' }}
       role="dialog"
       aria-modal="true"
@@ -47,12 +46,18 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl' }) => 
         if (e.target === e.currentTarget) onClose();
       }}
     >
+      {/*
+       * Mobile: flex-1 fills the overlay height exactly (safe on all Android/iOS).
+       * Desktop (md+): auto height capped at 90vh, centered by parent's justify-center.
+       * We deliberately avoid h-[100dvh] / h-screen because Android Chrome's
+       * collapsible bottom nav bar makes dvh > actual usable height → white gap.
+       */}
       <div
-        className={`w-full h-[100dvh] md:h-auto md:max-h-[90vh] ${maxWidth} bg-white md:rounded-2xl shadow-2xl flex flex-col overflow-hidden overflow-x-hidden transform transition-all duration-300 ease-out`}
+        className={`w-full flex-1 md:flex-none md:h-auto md:max-h-[90vh] ${maxWidth} bg-white md:rounded-2xl shadow-2xl flex flex-col overflow-hidden`}
         style={{ touchAction: 'pan-y' }}
       >
-        {/* Modal Header (Sticky top) */}
-        <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 sm:py-4 border-b border-slate-200 bg-white shrink-0">
+        {/* Sticky Modal Header */}
+        <div className="shrink-0 flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-slate-200 bg-white">
           <h2 className="text-base sm:text-xl font-bold text-slate-800 leading-tight truncate pr-2">
             {title}
           </h2>
@@ -66,7 +71,7 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl' }) => 
           </button>
         </div>
 
-        {/* Modal Content - Flex Column container for decoupled scrollable body & footer */}
+        {/* Content area: flex col so GrievanceForm / StatusTracker can use flex-1 */}
         <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
           {children}
         </div>
