@@ -9,7 +9,6 @@ import {
   ArrowLeft,
   ArrowRight,
   Loader2,
-  Languages,
   KeyRound,
   AlertTriangle
 } from 'lucide-react';
@@ -32,7 +31,7 @@ const AdminLogin = () => {
   const [isLocked, setIsLocked] = useState(false);
 
   const { login } = useAuth();
-  const { lang, toggleLang, t } = useLang();
+  const { lang, t } = useLang();
   const navigate = useNavigate();
 
   // Step 1: Validate Username & Password with backend
@@ -163,7 +162,7 @@ const AdminLogin = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-blue-950 to-slate-950 flex flex-col justify-between sm:justify-center py-2 sm:py-8 px-3 sm:px-6 lg:px-8">
       {/* Dedicated Top Navigation Row */}
-      <div className="w-full flex items-center justify-between px-4 pt-3 pb-2 max-w-4xl mx-auto">
+      <div className="w-full flex items-center justify-start px-4 pt-3 pb-2 max-w-4xl mx-auto">
         <Link
           to="/"
           className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-semibold backdrop-blur-md transition-all touch-target-min"
@@ -171,14 +170,6 @@ const AdminLogin = () => {
           <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
           <span>{lang === 'hi' ? 'मुख्य पृष्ठ पर लौटें' : 'Back to Home'}</span>
         </Link>
-
-        <button
-          onClick={toggleLang}
-          className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-semibold backdrop-blur-md transition-all touch-target-min cursor-pointer"
-        >
-          <Languages className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-300 shrink-0" />
-          <span>{lang === 'hi' ? 'English' : 'हिंदी'}</span>
-        </button>
       </div>
 
       <div className="my-auto py-2 sm:py-4 w-full sm:max-w-md sm:mx-auto">
@@ -225,7 +216,9 @@ const AdminLogin = () => {
                 : 'bg-emerald-600/80 text-emerald-100'
             }`}
           >
-            {step === 1 ? '1. क्रेडेंशियल्स' : '✓ 1. क्रेडेंशियल्स'}
+            {step === 1
+              ? (lang === 'hi' ? '1. क्रेडेंशियल्स' : '1. Credentials')
+              : (lang === 'hi' ? '✓ 1. क्रेडेंशियल्स' : '✓ 1. Credentials')}
           </span>
           <span className="text-white/40 text-xs shrink-0">→</span>
           <span
@@ -235,8 +228,7 @@ const AdminLogin = () => {
                 : 'bg-white/10 text-white/60'
             }`}
           >
-            <span className="sm:hidden">2. सुरक्षा पिन (2FA)</span>
-            <span className="hidden sm:inline">2. सुरक्षा पिन (2FA PIN)</span>
+            {lang === 'hi' ? '2. सुरक्षा पिन' : '2. Security PIN (2FA)'}
           </span>
         </div>
 
