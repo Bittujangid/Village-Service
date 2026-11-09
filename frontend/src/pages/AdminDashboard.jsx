@@ -18,6 +18,7 @@ import {
   AlertCircle,
   CheckCircle2,
   FileText,
+  Loader2,
   Search,
   MessageSquare,
   Languages,
@@ -109,7 +110,7 @@ const AdminDashboard = () => {
   const setSelectedWard = setWardFilter;
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [showFilters, setShowFilters] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [totalComplaints, setTotalComplaints] = useState(() => {
     try {
       const cached = sessionStorage.getItem('cached_admin_complaints');
@@ -527,6 +528,18 @@ const AdminDashboard = () => {
     fetchComplaintsList(1, '', '');
   };
 
+  const handleStatClick = (targetStatus) => {
+    setPage(1);
+    if (targetStatus === '') {
+      setStatusFilter('');
+    } else if (statusFilter === targetStatus) {
+      // Toggle off if already selected
+      setStatusFilter('');
+    } else {
+      setStatusFilter(targetStatus);
+    }
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) return isHi ? 'उपलब्ध नहीं' : 'N/A';
     try {
@@ -697,130 +710,199 @@ const AdminDashboard = () => {
           {/* ================= TAB 1: COMPLAINTS / GRIEVANCES ================= */}
           {(activeTab === 'complaints' || activeTab === 'grievances') && (
             <div className="space-y-3 sm:space-y-4 animate-fadeIn">
-              {/* Stat Bar: Slim 4-column horizontal on all screen sizes */}
-              <div className="grid grid-cols-4 gap-2 bg-white p-3 rounded-xl border border-slate-200/80 text-center shadow-xs mb-3">
-                <div className="min-w-0">
-                  <p className="text-lg font-black text-slate-900">{stats.total}</p>
-                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mt-0.5">
-                    {isHi ? 'कुल' : 'TOTAL'}
-                  </p>
-                </div>
-                <div className="min-w-0">
-                  <p className="text-lg font-black text-amber-600">{stats.pending}</p>
-                  <p className="text-[10px] font-bold text-amber-700 uppercase tracking-wide mt-0.5">
-                    {isHi ? 'लंबित' : 'PENDING'}
-                  </p>
-                </div>
-                <div className="min-w-0">
-                  <p className="text-lg font-black text-blue-600">{stats.inProgress}</p>
-                  <p className="text-[10px] font-bold text-blue-700 uppercase tracking-wide mt-0.5">
-                    {isHi ? 'प्रगति' : 'IN PROGRESS'}
-                  </p>
-                </div>
-                <div className="min-w-0">
-                  <p className="text-lg font-black text-emerald-600">{stats.resolved}</p>
-                  <p className="text-[10px] font-bold text-emerald-700 uppercase tracking-wide mt-0.5">
-                    {isHi ? 'पूर्ण' : 'SOLVED'}
-                  </p>
-                </div>
+              {/* 1. Modern Civic Stats Bar Upgrade */}
+              <div className="bg-white/90 backdrop-blur-xs rounded-2xl border border-slate-200/80 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.06)] p-2.5 sm:p-3 grid grid-cols-4 gap-2 mb-4">
+                {/* Stat 1: Total */}
+                <button
+                  type="button"
+                  onClick={() => handleStatClick('')}
+                  className={`group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl transition-all duration-200 active:scale-95 cursor-pointer border ${
+                    statusFilter === ''
+                      ? 'bg-slate-100/90 border-slate-300 ring-2 ring-slate-400/30 shadow-2xs'
+                      : 'bg-slate-50/60 border-slate-200/60 hover:bg-slate-100/60'
+                  }`}
+                  title={isHi ? 'सभी शिकायतें देखें' : 'View all complaints'}
+                >
+                  <FileText className="w-3.5 h-3.5 text-slate-500 mb-1" />
+                  <span className="text-base sm:text-lg font-bold text-slate-900 group-hover:scale-105 transition-transform">
+                    {stats.total}
+                  </span>
+                  <span className="text-[10px] sm:text-xs font-semibold text-slate-500">
+                    {isHi ? 'कुल' : 'Total'}
+                  </span>
+                </button>
+
+                {/* Stat 2: Pending */}
+                <button
+                  type="button"
+                  onClick={() => handleStatClick('Pending')}
+                  className={`group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl transition-all duration-200 active:scale-95 cursor-pointer bg-amber-50/70 border border-amber-200/60 ${
+                    statusFilter === 'Pending'
+                      ? 'ring-2 ring-amber-400 bg-amber-100/80 shadow-2xs'
+                      : 'hover:bg-amber-100/50'
+                  }`}
+                  title={isHi ? 'लंबित शिकायतें फ़िल्टर करें' : 'Filter by Pending'}
+                >
+                  <Clock className="w-3.5 h-3.5 text-amber-500 mb-1" />
+                  <span className="text-amber-600 font-bold text-base sm:text-lg group-hover:scale-105 transition-transform">
+                    {stats.pending}
+                  </span>
+                  <span className="text-[10px] sm:text-xs font-semibold text-amber-700">
+                    {isHi ? 'लंबित' : 'Pending'}
+                  </span>
+                </button>
+
+                {/* Stat 3: In Progress */}
+                <button
+                  type="button"
+                  onClick={() => handleStatClick('In Progress')}
+                  className={`group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl transition-all duration-200 active:scale-95 cursor-pointer bg-blue-50/70 border border-blue-200/60 ${
+                    statusFilter === 'In Progress'
+                      ? 'ring-2 ring-blue-400 bg-blue-100/80 shadow-2xs'
+                      : 'hover:bg-blue-100/50'
+                  }`}
+                  title={isHi ? 'प्रगति पर शिकायतें फ़िल्टर करें' : 'Filter by In Progress'}
+                >
+                  <Loader2 className="w-3.5 h-3.5 text-blue-500 mb-1 animate-[spin_4s_linear_infinite]" />
+                  <span className="text-blue-600 font-bold text-base sm:text-lg group-hover:scale-105 transition-transform">
+                    {stats.inProgress}
+                  </span>
+                  <span className="text-[10px] sm:text-xs font-semibold text-blue-700">
+                    {isHi ? 'प्रगति' : 'In Progress'}
+                  </span>
+                </button>
+
+                {/* Stat 4: Solved */}
+                <button
+                  type="button"
+                  onClick={() => handleStatClick('Resolved')}
+                  className={`group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl transition-all duration-200 active:scale-95 cursor-pointer bg-emerald-50/70 border border-emerald-200/60 ${
+                    statusFilter === 'Resolved'
+                      ? 'ring-2 ring-emerald-400 bg-emerald-100/80 shadow-2xs'
+                      : 'hover:bg-emerald-100/50'
+                  }`}
+                  title={isHi ? 'पूर्ण शिकायतें फ़िल्टर करें' : 'Filter by Solved'}
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 mb-1" />
+                  <span className="text-emerald-600 font-bold text-base sm:text-lg group-hover:scale-105 transition-transform">
+                    {stats.resolved}
+                  </span>
+                  <span className="text-[10px] sm:text-xs font-semibold text-emerald-700">
+                    {isHi ? 'पूर्ण' : 'Solved'}
+                  </span>
+                </button>
               </div>
 
-              {/* Collapsible / Expandable Filter Bar */}
-              <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200 shadow-2xs overflow-hidden mb-3 sm:mb-4">
-                <div className="p-3 sm:p-4 flex items-center justify-between bg-slate-50/60 sm:bg-white border-b sm:border-b-0 border-slate-100">
-                  <div className="flex items-center gap-2">
-                    <Filter className="w-4 h-4 text-blue-900" />
-                    <span className="text-xs sm:text-sm font-bold text-slate-800">
+              {/* 2. Sleek Filter Bar */}
+              <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs mb-4 overflow-hidden">
+                <div className="px-4 py-2.5 flex items-center justify-between">
+                  {/* Left side */}
+                  <div className="flex items-center">
+                    <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shrink-0 mr-2.5">
+                      <Filter className="w-3.5 h-3.5" />
+                    </div>
+                    <span className="text-xs sm:text-sm font-semibold text-slate-800">
                       {isHi ? 'फ़िल्टर एवं खोज' : 'Filters & Search'}
                     </span>
                     {(statusFilter || wardFilter) && (
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200">
+                      <span className="ml-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200">
                         {isHi ? 'सक्रिय' : 'Active'}
                       </span>
                     )}
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  {/* Right side (Toggle Trigger Button) */}
+                  <div className="flex items-center gap-1.5">
                     {(statusFilter || wardFilter) && (
                       <button
                         type="button"
                         onClick={handleResetFilter}
-                        className="text-xs font-semibold text-rose-600 hover:text-rose-800 hover:underline px-2 py-1 cursor-pointer"
+                        className="text-xs font-semibold text-rose-600 hover:text-rose-800 hover:underline px-2 py-1 cursor-pointer mr-0.5"
                       >
                         {isHi ? 'रीसेट' : 'Reset'}
                       </button>
                     )}
                     <button
                       type="button"
-                      onClick={() => setShowFilters((prev) => !prev)}
-                      className="sm:hidden px-2.5 py-1 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg flex items-center gap-1 shadow-2xs cursor-pointer"
+                      onClick={() => setIsFilterOpen((prev) => !prev)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100/90 hover:bg-slate-200/70 text-slate-700 text-xs font-medium transition active:scale-95 cursor-pointer"
                     >
-                      <span>{isHi ? (showFilters ? 'छिपाएं' : 'फ़िल्टर') : (showFilters ? 'Hide' : 'Filter')}</span>
-                      {showFilters ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                      <span>
+                        {isFilterOpen
+                          ? (isHi ? 'छिपाएं' : 'Hide')
+                          : (isHi ? 'फ़िल्टर' : 'Filter')}
+                      </span>
+                      <ChevronDown
+                        className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                          isFilterOpen ? 'rotate-180' : ''
+                        }`}
+                      />
                     </button>
                   </div>
                 </div>
 
-                {/* Form Body - Collapsed by default on mobile, always open on sm+ */}
-                <div className={`${showFilters ? 'block' : 'hidden'} sm:block p-3 sm:p-4 pt-0 sm:pt-0`}>
-                  <form onSubmit={handleApplyFilter} className="flex flex-col md:flex-row items-stretch md:items-end gap-2.5 sm:gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                    {/* Status Dropdown */}
-                    <div className="flex-1 min-w-0">
-                      <label htmlFor="filter-status" className="block text-[11px] sm:text-xs font-bold text-slate-700 mb-1">
-                        {isHi ? 'स्थिति फ़िल्टर' : 'Filter by Status'}
-                      </label>
-                      <select
-                        id="filter-status"
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                        className="w-full min-h-[40px] px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-blue-900"
-                      >
-                        <option value="">{isHi ? 'सभी स्थितियां' : 'All Status'}</option>
-                        <option value="Pending">{isHi ? 'लंबित' : 'Pending'}</option>
-                        <option value="In Progress">{isHi ? 'प्रगति पर' : 'In Progress'}</option>
-                        <option value="Resolved">{isHi ? 'समाधान पूर्ण' : 'Resolved'}</option>
-                      </select>
-                    </div>
-
-                    {/* Ward Number Input */}
-                    <div className="flex-1 min-w-0">
-                      <label htmlFor="filter-ward" className="block text-[11px] sm:text-xs font-bold text-slate-700 mb-1">
-                        {isHi ? 'वार्ड संख्या (वार्ड 1-7)' : 'Ward Number (Ward 1-7)'}
-                      </label>
-                      <input
-                        id="filter-ward"
-                        type="number"
-                        min="1"
-                        max="7"
-                        value={wardFilter}
-                        onChange={(e) => setWardFilter(e.target.value)}
-                        placeholder={isHi ? 'वार्ड 1-7 (उदा. 4)' : 'Ward 1-7 (e.g. 4)'}
-                        className="w-full min-h-[40px] px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-blue-900"
-                      />
-                    </div>
-
-                    {/* Filter Buttons */}
-                    <div className="flex items-center gap-2 shrink-0">
-                      <button
-                        type="submit"
-                        className="flex-1 md:flex-none min-h-[40px] px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-xs flex items-center justify-center gap-1.5 focus:outline-none transition-all cursor-pointer"
-                      >
-                        <Filter className="w-3.5 h-3.5" />
-                        <span>{isHi ? 'लागू करें' : 'Apply'}</span>
-                      </button>
-
-                      {(statusFilter || wardFilter) && (
-                        <button
-                          type="button"
-                          onClick={handleResetFilter}
-                          className="min-h-[40px] px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-200 transition-colors cursor-pointer"
+                {/* Collapsible Form Body */}
+                {isFilterOpen && (
+                  <div className="px-4 pb-3.5 pt-2 border-t border-slate-100 animate-fadeIn">
+                    <form onSubmit={handleApplyFilter} className="flex flex-col md:flex-row items-stretch md:items-end gap-2.5 sm:gap-3 pt-1">
+                      {/* Status Dropdown */}
+                      <div className="flex-1 min-w-0">
+                        <label htmlFor="filter-status" className="block text-[11px] sm:text-xs font-semibold text-slate-700 mb-1">
+                          {isHi ? 'स्थिति फ़िल्टर' : 'Filter by Status'}
+                        </label>
+                        <select
+                          id="filter-status"
+                          value={statusFilter}
+                          onChange={(e) => setStatusFilter(e.target.value)}
+                          className="w-full min-h-[38px] px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-blue-900"
                         >
-                          {isHi ? 'रीसेट' : 'Reset'}
+                          <option value="">{isHi ? 'सभी स्थितियां' : 'All Status'}</option>
+                          <option value="Pending">{isHi ? 'लंबित' : 'Pending'}</option>
+                          <option value="In Progress">{isHi ? 'प्रगति पर' : 'In Progress'}</option>
+                          <option value="Resolved">{isHi ? 'समाधान पूर्ण' : 'Resolved'}</option>
+                        </select>
+                      </div>
+
+                      {/* Ward Number Input */}
+                      <div className="flex-1 min-w-0">
+                        <label htmlFor="filter-ward" className="block text-[11px] sm:text-xs font-semibold text-slate-700 mb-1">
+                          {isHi ? 'वार्ड संख्या (वार्ड 1-7)' : 'Ward Number (Ward 1-7)'}
+                        </label>
+                        <input
+                          id="filter-ward"
+                          type="number"
+                          min="1"
+                          max="7"
+                          value={wardFilter}
+                          onChange={(e) => setWardFilter(e.target.value)}
+                          placeholder={isHi ? 'वार्ड 1-7 (उदा. 4)' : 'Ward 1-7 (e.g. 4)'}
+                          className="w-full min-h-[38px] px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-blue-900"
+                        />
+                      </div>
+
+                      {/* Filter Buttons */}
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          type="submit"
+                          className="flex-1 md:flex-none min-h-[38px] px-5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm shadow-xs flex items-center justify-center gap-1.5 focus:outline-none transition-all cursor-pointer active:scale-95"
+                        >
+                          <Filter className="w-3.5 h-3.5" />
+                          <span>{isHi ? 'लागू करें' : 'Apply'}</span>
                         </button>
-                      )}
-                    </div>
-                  </form>
-                </div>
+
+                        {(statusFilter || wardFilter) && (
+                          <button
+                            type="button"
+                            onClick={handleResetFilter}
+                            className="min-h-[38px] px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs border border-slate-200 transition-colors cursor-pointer"
+                          >
+                            {isHi ? 'रीसेट' : 'Reset'}
+                          </button>
+                        )}
+                      </div>
+                    </form>
+                  </div>
+                )}
               </div>
 
             {/* Complaints Table Container (horizontally scrollable on mobile) */}
