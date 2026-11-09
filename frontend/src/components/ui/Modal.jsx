@@ -3,9 +3,12 @@ import { X } from 'lucide-react';
 
 /**
  * Responsive Modal Component
- * On mobile: fills the overlay (fixed inset-0) via flex-1 — avoids dvh/svh
- * mismatch with Android Chrome's collapsible address + nav bars.
- * On tablet/desktop: centered card with max-height cap.
+ *
+ * Mobile: bottom-sheet style — anchored at the bottom, max-h-[90vh] hard cap,
+ *         internal scroll. This prevents any focus-induced viewport repaint
+ *         (e.g. from radio inputs / Android Chrome virtual keyboard) from
+ *         collapsing the modal height.
+ * Desktop (sm+): centered card, max-h-[90vh], scrollable body.
  */
 const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl' }) => {
   useEffect(() => {
@@ -33,13 +36,14 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl' }) => 
 
   return (
     /*
-     * Overlay: fixed inset-0 means it's exactly the visible viewport on every
-     * browser/device — no viewport-unit tricks needed.
-     * flex flex-col so the inner card can use flex-1 to fill it.
+     * Overlay: fixed inset-0 — exact visible viewport on every device.
+     * Mobile: items-end → modal slides up from bottom as a bottom-sheet.
+     * Desktop (sm+): items-center justify-center → centered dialog.
+     * overflow-hidden on the overlay prevents any inner focus event from
+     * causing the page underneath to scroll/repaint.
      */
     <div
-      className="fixed inset-0 z-50 flex flex-col md:items-center md:justify-center bg-black/90 md:bg-black/70 backdrop-blur-sm overflow-hidden"
-      style={{ touchAction: 'pan-y' }}
+      className="fixed inset-0 z-50 flex flex-col items-stretch sm:items-center sm:justify-center bg-black/90 sm:bg-black/70 backdrop-blur-sm overflow-hidden"
       role="dialog"
       aria-modal="true"
       onClick={(e) => {
@@ -47,14 +51,15 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl' }) => 
       }}
     >
       {/*
-       * Mobile: flex-1 fills the overlay height exactly (safe on all Android/iOS).
-       * Desktop (md+): auto height capped at 90vh, centered by parent's justify-center.
-       * We deliberately avoid h-[100dvh] / h-screen because Android Chrome's
-       * collapsible bottom nav bar makes dvh > actual usable height → white gap.
+       * The card itself:
+       * Mobile:  full width, rounded top corners only, max-h-[90vh] hard cap,
+       *          pushed to the bottom via mt-auto. The fixed max-h means Android
+       *          Chrome viewport repaints (focus, keyboard) cannot shrink the card.
+       * Desktop: centered, rounded all corners, max-h-[90vh].
        */}
       <div
-        className={`w-full flex-1 md:flex-none md:h-auto md:max-h-[90vh] ${maxWidth} bg-white md:rounded-2xl shadow-2xl flex flex-col overflow-hidden`}
-        style={{ touchAction: 'pan-y' }}
+        className={`w-full mt-auto sm:mt-0 sm:m-4 max-h-[90vh] ${maxWidth} bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden`}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Sticky Modal Header */}
         <div className="shrink-0 flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-slate-200 bg-white">
@@ -71,7 +76,7 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl' }) => 
           </button>
         </div>
 
-        {/* Content area: flex col so GrievanceForm / StatusTracker can use flex-1 */}
+        {/* Content area: flex col so GrievanceForm / StatusTracker can use flex-1 + overflow-y-auto */}
         <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
           {children}
         </div>

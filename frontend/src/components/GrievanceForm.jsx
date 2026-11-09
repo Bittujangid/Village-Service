@@ -827,6 +827,7 @@ const GrievanceForm = ({ onSuccessClose }) => {
                 <button
                   key={w}
                   type="button"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => handleChange('ward', w)}
                   className={`min-h-[44px] px-3 py-2 rounded-lg text-xs sm:text-sm font-bold border transition-all flex items-center justify-center ${
                     isSelected
@@ -856,23 +857,40 @@ const GrievanceForm = ({ onSuccessClose }) => {
             {categories.map((cat) => {
               const isSelected = formData.category === cat.id;
               return (
-                <label
+                <div
                   key={cat.id}
-                  onClick={() => handleChange('category', cat.id)}
-                  className={`flex items-center gap-3 p-3.5 rounded-xl border-2 cursor-pointer transition-all ${
+                  role="button"
+                  tabIndex={0}
+                  aria-pressed={isSelected}
+                  aria-label={cat.label}
+                  onMouseDown={(e) => {
+                    // Prevent focus-shift that causes Android Chrome modal collapse
+                    e.preventDefault();
+                  }}
+                  onClick={() => {
+                    handleChange('category', cat.id);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleChange('category', cat.id);
+                    }
+                  }}
+                  className={`flex items-center gap-3 p-3.5 rounded-xl border-2 cursor-pointer transition-all select-none ${
                     isSelected
                       ? 'border-blue-900 bg-blue-50/60 shadow-2xs'
                       : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
                   }`}
                 >
-                  <input
-                    type="radio"
-                    name="category"
-                    value={cat.id}
-                    checked={isSelected}
-                    onChange={() => handleChange('category', cat.id)}
-                    className="sr-only"
-                  />
+                  <span
+                    className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
+                      isSelected ? 'border-blue-900 bg-blue-900' : 'border-slate-300 bg-white'
+                    }`}
+                  >
+                    {isSelected && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-white block" />
+                    )}
+                  </span>
                   <span className="text-2xl flex-shrink-0" role="img" aria-label={cat.label}>
                     {cat.emoji}
                   </span>
@@ -884,7 +902,7 @@ const GrievanceForm = ({ onSuccessClose }) => {
                       {cat.sublabel}
                     </span>
                   </div>
-                </label>
+                </div>
               );
             })}
           </div>
