@@ -38,7 +38,7 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl' }) => 
      * flex flex-col so the inner card can use flex-1 to fill it.
      */
     <div
-      className="fixed inset-0 z-50 flex flex-col md:items-center md:justify-center bg-black/70 backdrop-blur-sm overflow-hidden"
+      className="fixed inset-0 z-50 flex flex-col md:items-center md:justify-center bg-black/90 md:bg-black/70 backdrop-blur-sm overflow-hidden"
       style={{ touchAction: 'pan-y' }}
       role="dialog"
       aria-modal="true"

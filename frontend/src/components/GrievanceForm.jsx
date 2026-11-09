@@ -174,7 +174,7 @@ const GrievanceForm = ({ onSuccessClose }) => {
       window.recaptchaVerifier = verifier;
       return verifier;
     } catch (err) {
-      console.error('Recaptcha init error:', err);
+      console.warn('Recaptcha init error:', err);
       return null;
     }
   };
@@ -909,7 +909,7 @@ const GrievanceForm = ({ onSuccessClose }) => {
             onChange={(e) => handleChange('description', e.target.value)}
             onBlur={handleInputBlur}
             placeholder={t.labelDescriptionHint}
-            className={`w-full p-3.5 rounded-lg border ${
+            className={`w-full p-3.5 rounded-lg border resize-none ${
               errors.description ? 'border-red-500 bg-red-50/30' : 'border-slate-300 bg-white'
             } text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-900 focus:border-blue-900 transition-colors text-base`}
           />
