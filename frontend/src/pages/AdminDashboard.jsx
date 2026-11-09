@@ -27,6 +27,9 @@ import {
   Building,
   TrendingUp,
   Download,
+  Eye,
+  X as XIcon,
+  ImageOff,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
@@ -107,6 +110,9 @@ const AdminDashboard = () => {
 
   // Status edit inline state map { [complaintId]: { status, adminRemarks, saving: boolean } }
   const [editState, setEditState] = useState({});
+
+  // Lightbox: holds image URL to show in full-screen overlay, null = closed
+  const [selectedImage, setSelectedImage] = useState(null);
 
   // Notices state (Stale-While-Revalidate with sessionStorage)
   const [notices, setNotices] = useState(() => {
@@ -861,7 +867,7 @@ const AdminDashboard = () => {
                             <StatusBadge status={item.status} />
                           </div>
 
-                          {/* Middle: phone call + tracking ID */}
+                          {/* Middle: phone call + tracking ID + photo */}
                           <div className="flex items-center justify-between gap-2 mb-2">
                             <a
                               href={`tel:+91${item.phone}`}
@@ -870,9 +876,27 @@ const AdminDashboard = () => {
                               <Phone className="w-3.5 h-3.5" />
                               <span>{item.phone}</span>
                             </a>
-                            <span className="text-[11px] text-slate-400 font-mono">
-                              #{item.trackingId || id}
-                            </span>
+                            <div className="flex items-center gap-1.5">
+                              {(item.imageUrl || item.image || item.photoUrl || item.attachment) ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setSelectedImage(item.imageUrl || item.image || item.photoUrl || item.attachment)}
+                                  className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors cursor-pointer"
+                                  title="फोटो देखें (View Evidence Photo)"
+                                >
+                                  <Eye className="w-3 h-3 shrink-0" />
+                                  <span>फोटो</span>
+                                </button>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 text-[10px] text-slate-400">
+                                  <ImageOff className="w-3 h-3 shrink-0" />
+                                  <span>फोटो नहीं</span>
+                                </span>
+                              )}
+                              <span className="text-[11px] text-slate-400 font-mono">
+                                #{item.trackingId || id}
+                              </span>
+                            </div>
                           </div>
 
                           {/* Bottom: status change select */}
@@ -960,27 +984,29 @@ const AdminDashboard = () => {
                               {item.category}
                             </td>
 
-                            {/* Image Thumbnail (40x40) */}
+                            {/* Image Thumbnail / Lightbox Trigger */}
                             <td className="py-4 px-4">
-                              {item.imageUrl || item.image ? (
-                                <a
-                                  href={item.imageUrl || item.image}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-block group relative"
-                                  title="पूरी फोटो नए टैब में खोलें"
+                              {(item.imageUrl || item.image || item.photoUrl || item.attachment) ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setSelectedImage(item.imageUrl || item.image || item.photoUrl || item.attachment)}
+                                  className="inline-flex items-center gap-2 group cursor-pointer"
+                                  title="फोटो देखें (View Evidence Photo)"
                                 >
                                   <img
-                                    src={item.imageUrl || item.image}
+                                    src={item.imageUrl || item.image || item.photoUrl || item.attachment}
                                     alt="शिकायत फोटो"
-                                    className="w-10 h-10 object-cover rounded-lg border border-slate-200 group-hover:scale-110 transition-transform shadow-xs"
+                                    className="w-10 h-10 object-cover rounded-lg border border-slate-200 group-hover:scale-110 group-hover:shadow-md transition-all"
                                   />
-                                  <span className="absolute -top-1 -right-1 bg-emerald-600 text-white rounded-full p-0.5 shadow-xs">
-                                    <ExternalLink className="w-2.5 h-2.5" />
+                                  <span className="text-[11px] font-semibold text-blue-700 group-hover:text-blue-900 group-hover:underline transition-colors">
+                                    देखें
                                   </span>
-                                </a>
+                                </button>
                               ) : (
-                                <span className="text-xs text-slate-400">उपलब्ध नहीं</span>
+                                <span className="inline-flex items-center gap-1 text-xs text-slate-400">
+                                  <ImageOff className="w-3.5 h-3.5 shrink-0" />
+                                  <span>उपलब्ध नहीं</span>
+                                </span>
                               )}
                             </td>
 
@@ -1395,6 +1421,42 @@ const AdminDashboard = () => {
 
       </main>
       </div>
+
+      {/* ── Image Lightbox Overlay ── */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/85 backdrop-blur-sm"
+          onClick={() => setSelectedImage(null)}
+          onKeyDown={(e) => { if (e.key === 'Escape') setSelectedImage(null); }}
+          tabIndex={-1}
+          role="dialog"
+          aria-modal="true"
+          aria-label="शिकायत फोटो देखें"
+        >
+          {/* Close button */}
+          <button
+            type="button"
+            onClick={() => setSelectedImage(null)}
+            className="absolute top-4 right-4 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-white/15 hover:bg-white/30 text-white transition-colors"
+            aria-label="बंद करें"
+          >
+            <XIcon className="w-5 h-5" />
+          </button>
+
+          {/* Image */}
+          <img
+            src={selectedImage}
+            alt="शिकायत साक्ष्य फोटो"
+            className="max-h-[85vh] max-w-[90vw] object-contain rounded-xl shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+
+          {/* Bottom hint */}
+          <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs text-white/60 select-none whitespace-nowrap">
+            बाहर क्लिक करें या Esc दबाएं — बंद करें
+          </p>
+        </div>
+      )}
     </div>
   );
 };
