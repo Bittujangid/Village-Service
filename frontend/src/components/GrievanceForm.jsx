@@ -20,11 +20,11 @@ import { submitComplaint } from '../api/complaints';
 import { useLang } from '../context/LanguageContext';
 
 const getCategories = (lang) => [
-  { id: 'पानी / हैंडपंप', label: lang === 'hi' ? 'पानी / हैंडपंप' : 'Water / Handpump', emoji: '💧', sublabel: lang === 'hi' ? 'Water Supply' : 'पानी / हैंडपंप' },
-  { id: 'बिजली / स्ट्रीट लाइट', label: lang === 'hi' ? 'बिजली / स्ट्रीट लाइट' : 'Electricity / Streetlight', emoji: '⚡', sublabel: lang === 'hi' ? 'Electricity & Lights' : 'बिजली / लाइट' },
-  { id: 'सड़क / नाली', label: lang === 'hi' ? 'सड़क / नाली' : 'Road / Drainage', emoji: '🛣️', sublabel: lang === 'hi' ? 'Roads & Drainage' : 'सड़क / नाली' },
-  { id: 'सफाई व्यवस्था', label: lang === 'hi' ? 'सफाई व्यवस्था' : 'Sanitation & Cleanliness', emoji: '🧹', sublabel: lang === 'hi' ? 'Sanitation & Waste' : 'सफाई व्यवस्था' },
-  { id: 'अन्य', label: lang === 'hi' ? 'अन्य समस्या' : 'Other Grievance', emoji: '📋', sublabel: lang === 'hi' ? 'Other Issues' : 'अन्य समस्या' },
+  { id: 'पानी / हैंडपंप', label: lang === 'hi' ? 'पानी / हैंडपंप' : 'Water / Handpump', emoji: '💧', sublabel: lang === 'hi' ? 'पेयजल एवं जल आपूर्ति' : 'Water Supply' },
+  { id: 'बिजली / स्ट्रीट लाइट', label: lang === 'hi' ? 'बिजली / स्ट्रीट लाइट' : 'Electricity / Streetlight', emoji: '⚡', sublabel: lang === 'hi' ? 'विद्युत एवं प्रकाश' : 'Electricity & Lights' },
+  { id: 'सड़क / नाली', label: lang === 'hi' ? 'सड़क / नाली' : 'Road / Drainage', emoji: '🛣️', sublabel: lang === 'hi' ? 'सड़क एवं जल निकासी' : 'Roads & Drainage' },
+  { id: 'सफाई व्यवस्था', label: lang === 'hi' ? 'सफाई व्यवस्था' : 'Sanitation & Cleanliness', emoji: '🧹', sublabel: lang === 'hi' ? 'कचरा एवं स्वच्छता' : 'Sanitation & Waste' },
+  { id: 'अन्य', label: lang === 'hi' ? 'अन्य समस्या' : 'Other Problem', emoji: '📋', sublabel: lang === 'hi' ? 'अन्य सामान्य विषय' : 'Other General Issues' },
 ];
 
 const WARDS = Array.from({ length: 7 }, (_, i) => i + 1);
@@ -138,9 +138,9 @@ const GrievanceForm = ({ onSuccessClose }) => {
     }
   }, [isPhoneVerified]);
 
-  // Autofocus OTP input when OTP is sent
+  // Autofocus OTP input when OTP is sent (desktop only to prevent mobile keyboard viewport shifts)
   useEffect(() => {
-    if (otpSent && !isPhoneVerified) {
+    if (otpSent && !isPhoneVerified && window.innerWidth >= 640) {
       const timer = setTimeout(() => {
         otpInputRef.current?.focus();
       }, 150);
@@ -315,9 +315,6 @@ const GrievanceForm = ({ onSuccessClose }) => {
           if (document.activeElement && typeof document.activeElement.blur === 'function') {
             document.activeElement.blur();
           }
-          if (window.visualViewport) {
-            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-          }
           toast.success(
             lang === 'hi'
               ? 'नंबर सफलतापूर्वक सत्यापित (Dev Mode)'
@@ -343,9 +340,6 @@ const GrievanceForm = ({ onSuccessClose }) => {
         cleanupRecaptcha();
         if (document.activeElement && typeof document.activeElement.blur === 'function') {
           document.activeElement.blur();
-        }
-        if (window.visualViewport) {
-          window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
         }
         toast.success(
           t.otpVerifySuccess ||
@@ -517,13 +511,13 @@ const GrievanceForm = ({ onSuccessClose }) => {
         citizenName: formData.name,
       });
 
-      toast.success(lang === 'hi' ? 'आपकी शिकायत सफलतापूर्वक दर्ज कर ली गई है!' : 'Grievance submitted successfully!');
+      toast.success(lang === 'hi' ? 'आपकी शिकायत सफलतापूर्वक दर्ज कर ली गई है!' : 'Complaint submitted successfully!');
     } catch (error) {
       console.error('Complaint submit error:', error);
       const errMsg =
         error?.response?.data?.message ||
         error?.message ||
-        (lang === 'hi' ? 'शिकायत दर्ज नहीं हो सकी। कृपया दोबारा कोशिश करें।' : 'Failed to submit grievance. Please try again.');
+        (lang === 'hi' ? 'शिकायत दर्ज नहीं हो सकी। कृपया दोबारा कोशिश करें।' : 'Failed to submit complaint. Please try again.');
       toast.error(errMsg);
     } finally {
       setIsSubmitting(false);
@@ -553,7 +547,7 @@ const GrievanceForm = ({ onSuccessClose }) => {
 
   // ================= SUCCESS VIEW =================
   if (successResult) {
-    const shareMessage = `${lang === 'hi' ? 'मेरी ग्राम पंचायत शिकायत दर्ज हो गई है।' : 'My Gram Panchayat Grievance is registered.'}\n${lang === 'hi' ? 'ट्रैकिंग ID' : 'Tracking ID'}: ${successResult.trackingId}\n${t.navTitle} | GramSeva`;
+    const shareMessage = `${lang === 'hi' ? 'मेरी ग्राम पंचायत शिकायत दर्ज हो गई है।' : 'My Gram Panchayat Complaint is registered.'}\n${lang === 'hi' ? 'ट्रैकिंग ID' : 'Tracking ID'}: ${successResult.trackingId}\n${t.navTitle} | GramSeva`;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
 
     return (
@@ -569,7 +563,7 @@ const GrievanceForm = ({ onSuccessClose }) => {
         <p className="mt-2 text-sm sm:text-base text-slate-600 max-w-md mx-auto">
           {lang === 'hi'
             ? `धन्यवाद ${successResult.citizenName}! आपकी समस्या ग्राम पंचायत के संबंधित विभाग को प्रेषित कर दी गई है।`
-            : `Thank you ${successResult.citizenName}! Your grievance has been forwarded to the concerned Panchayat department.`}
+            : `Thank you ${successResult.citizenName}! Your complaint has been forwarded to the concerned Panchayat department.`}
         </p>
 
         {/* Tracking ID Display Card */}
@@ -661,7 +655,7 @@ const GrievanceForm = ({ onSuccessClose }) => {
             ) : (
               <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded">
                 <KeyRound className="w-3 h-3 text-amber-700" />
-                <span>OTP सत्यापन आवश्यक</span>
+                <span>{lang === 'hi' ? 'OTP सत्यापन आवश्यक' : 'OTP Verification Required'}</span>
               </span>
             )}
           </div>
@@ -760,7 +754,6 @@ const GrievanceForm = ({ onSuccessClose }) => {
                   type="text"
                   inputMode="numeric"
                   maxLength={6}
-                  autoFocus
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
                   onBlur={handleInputBlur}

@@ -45,7 +45,7 @@ export default function Footer({ onOpenGrievance, onOpenTracker, onOpenTrack, on
             <ul className="space-y-1.5">
               <li>
                 <button type="button" onClick={onOpenGrievance} className="hover:text-white transition cursor-pointer text-left">
-                  {isHi ? 'शिकायत दर्ज करें' : 'File Grievance'}
+                  {isHi ? 'शिकायत दर्ज करें' : 'Register Complaint'}
                 </button>
               </li>
               <li>

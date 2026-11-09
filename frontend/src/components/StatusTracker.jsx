@@ -103,7 +103,7 @@ const StatusTracker = ({ initialQuery = '' }) => {
   };
 
   const handleInputBlur = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // No-op: do not call window.scrollTo inside fixed modals to avoid mobile viewport collapse
   };
 
   return (
@@ -111,7 +111,7 @@ const StatusTracker = ({ initialQuery = '' }) => {
       {/* Search Input Box */}
       <form onSubmit={handleSearch} className="space-y-3">
         <label htmlFor="track-query" className="block text-sm font-bold text-slate-800">
-          {lang === 'hi' ? 'शिकायत खोजें' : 'Search Grievance'}
+          {lang === 'hi' ? 'शिकायत खोजें' : 'Search Complaint'}
           <span className="text-xs font-normal text-slate-500 ml-2">
             ({lang === 'hi' ? 'ट्रैकिंग ID या मोबाइल' : 'Tracking ID or Phone'})
           </span>
@@ -147,7 +147,7 @@ const StatusTracker = ({ initialQuery = '' }) => {
       </form>
 
       {/* Loading Spinner */}
-      {loading && <LoadingSpinner label={lang === 'hi' ? 'शिकायत का विवरण खोजा जा रहा है...' : 'Searching grievance records...'} />}
+      {loading && <LoadingSpinner label={lang === 'hi' ? 'शिकायत का विवरण खोजा जा रहा है...' : 'Searching complaint records...'} />}
 
       {/* Error Message Card */}
       {!loading && searched && errorMessage && (
@@ -166,7 +166,7 @@ const StatusTracker = ({ initialQuery = '' }) => {
           <p className="text-xs font-bold text-slate-700 mb-2">
             {lang === 'hi'
               ? `इस नंबर से ${complaintList.length} शिकायतें दर्ज मिली हैं। देखने के लिए चुनें:`
-              : `Found ${complaintList.length} grievances linked to this phone. Select to view:`}
+              : `Found ${complaintList.length} complaints linked to this phone. Select to view:`}
           </p>
           <div className="flex flex-wrap gap-2">
             {complaintList.map((c, idx) => (
@@ -288,12 +288,12 @@ const StatusTracker = ({ initialQuery = '' }) => {
           <div className="p-4 rounded-2xl bg-amber-50/90 border border-amber-200 text-amber-900">
             <div className="flex items-center gap-2 font-bold text-sm mb-1 text-amber-900">
               <MessageSquare className="w-4 h-4 text-amber-700" />
-              <span>{t.officerRemarks} (Panchayat Remarks):</span>
+              <span>{t.officerRemarks}:</span>
             </div>
             <p className="text-xs sm:text-sm text-amber-950 font-medium pl-6 leading-relaxed">
               {complaint.adminRemarks || (lang === 'hi'
                 ? 'आपकी शिकायत संबंधित विभाग के संज्ञान में है। जल्द ही आवश्यक कार्रवाई की जाएगी।'
-                : 'Your grievance is under review with the concerned authority. Necessary action will be taken shortly.')}
+                : 'Your complaint is under review with the concerned authority. Necessary action will be taken shortly.')}
             </p>
           </div>
         </div>

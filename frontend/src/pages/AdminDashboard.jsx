@@ -52,17 +52,30 @@ const INITIAL_STATS = {
 };
 
 const NOTICE_CATEGORIES = [
-  'सामान्य सूचना',
-  'पेयजल व जल आपूर्ति',
-  'स्वच्छता अभियान',
-  'विद्युत आपूर्ति',
-  'सड़क व निर्माण',
-  'कृषि व योजनाएं',
+  { id: 'सामान्य सूचना', hi: 'सामान्य सूचना', en: 'General Notice' },
+  { id: 'पेयजल व जल आपूर्ति', hi: 'पेयजल व जल आपूर्ति', en: 'Water Supply' },
+  { id: 'स्वच्छता अभियान', hi: 'स्वच्छता अभियान', en: 'Sanitation & Cleanliness' },
+  { id: 'विद्युत आपूर्ति', hi: 'विद्युत आपूर्ति', en: 'Electricity Supply' },
+  { id: 'सड़क व निर्माण', hi: 'सड़क व निर्माण', en: 'Road & Construction' },
+  { id: 'कृषि व योजनाएं', hi: 'कृषि व योजनाएं', en: 'Agriculture & Schemes' },
 ];
+
+const getCategoryDisplay = (cat, lang) => {
+  if (!cat) return lang === 'hi' ? 'सामान्य' : 'General';
+  const match = NOTICE_CATEGORIES.find((c) => c.id === cat || c.hi === cat || c.en === cat);
+  if (match) return lang === 'hi' ? match.hi : match.en;
+  if (cat.includes('पानी') || cat.toLowerCase().includes('water')) return lang === 'hi' ? 'पानी / हैंडपंप' : 'Water / Handpump';
+  if (cat.includes('बिजली') || cat.toLowerCase().includes('electric')) return lang === 'hi' ? 'बिजली / स्ट्रीट लाइट' : 'Electricity & Lights';
+  if (cat.includes('सड़क') || cat.toLowerCase().includes('road')) return lang === 'hi' ? 'सड़क / नाली' : 'Road & Drainage';
+  if (cat.includes('सफाई') || cat.toLowerCase().includes('sanitat')) return lang === 'hi' ? 'सफाई व्यवस्था' : 'Sanitation & Waste';
+  if (cat.includes('अन्य') || cat.toLowerCase().includes('other')) return lang === 'hi' ? 'अन्य समस्या' : 'Other Complaint';
+  return cat;
+};
 
 const AdminDashboard = () => {
   const { logout } = useAuth();
   const { lang, toggleLang, t } = useLang();
+  const isHi = lang === 'hi';
   const navigate = useNavigate();
 
   // Active Tab: 'complaints' or 'notices' or 'analytics'
@@ -129,7 +142,7 @@ const AdminDashboard = () => {
   const [newNotice, setNewNotice] = useState({
     title: '',
     description: '',
-    category: NOTICE_CATEGORIES[0],
+    category: NOTICE_CATEGORIES[0].id,
     isImportant: false,
   });
   const [creatingNotice, setCreatingNotice] = useState(false);
@@ -174,7 +187,7 @@ const AdminDashboard = () => {
       sessionStorage.removeItem('cached_admin_analytics');
     } catch (e) {}
     logout();
-    toast.success('आप सफलतापूर्वक लॉगआउट हो गए हैं');
+    toast.success(isHi ? 'आप सफलतापूर्वक लॉगआउट हो गए हैं' : 'Logged out successfully');
     navigate('/admin/login');
   };
 
@@ -458,24 +471,24 @@ const AdminDashboard = () => {
   const handleCreateNotice = async (e) => {
     e.preventDefault();
     if (!newNotice.title.trim() || !newNotice.description.trim()) {
-      toast.error('कृपया सूचना का शीर्षक और विवरण दोनों भरें');
+      toast.error(isHi ? 'कृपया सूचना का शीर्षक और विवरण दोनों भरें' : 'Please enter both notice title and description');
       return;
     }
 
     setCreatingNotice(true);
     try {
       await createNotice(newNotice);
-      toast.success('नई सार्वजनिक सूचना सफलतापूर्वक प्रकाशित की गई!');
+      toast.success(isHi ? 'नई सार्वजनिक सूचना सफलतापूर्वक प्रकाशित की गई!' : 'New notice published successfully!');
       setNewNotice({
         title: '',
         description: '',
-        category: NOTICE_CATEGORIES[0],
+        category: NOTICE_CATEGORIES[0].id,
         isImportant: false,
       });
       await fetchNoticesList();
     } catch (err) {
       console.warn('Create notice error:', err);
-      const msg = err?.response?.data?.message || 'सूचना प्रकाशित करने में समस्या आई';
+      const msg = err?.response?.data?.message || (isHi ? 'सूचना प्रकाशित करने में समस्या आई' : 'Failed to publish notice');
       toast.error(msg);
     } finally {
       setCreatingNotice(false);
@@ -484,18 +497,18 @@ const AdminDashboard = () => {
 
   // Delete Notice
   const handleDeleteNotice = async (id) => {
-    if (!window.confirm('क्या आप वाकई इस सूचना को हटाना चाहते हैं?')) {
+    if (!window.confirm(isHi ? 'क्या आप वाकई इस सूचना को हटाना चाहते हैं?' : 'Are you sure you want to delete this notice?')) {
       return;
     }
 
     try {
       await deleteNotice(id);
-      toast.success('सूचना सफलतापूर्वक हटा दी गई');
+      toast.success(isHi ? 'सूचना सफलतापूर्वक हटा दी गई' : 'Notice deleted successfully');
       setNotices((prev) => prev.filter((n) => (n._id || n.id) !== id));
       await fetchNoticesList();
     } catch (err) {
       console.warn('Delete notice error:', err);
-      const msg = err?.response?.data?.message || 'सूचना हटाने में समस्या आई';
+      const msg = err?.response?.data?.message || (isHi ? 'सूचना हटाने में समस्या आई' : 'Failed to delete notice');
       toast.error(msg);
     }
   };
@@ -515,9 +528,9 @@ const AdminDashboard = () => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'उपलब्ध नहीं';
+    if (!dateString) return isHi ? 'उपलब्ध नहीं' : 'N/A';
     try {
-      return new Date(dateString).toLocaleDateString('hi-IN', {
+      return new Date(dateString).toLocaleDateString(isHi ? 'hi-IN' : 'en-IN', {
         month: 'short',
         day: 'numeric',
         year: 'numeric',
@@ -538,14 +551,14 @@ const AdminDashboard = () => {
           {/* Left: Branding */}
           <div className="flex items-center gap-2 min-w-0">
             <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm border border-blue-100 shrink-0 select-none">
-              प
+              {isHi ? 'प' : 'P'}
             </div>
             <div className="flex items-center gap-1.5 min-w-0">
               <h1 className="text-sm font-bold text-slate-800 tracking-tight truncate">
-                पंचायत सहरी
+                {isHi ? 'पंचायत सहरी' : 'Gram Panchayat Sahari'}
               </h1>
               <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 border border-blue-200 shrink-0">
-                Admin
+                {isHi ? 'प्रशासन' : 'Admin'}
               </span>
             </div>
           </div>
@@ -556,12 +569,12 @@ const AdminDashboard = () => {
             <button
               type="button"
               onClick={toggleLang}
-              className="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 flex items-center gap-1 transition-colors"
-              title={lang === 'hi' ? 'Switch to English' : 'हिंदी में देखें'}
-              aria-label="Toggle Language"
+              className="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 flex items-center gap-1 transition-colors cursor-pointer"
+              title={isHi ? 'Switch to English' : 'हिंदी में देखें'}
+              aria-label={isHi ? 'Switch to English' : 'हिंदी में देखें'}
             >
               <Languages className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-              <span>{lang === 'hi' ? 'EN' : 'हि'}</span>
+              <span>{isHi ? 'English' : 'हिंदी'}</span>
             </button>
 
             {/* Refresh Button */}
@@ -572,12 +585,12 @@ const AdminDashboard = () => {
                 fetchComplaintsList(page);
                 fetchNoticesList();
                 fetchWardAnalyticsData();
-                toast.success(lang === 'hi' ? 'डेटा रीफ्रेश किया गया' : 'Data refreshed');
+                toast.success(isHi ? 'डेटा रीफ्रेश किया गया' : 'Data refreshed');
               }}
               disabled={loadingStats || loadingComplaints}
               className="p-2 text-slate-500 hover:text-blue-600 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
-              title={lang === 'hi' ? 'डेटा रीफ्रेश करें' : 'Refresh Data'}
-              aria-label="Refresh"
+              title={isHi ? 'डेटा रीफ्रेश करें' : 'Refresh Data'}
+              aria-label={isHi ? 'डेटा रीफ्रेश करें' : 'Refresh Data'}
             >
               <RefreshCw className={`w-4 h-4 shrink-0 ${(loadingStats || loadingComplaints) ? 'animate-spin text-blue-600' : ''}`} />
             </button>
@@ -587,11 +600,11 @@ const AdminDashboard = () => {
               type="button"
               onClick={handleLogout}
               className="px-2.5 py-1.5 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
-              aria-label={lang === 'hi' ? 'लॉगआउट' : 'Logout'}
-              title={lang === 'hi' ? 'लॉगआउट' : 'Logout'}
+              aria-label={isHi ? 'लॉगआउट' : 'Logout'}
+              title={isHi ? 'लॉगआउट' : 'Logout'}
             >
               <LogOut className="w-3.5 h-3.5 shrink-0" />
-              <span className="hidden sm:inline">{lang === 'hi' ? 'लॉगआउट' : 'Logout'}</span>
+              <span className="hidden sm:inline">{isHi ? 'लॉगआउट' : 'Logout'}</span>
             </button>
           </div>
         </div>
@@ -609,7 +622,7 @@ const AdminDashboard = () => {
               }`}
           >
             <FileText className="w-3.5 h-3.5 shrink-0" />
-            <span>{lang === 'hi' ? 'शिकायतें' : 'Complaints'}</span>
+            <span>{isHi ? 'शिकायतें' : 'Complaints'}</span>
             {totalComplaints > 0 && (
               <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
                 (activeTab === 'complaints' || activeTab === 'grievances') ? 'bg-blue-700 text-white' : 'bg-slate-200 text-slate-700'
@@ -628,7 +641,7 @@ const AdminDashboard = () => {
               }`}
           >
             <Activity className="w-3.5 h-3.5 shrink-0" />
-            <span>{lang === 'hi' ? 'वार्ड एनालिटिक्स' : 'Ward Analytics'}</span>
+            <span>{isHi ? 'वार्ड एनालिटिक्स' : 'Ward Analytics'}</span>
           </button>
 
           <button
@@ -640,7 +653,7 @@ const AdminDashboard = () => {
               }`}
           >
             <Bell className="w-3.5 h-3.5 shrink-0" />
-            <span>{lang === 'hi' ? 'सूचनाएं' : 'Notices'}</span>
+            <span>{isHi ? 'सूचनाएं' : 'Notices'}</span>
             {notices.length > 0 && (
               <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
                 activeTab === 'notices' ? 'bg-blue-700 text-white' : 'bg-slate-200 text-slate-700'
@@ -688,19 +701,27 @@ const AdminDashboard = () => {
               <div className="grid grid-cols-4 gap-2 bg-white p-3 rounded-xl border border-slate-200/80 text-center shadow-xs mb-3">
                 <div className="min-w-0">
                   <p className="text-lg font-black text-slate-900">{stats.total}</p>
-                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mt-0.5">कुल</p>
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mt-0.5">
+                    {isHi ? 'कुल' : 'TOTAL'}
+                  </p>
                 </div>
                 <div className="min-w-0">
                   <p className="text-lg font-black text-amber-600">{stats.pending}</p>
-                  <p className="text-[10px] font-bold text-amber-700 uppercase tracking-wide mt-0.5">लंबित</p>
+                  <p className="text-[10px] font-bold text-amber-700 uppercase tracking-wide mt-0.5">
+                    {isHi ? 'लंबित' : 'PENDING'}
+                  </p>
                 </div>
                 <div className="min-w-0">
                   <p className="text-lg font-black text-blue-600">{stats.inProgress}</p>
-                  <p className="text-[10px] font-bold text-blue-700 uppercase tracking-wide mt-0.5">प्रगति</p>
+                  <p className="text-[10px] font-bold text-blue-700 uppercase tracking-wide mt-0.5">
+                    {isHi ? 'प्रगति' : 'IN PROGRESS'}
+                  </p>
                 </div>
                 <div className="min-w-0">
                   <p className="text-lg font-black text-emerald-600">{stats.resolved}</p>
-                  <p className="text-[10px] font-bold text-emerald-700 uppercase tracking-wide mt-0.5">पूर्ण</p>
+                  <p className="text-[10px] font-bold text-emerald-700 uppercase tracking-wide mt-0.5">
+                    {isHi ? 'पूर्ण' : 'SOLVED'}
+                  </p>
                 </div>
               </div>
 
@@ -710,11 +731,11 @@ const AdminDashboard = () => {
                   <div className="flex items-center gap-2">
                     <Filter className="w-4 h-4 text-blue-900" />
                     <span className="text-xs sm:text-sm font-bold text-slate-800">
-                      फ़िल्टर एवं खोज (Filters)
+                      {isHi ? 'फ़िल्टर एवं खोज' : 'Filters & Search'}
                     </span>
                     {(statusFilter || wardFilter) && (
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200">
-                        सक्रिय (Active)
+                        {isHi ? 'सक्रिय' : 'Active'}
                       </span>
                     )}
                   </div>
@@ -724,9 +745,9 @@ const AdminDashboard = () => {
                       <button
                         type="button"
                         onClick={handleResetFilter}
-                        className="text-xs font-semibold text-rose-600 hover:text-rose-800 hover:underline px-2 py-1"
+                        className="text-xs font-semibold text-rose-600 hover:text-rose-800 hover:underline px-2 py-1 cursor-pointer"
                       >
-                        रीसेट
+                        {isHi ? 'रीसेट' : 'Reset'}
                       </button>
                     )}
                     <button
@@ -734,7 +755,7 @@ const AdminDashboard = () => {
                       onClick={() => setShowFilters((prev) => !prev)}
                       className="sm:hidden px-2.5 py-1 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg flex items-center gap-1 shadow-2xs cursor-pointer"
                     >
-                      <span>{showFilters ? 'छिपाएं' : 'फ़िल्टर'}</span>
+                      <span>{isHi ? (showFilters ? 'छिपाएं' : 'फ़िल्टर') : (showFilters ? 'Hide' : 'Filter')}</span>
                       {showFilters ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                     </button>
                   </div>
@@ -746,7 +767,7 @@ const AdminDashboard = () => {
                     {/* Status Dropdown */}
                     <div className="flex-1 min-w-0">
                       <label htmlFor="filter-status" className="block text-[11px] sm:text-xs font-bold text-slate-700 mb-1">
-                        स्थिति फ़िल्टर (Status)
+                        {isHi ? 'स्थिति फ़िल्टर' : 'Filter by Status'}
                       </label>
                       <select
                         id="filter-status"
@@ -754,17 +775,17 @@ const AdminDashboard = () => {
                         onChange={(e) => setStatusFilter(e.target.value)}
                         className="w-full min-h-[40px] px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-blue-900"
                       >
-                        <option value="">सभी स्थितियां (All Status)</option>
-                        <option value="Pending">लंबित (Pending)</option>
-                        <option value="In Progress">प्रगति पर (In Progress)</option>
-                        <option value="Resolved">समाधान पूर्ण (Resolved)</option>
+                        <option value="">{isHi ? 'सभी स्थितियां' : 'All Status'}</option>
+                        <option value="Pending">{isHi ? 'लंबित' : 'Pending'}</option>
+                        <option value="In Progress">{isHi ? 'प्रगति पर' : 'In Progress'}</option>
+                        <option value="Resolved">{isHi ? 'समाधान पूर्ण' : 'Resolved'}</option>
                       </select>
                     </div>
 
                     {/* Ward Number Input */}
                     <div className="flex-1 min-w-0">
                       <label htmlFor="filter-ward" className="block text-[11px] sm:text-xs font-bold text-slate-700 mb-1">
-                        {lang === 'hi' ? 'वार्ड संख्या (वार्ड 1-7)' : 'Ward Number (Ward 1-7)'}
+                        {isHi ? 'वार्ड संख्या (वार्ड 1-7)' : 'Ward Number (Ward 1-7)'}
                       </label>
                       <input
                         id="filter-ward"
@@ -773,7 +794,7 @@ const AdminDashboard = () => {
                         max="7"
                         value={wardFilter}
                         onChange={(e) => setWardFilter(e.target.value)}
-                        placeholder={lang === 'hi' ? 'वार्ड 1-7 (उदा. 4)' : 'Ward 1-7 (e.g. 4)'}
+                        placeholder={isHi ? 'वार्ड 1-7 (उदा. 4)' : 'Ward 1-7 (e.g. 4)'}
                         className="w-full min-h-[40px] px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-blue-900"
                       />
                     </div>
@@ -785,16 +806,16 @@ const AdminDashboard = () => {
                         className="flex-1 md:flex-none min-h-[40px] px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-xs flex items-center justify-center gap-1.5 focus:outline-none transition-all cursor-pointer"
                       >
                         <Filter className="w-3.5 h-3.5" />
-                        <span>लागू करें (Apply)</span>
+                        <span>{isHi ? 'लागू करें' : 'Apply'}</span>
                       </button>
 
                       {(statusFilter || wardFilter) && (
                         <button
                           type="button"
                           onClick={handleResetFilter}
-                          className="min-h-[40px] px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-200 transition-colors"
+                          className="min-h-[40px] px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-200 transition-colors cursor-pointer"
                         >
-                          रीसेट
+                          {isHi ? 'रीसेट' : 'Reset'}
                         </button>
                       )}
                     </div>
@@ -806,10 +827,10 @@ const AdminDashboard = () => {
             <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
               <div className="p-4 border-b border-slate-200 flex items-center justify-between">
                 <h3 className="text-base sm:text-lg font-bold text-slate-800">
-                  शिकायत निवारण सूची
+                  {isHi ? 'शिकायत निवारण सूची' : 'Complaint Redressal List'}
                 </h3>
                 <span className="text-xs font-semibold text-slate-500">
-                  कुल परिणाम: {totalComplaints}
+                  {isHi ? `कुल परिणाम: ${totalComplaints}` : `Total Results: ${totalComplaints}`}
                 </span>
               </div>
 
@@ -820,15 +841,17 @@ const AdminDashboard = () => {
                   ))}
                   <div className="flex items-center justify-center gap-2 pt-2 text-xs font-semibold text-slate-500">
                     <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-700" />
-                    <span>शिकायतें लोड हो रही हैं... (Loading complaints...)</span>
+                    <span>{isHi ? 'शिकायतें लोड हो रही हैं...' : 'Loading complaints...'}</span>
                   </div>
                 </div>
               ) : complaints.length === 0 ? (
                 <div className="p-12 text-center text-slate-500">
                   <AlertCircle className="w-12 h-12 mx-auto text-slate-400 mb-3" />
-                  <p className="text-base font-bold">कोई शिकायत उपलब्ध नहीं है</p>
+                  <p className="text-base font-bold">
+                    {isHi ? 'कोई शिकायत उपलब्ध नहीं है' : 'No complaints available'}
+                  </p>
                   <p className="text-xs text-slate-400 mt-1">
-                    वर्तमान फ़िल्टर के अनुसार कोई रिकॉर्ड नहीं मिला।
+                    {isHi ? 'वर्तमान फ़िल्टर के अनुसार कोई रिकॉर्ड नहीं मिला।' : 'No records found matching current filters.'}
                   </p>
                   <button
                     type="button"
@@ -836,7 +859,7 @@ const AdminDashboard = () => {
                     className="mt-4 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
-                    <span>पुनः लोड करें (Retry)</span>
+                    <span>{isHi ? 'पुनः लोड करें' : 'Retry'}</span>
                   </button>
                 </div>
               ) : (
@@ -855,13 +878,13 @@ const AdminDashboard = () => {
                           <div className="flex items-start justify-between gap-2 mb-2">
                             <div className="min-w-0">
                               <p className="text-sm font-semibold text-slate-900 truncate">
-                                {item.citizenName || item.name || 'गोपनीय'}
+                                {item.citizenName || item.name || (isHi ? 'गोपनीय' : 'Confidential')}
                               </p>
                               <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                                 <span className="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
-                                  वार्ड {item.wardNumber ?? item.ward ?? '—'}
+                                  {isHi ? `वार्ड ${item.wardNumber ?? item.ward ?? '—'}` : `Ward ${item.wardNumber ?? item.ward ?? '—'}`}
                                 </span>
-                                <span className="text-[10px] text-slate-500 truncate">{item.category}</span>
+                                <span className="text-[10px] text-slate-500 truncate">{getCategoryDisplay(item.category, lang)}</span>
                               </div>
                             </div>
                             <StatusBadge status={item.status} />
@@ -882,15 +905,15 @@ const AdminDashboard = () => {
                                   type="button"
                                   onClick={() => setSelectedImage(item.imageUrl || item.image || item.photoUrl || item.attachment)}
                                   className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors cursor-pointer"
-                                  title="फोटो देखें (View Evidence Photo)"
+                                  title={isHi ? 'फोटो देखें' : 'View Photo'}
                                 >
                                   <Eye className="w-3 h-3 shrink-0" />
-                                  <span>फोटो</span>
+                                  <span>{isHi ? 'फोटो' : 'Photo'}</span>
                                 </button>
                               ) : (
                                 <span className="inline-flex items-center gap-1 text-[10px] text-slate-400">
                                   <ImageOff className="w-3 h-3 shrink-0" />
-                                  <span>फोटो नहीं</span>
+                                  <span>{isHi ? 'फोटो नहीं' : 'No Photo'}</span>
                                 </span>
                               )}
                               <span className="text-[11px] text-slate-400 font-mono">
@@ -906,18 +929,18 @@ const AdminDashboard = () => {
                             disabled={isSaving}
                             className="w-full text-xs py-1.5 px-2 rounded-lg border border-slate-200 bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-900 disabled:opacity-60"
                           >
-                            <option value="Pending">लंबित (Pending)</option>
-                            <option value="In Progress">प्रगति पर (In Progress)</option>
-                            <option value="Resolved">समाधान पूर्ण (Resolved)</option>
+                            <option value="Pending">{isHi ? 'लंबित' : 'Pending'}</option>
+                            <option value="In Progress">{isHi ? 'प्रगति पर' : 'In Progress'}</option>
+                            <option value="Resolved">{isHi ? 'समाधान पूर्ण' : 'Resolved'}</option>
                           </select>
                           {(itemEdit.status !== undefined && itemEdit.status !== item.status) && (
                             <button
                               type="button"
                               disabled={isSaving}
                               onClick={() => handleSaveStatus(item)}
-                              className="mt-1.5 w-full min-h-[36px] rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-400 text-white font-bold text-xs transition-colors"
+                              className="mt-1.5 w-full min-h-[36px] rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-400 text-white font-bold text-xs transition-colors cursor-pointer"
                             >
-                              {isSaving ? 'सेव हो रहा है...' : 'स्थिति सेव करें'}
+                              {isSaving ? (isHi ? 'सेव हो रहा है...' : 'Saving...') : (isHi ? 'स्थिति सेव करें' : 'Save Status')}
                             </button>
                           )}
                         </div>
@@ -931,14 +954,14 @@ const AdminDashboard = () => {
                     <thead>
                       <tr className="bg-slate-50/80 border-b border-slate-200 text-xs font-bold text-slate-600 uppercase tracking-wider">
                         <th className="py-3.5 px-4">Tracking ID</th>
-                        <th className="py-3.5 px-4">नागरिक नाम</th>
-                        <th className="py-3.5 px-4">फोन (Call)</th>
-                        <th className="py-3.5 px-4">वार्ड</th>
-                        <th className="py-3.5 px-4">श्रेणी</th>
-                        <th className="py-3.5 px-4">फोटो</th>
-                        <th className="py-3.5 px-4">दिनांक</th>
-                        <th className="py-3.5 px-4">स्थिति</th>
-                        <th className="py-3.5 px-4 min-w-[280px]">कार्रवाई एवं टिप्पणी (Actions)</th>
+                        <th className="py-3.5 px-4">{isHi ? 'नागरिक नाम' : 'Citizen Name'}</th>
+                        <th className="py-3.5 px-4">{isHi ? 'फोन (Call)' : 'Phone (Call)'}</th>
+                        <th className="py-3.5 px-4">{isHi ? 'वार्ड' : 'Ward'}</th>
+                        <th className="py-3.5 px-4">{isHi ? 'श्रेणी' : 'Category'}</th>
+                        <th className="py-3.5 px-4">{isHi ? 'फोटो' : 'Photo'}</th>
+                        <th className="py-3.5 px-4">{isHi ? 'दिनांक' : 'Date'}</th>
+                        <th className="py-3.5 px-4">{isHi ? 'स्थिति' : 'Status'}</th>
+                        <th className="py-3.5 px-4 min-w-[280px]">{isHi ? 'कार्रवाई एवं टिप्पणी' : 'Actions & Remarks'}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200 text-sm">
@@ -958,7 +981,7 @@ const AdminDashboard = () => {
 
                             {/* Citizen Name */}
                             <td className="py-4 px-4 font-semibold text-slate-900">
-                              {item.citizenName || item.name || 'गोपनीय'}
+                              {item.citizenName || item.name || (isHi ? 'गोपनीय' : 'Confidential')}
                             </td>
 
                             {/* Phone with Call Link */}
@@ -975,13 +998,13 @@ const AdminDashboard = () => {
                             {/* Ward */}
                             <td className="py-4 px-4">
                               <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-slate-100 text-slate-800">
-                                वार्ड {item.wardNumber ?? item.ward ?? 'अस्पष्ट'}
+                                {isHi ? `वार्ड ${item.wardNumber ?? item.ward ?? 'अस्पष्ट'}` : `Ward ${item.wardNumber ?? item.ward ?? 'N/A'}`}
                               </span>
                             </td>
 
                             {/* Category */}
                             <td className="py-4 px-4 text-xs font-semibold text-slate-700">
-                              {item.category}
+                              {getCategoryDisplay(item.category, lang)}
                             </td>
 
                             {/* Image Thumbnail / Lightbox Trigger */}
@@ -991,21 +1014,21 @@ const AdminDashboard = () => {
                                   type="button"
                                   onClick={() => setSelectedImage(item.imageUrl || item.image || item.photoUrl || item.attachment)}
                                   className="inline-flex items-center gap-2 group cursor-pointer"
-                                  title="फोटो देखें (View Evidence Photo)"
+                                  title={isHi ? 'फोटो देखें' : 'View Photo'}
                                 >
                                   <img
                                     src={item.imageUrl || item.image || item.photoUrl || item.attachment}
-                                    alt="शिकायत फोटो"
+                                    alt="Complaint Photo"
                                     className="w-10 h-10 object-cover rounded-lg border border-slate-200 group-hover:scale-110 group-hover:shadow-md transition-all"
                                   />
                                   <span className="text-[11px] font-semibold text-blue-700 group-hover:text-blue-900 group-hover:underline transition-colors">
-                                    देखें
+                                    {isHi ? 'देखें' : 'View'}
                                   </span>
                                 </button>
                               ) : (
                                 <span className="inline-flex items-center gap-1 text-xs text-slate-400">
                                   <ImageOff className="w-3.5 h-3.5 shrink-0" />
-                                  <span>उपलब्ध नहीं</span>
+                                  <span>{isHi ? 'उपलब्ध नहीं' : 'N/A'}</span>
                                 </span>
                               )}
                             </td>
@@ -1029,18 +1052,18 @@ const AdminDashboard = () => {
                                     onChange={(e) => handleStatusChange(id, e.target.value)}
                                     className="min-h-[38px] px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 flex-1"
                                   >
-                                    <option value="Pending">लंबित (Pending)</option>
-                                    <option value="In Progress">प्रगति पर (In Progress)</option>
-                                    <option value="Resolved">समाधान पूर्ण (Resolved)</option>
+                                    <option value="Pending">{isHi ? 'लंबित' : 'Pending'}</option>
+                                    <option value="In Progress">{isHi ? 'प्रगति पर' : 'In Progress'}</option>
+                                    <option value="Resolved">{isHi ? 'समाधान पूर्ण' : 'Resolved'}</option>
                                   </select>
 
                                   <button
                                     type="button"
                                     disabled={isSaving}
                                     onClick={() => handleSaveStatus(item)}
-                                    className="min-h-[38px] px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-400 text-white font-bold text-xs shadow-xs transition-colors focus:outline-none"
+                                    className="min-h-[38px] px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-400 text-white font-bold text-xs shadow-xs transition-colors focus:outline-none cursor-pointer"
                                   >
-                                    {isSaving ? '...' : 'सेव करें'}
+                                    {isSaving ? '...' : (isHi ? 'सेव करें' : 'Save')}
                                   </button>
                                 </div>
 
@@ -1048,7 +1071,7 @@ const AdminDashboard = () => {
                                   rows={1}
                                   value={currentRemarks}
                                   onChange={(e) => handleRemarksChange(id, e.target.value)}
-                                  placeholder="प्रशासनिक टिप्पणी लिखें..."
+                                  placeholder={isHi ? 'प्रशासनिक टिप्पणी लिखें...' : 'Add administrative remarks...'}
                                   className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                                 />
                               </div>
@@ -1065,7 +1088,7 @@ const AdminDashboard = () => {
               {/* Pagination Controls */}
               <div className="p-4 border-t border-slate-200 flex items-center justify-between">
                 <span className="text-xs text-slate-500">
-                  पृष्ठ {page} / {totalPages || 1}
+                  {isHi ? `पृष्ठ ${page} / ${totalPages || 1}` : `Page ${page} of ${totalPages || 1}`}
                 </span>
 
                 <div className="flex items-center gap-2">
@@ -1077,10 +1100,10 @@ const AdminDashboard = () => {
                       setPage(newP);
                       fetchComplaintsList(newP);
                     }}
-                    className="min-h-[40px] px-3 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-50 text-xs font-bold text-slate-700 flex items-center gap-1 transition-colors touch-target-min"
+                    className="min-h-[40px] px-3 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-50 text-xs font-bold text-slate-700 flex items-center gap-1 transition-colors touch-target-min cursor-pointer"
                   >
                     <ChevronLeft className="w-4 h-4" />
-                    <span>पिछला (Prev)</span>
+                    <span>{isHi ? 'पिछला' : 'Prev'}</span>
                   </button>
 
                   <button
@@ -1091,9 +1114,9 @@ const AdminDashboard = () => {
                       setPage(newP);
                       fetchComplaintsList(newP);
                     }}
-                    className="min-h-[40px] px-3 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-50 text-xs font-bold text-slate-700 flex items-center gap-1 transition-colors touch-target-min"
+                    className="min-h-[40px] px-3 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-50 text-xs font-bold text-slate-700 flex items-center gap-1 transition-colors touch-target-min cursor-pointer"
                   >
-                    <span>अगला (Next)</span>
+                    <span>{isHi ? 'अगला' : 'Next'}</span>
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
@@ -1132,7 +1155,7 @@ const AdminDashboard = () => {
                       className="min-h-[40px] px-3.5 sm:px-4 py-2 rounded-xl bg-blue-900/60 text-white text-xs sm:text-sm font-bold flex items-center gap-2 opacity-70 cursor-not-allowed"
                     >
                       <Download className="w-4 h-4 shrink-0" />
-                      <span>{lang === 'hi' ? 'रिपोर्ट लोड हो रही है...' : 'Loading PDF...'}</span>
+                      <span>{isHi ? 'रिपोर्ट लोड हो रही है...' : 'Loading PDF...'}</span>
                     </button>
                   }
                 >
@@ -1145,14 +1168,14 @@ const AdminDashboard = () => {
                   type="button"
                   onClick={() => {
                     fetchWardAnalyticsData();
-                    toast.success(lang === 'hi' ? 'एनालिटिक्स रीफ्रेश किया गया' : 'Analytics refreshed');
+                    toast.success(isHi ? 'एनालिटिक्स रीफ्रेश किया गया' : 'Analytics refreshed');
                   }}
                   disabled={loadingAnalytics}
-                  className="min-h-[40px] px-3 sm:px-3.5 py-2 rounded-xl text-slate-600 hover:text-blue-900 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors touch-target-min shrink-0"
-                  title={lang === 'hi' ? 'एनालिटिक्स रीफ्रेश करें' : 'Refresh Analytics'}
+                  className="min-h-[40px] px-3 sm:px-3.5 py-2 rounded-xl text-slate-600 hover:text-blue-900 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors touch-target-min shrink-0 cursor-pointer"
+                  title={isHi ? 'एनालिटिक्स रीफ्रेश करें' : 'Refresh Analytics'}
                 >
                   <RefreshCw className={`w-4 h-4 shrink-0 ${loadingAnalytics ? 'animate-spin' : ''}`} />
-                  <span className="hidden sm:inline">{lang === 'hi' ? 'रीफ्रेश' : 'Refresh'}</span>
+                  <span className="hidden sm:inline">{isHi ? 'रीफ्रेश' : 'Refresh'}</span>
                 </button>
               </div>
             </div>
@@ -1166,19 +1189,19 @@ const AdminDashboard = () => {
                   <Building className="w-4 h-4 text-emerald-600 shrink-0" />
                 </div>
                 <div className="text-xl sm:text-2xl font-black text-slate-900">7</div>
-                <span className="text-[11px] text-slate-400 block mt-0.5 truncate">{lang === 'hi' ? 'वार्ड 1 से 7 सक्रिय' : 'Wards 1 to 7 active'}</span>
+                <span className="text-[11px] text-slate-400 block mt-0.5 truncate">{isHi ? 'वार्ड 1 से 7 सक्रिय' : 'Wards 1 to 7 active'}</span>
               </div>
 
               {/* Card 2: Total Complaints */}
               <div className="min-w-0 bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 shadow-xs">
                 <div className="flex items-center justify-between text-slate-400 mb-1">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 truncate">{lang === 'hi' ? 'कुल शिकायतें' : 'Total Grievances'}</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 truncate">{isHi ? 'कुल शिकायतें' : 'TOTAL COMPLAINTS'}</span>
                   <FileText className="w-4 h-4 text-blue-600 shrink-0" />
                 </div>
                 <div className="text-xl sm:text-2xl font-black text-slate-900">
                   {analyticsData.resolutionMetrics?.totalAllComplaints || stats.total || 0}
                 </div>
-                <span className="text-[11px] text-slate-400 block mt-0.5 truncate">{lang === 'hi' ? 'सभी 7 वार्डों से' : 'Across all 7 wards'}</span>
+                <span className="text-[11px] text-slate-400 block mt-0.5 truncate">{isHi ? 'सभी 7 वार्डों से' : 'Across all 7 wards'}</span>
               </div>
 
               {/* Card 3: Overall Resolution Rate */}
@@ -1191,7 +1214,7 @@ const AdminDashboard = () => {
                   {analyticsData.resolutionMetrics?.overallResolutionRate ?? 0}%
                 </div>
                 <span className="text-[11px] text-slate-400 block mt-0.5 truncate">
-                  {analyticsData.resolutionMetrics?.totalResolvedAll || stats.resolved || 0} {lang === 'hi' ? 'निस्तारित' : 'resolved'}
+                  {analyticsData.resolutionMetrics?.totalResolvedAll || stats.resolved || 0} {isHi ? 'निस्तारित' : 'solved'}
                 </span>
               </div>
 
@@ -1202,9 +1225,9 @@ const AdminDashboard = () => {
                   <Flame className="w-4 h-4 text-rose-600 animate-pulse shrink-0" />
                 </div>
                 <div className="text-xl sm:text-2xl font-black text-rose-700">
-                  {lang === 'hi' ? `वार्ड ${analyticsData.criticalWard || 1}` : `Ward ${analyticsData.criticalWard || 1}`}
+                  {isHi ? `वार्ड ${analyticsData.criticalWard || 1}` : `Ward ${analyticsData.criticalWard || 1}`}
                 </div>
-                <span className="text-[11px] text-rose-600 font-semibold block mt-0.5 truncate">{lang === 'hi' ? 'अधिकतम लंबित मामले' : 'Highest open volume'}</span>
+                <span className="text-[11px] text-rose-600 font-semibold block mt-0.5 truncate">{isHi ? 'अधिकतम लंबित मामले' : 'Most pending complaints'}</span>
               </div>
 
               {/* Card 5: Average Resolution Time */}
@@ -1217,7 +1240,7 @@ const AdminDashboard = () => {
                   <div className="text-xl sm:text-2xl font-black text-slate-900">
                     {analyticsData.resolutionMetrics?.averageResolutionDays || 2.4} <span className="text-xs font-normal text-slate-500">{t.kpiDaysUnit}</span>
                   </div>
-                  <span className="text-[11px] text-slate-400 block sm:mt-0.5 truncate">{lang === 'hi' ? 'औसत निस्तारण अवधि' : 'Average time to resolve'}</span>
+                  <span className="text-[11px] text-slate-400 block sm:mt-0.5 truncate">{isHi ? 'औसत समाधान अवधि' : 'Average time to solve'}</span>
                 </div>
               </div>
             </div>
@@ -1258,13 +1281,13 @@ const AdminDashboard = () => {
             <div className="lg:col-span-1 bg-white p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200 shadow-xs h-fit">
               <h3 className="text-base sm:text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <PlusCircle className="w-5 h-5 text-emerald-700" />
-                <span>नई सार्वजनिक सूचना बनाएं</span>
+                <span>{isHi ? 'नई सार्वजनिक सूचना बनाएं' : 'Publish Notice'}</span>
               </h3>
 
               <form onSubmit={handleCreateNotice} className="space-y-4">
                 <div>
                   <label htmlFor="notice-cat" className="block text-xs font-bold text-slate-700 mb-1">
-                    श्रेणी चुनें (Category)
+                    {isHi ? 'श्रेणी चुनें' : 'Notice Category'}
                   </label>
                   <select
                     id="notice-cat"
@@ -1273,8 +1296,8 @@ const AdminDashboard = () => {
                     className="w-full min-h-[48px] px-3 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     {NOTICE_CATEGORIES.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
+                      <option key={c.id} value={c.id}>
+                        {isHi ? c.hi : c.en}
                       </option>
                     ))}
                   </select>
@@ -1282,7 +1305,7 @@ const AdminDashboard = () => {
 
                 <div>
                   <label htmlFor="notice-title" className="block text-xs font-bold text-slate-700 mb-1">
-                    सूचना शीर्षक (Title) <span className="text-red-500">*</span>
+                    {isHi ? 'सूचना शीर्षक' : 'Notice Title'} <span className="text-red-500">*</span>
                   </label>
                   <input
                     id="notice-title"
@@ -1290,14 +1313,14 @@ const AdminDashboard = () => {
                     required
                     value={newNotice.title}
                     onChange={(e) => setNewNotice({ ...newNotice, title: e.target.value })}
-                    placeholder="उदा. ग्राम सभा की विशेष बैठक"
+                    placeholder={isHi ? 'उदा. ग्राम सभा की विशेष बैठक' : 'e.g. Special Gram Sabha Meeting'}
                     className="w-full min-h-[48px] px-3 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
 
                 <div>
                   <label htmlFor="notice-desc" className="block text-xs font-bold text-slate-700 mb-1">
-                    सूचना विवरण (Description) <span className="text-red-500">*</span>
+                    {isHi ? 'सूचना विवरण' : 'Notice Details'} <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     id="notice-desc"
@@ -1305,7 +1328,7 @@ const AdminDashboard = () => {
                     required
                     value={newNotice.description}
                     onChange={(e) => setNewNotice({ ...newNotice, description: e.target.value })}
-                    placeholder="सूचना का पूरा विवरण लिखें जो नागरिकों को प्रदर्शित होगा..."
+                    placeholder={isHi ? 'सूचना का पूरा विवरण लिखें जो नागरिकों को प्रदर्शित होगा...' : 'Write full notice details to be shown to citizens...'}
                     className="w-full p-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
@@ -1319,21 +1342,21 @@ const AdminDashboard = () => {
                     className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer"
                   />
                   <label htmlFor="notice-important" className="text-xs font-bold text-slate-700 cursor-pointer">
-                    ⚠️ अति महत्वपूर्ण सूचना (Mark as High Priority / Important)
+                    {isHi ? '⚠️ अति महत्वपूर्ण सूचना (High Priority)' : '⚠️ High Priority Notice'}
                   </label>
                 </div>
 
                 <button
                   type="submit"
                   disabled={creatingNotice}
-                  className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-400 text-white font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2 touch-target-min"
+                  className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-400 text-white font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2 touch-target-min cursor-pointer"
                 >
                   {creatingNotice ? (
-                    <span>प्रकाशित कर रहे हैं...</span>
+                    <span>{isHi ? 'प्रकाशित कर रहे हैं...' : 'Publishing...'}</span>
                   ) : (
                     <>
                       <PlusCircle className="w-4 h-4" />
-                      <span>प्रकाशित करें (Publish Notice)</span>
+                      <span>{isHi ? 'सूचना प्रकाशित करें' : 'Publish Notice'}</span>
                     </>
                   )}
                 </button>
@@ -1344,10 +1367,10 @@ const AdminDashboard = () => {
             <div className="lg:col-span-2 space-y-3 sm:space-y-4">
               <div className="bg-white p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
                 <h3 className="text-base sm:text-lg font-bold text-slate-800">
-                  वर्तमान सक्रिय सूचनाएं (Active Notices)
+                  {isHi ? 'सक्रिय सूचनाएँ' : 'Active Notices'}
                 </h3>
                 <span className="text-xs font-semibold text-slate-500">
-                  कुल: {notices.length}
+                  {isHi ? `कुल: ${notices.length}` : `Total: ${notices.length}`}
                 </span>
               </div>
 
@@ -1358,15 +1381,15 @@ const AdminDashboard = () => {
                   ))}
                   <div className="flex items-center justify-center gap-2 pt-2 text-xs font-semibold text-slate-500">
                     <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-700" />
-                    <span>सूचनाएं लोड हो रही हैं... (Loading notices...)</span>
+                    <span>{isHi ? 'सूचनाएं लोड हो रही हैं...' : 'Loading notices...'}</span>
                   </div>
                 </div>
               ) : notices.length === 0 ? (
                 <div className="bg-white p-8 sm:p-10 rounded-xl sm:rounded-2xl border border-slate-200 text-center text-slate-500">
                   <Bell className="w-10 h-10 mx-auto text-slate-300 mb-2" />
-                  <p className="font-bold">कोई सूचना प्रकाशित नहीं है</p>
+                  <p className="font-bold">{isHi ? 'कोई सूचना प्रकाशित नहीं है' : 'No notices published'}</p>
                   <p className="text-xs text-slate-400 mt-1">
-                    बाईं ओर दिए गए फॉर्म से नई सूचना जोड़ें।
+                    {isHi ? 'बाईं ओर दिए गए फॉर्म से नई सूचना जोड़ें।' : 'Add a new notice using the form on the left.'}
                   </p>
                 </div>
               ) : (
@@ -1382,11 +1405,11 @@ const AdminDashboard = () => {
                           <div className="flex items-center gap-2 mb-1">
                             {n.isImportant && (
                               <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-red-100 text-red-800 border border-red-200">
-                                ⚠️ अति महत्वपूर्ण
+                                {isHi ? '⚠️ अति महत्वपूर्ण' : '⚠️ High Priority'}
                               </span>
                             )}
                             <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
-                              {n.category || 'सूचना'}
+                              {getCategoryDisplay(n.category, lang)}
                             </span>
                             <span className="text-xs text-slate-400">
                               {formatDate(n.createdAt)}
@@ -1404,11 +1427,11 @@ const AdminDashboard = () => {
                         <button
                           type="button"
                           onClick={() => handleDeleteNotice(noticeId)}
-                          className="min-h-[44px] px-3.5 py-2 rounded-xl text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 text-xs font-bold flex items-center gap-1.5 transition-colors touch-target-min"
-                          title="सूचना हटाएं"
+                          className="min-h-[44px] px-3.5 py-2 rounded-xl text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 text-xs font-bold flex items-center gap-1.5 transition-colors touch-target-min cursor-pointer"
+                          title={isHi ? 'सूचना हटाएं' : 'Delete notice'}
                         >
                           <Trash2 className="w-4 h-4" />
-                          <span>हटाएं (Delete)</span>
+                          <span>{isHi ? 'हटाएं' : 'Delete'}</span>
                         </button>
                       </div>
                     );
@@ -1431,14 +1454,14 @@ const AdminDashboard = () => {
           tabIndex={-1}
           role="dialog"
           aria-modal="true"
-          aria-label="शिकायत फोटो देखें"
+          aria-label={isHi ? 'शिकायत फोटो देखें' : 'View complaint photo'}
         >
           {/* Close button */}
           <button
             type="button"
             onClick={() => setSelectedImage(null)}
-            className="absolute top-4 right-4 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-white/15 hover:bg-white/30 text-white transition-colors"
-            aria-label="बंद करें"
+            className="absolute top-4 right-4 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-white/15 hover:bg-white/30 text-white transition-colors cursor-pointer"
+            aria-label={isHi ? 'बंद करें' : 'Close'}
           >
             <XIcon className="w-5 h-5" />
           </button>
@@ -1446,14 +1469,14 @@ const AdminDashboard = () => {
           {/* Image */}
           <img
             src={selectedImage}
-            alt="शिकायत साक्ष्य फोटो"
+            alt={isHi ? 'शिकायत साक्ष्य फोटो' : 'Complaint evidence photo'}
             className="max-h-[85vh] max-w-[90vw] object-contain rounded-xl shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           />
 
           {/* Bottom hint */}
           <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs text-white/60 select-none whitespace-nowrap">
-            बाहर क्लिक करें या Esc दबाएं — बंद करें
+            {isHi ? 'बाहर क्लिक करें या Esc दबाएं — बंद करें' : 'Click outside or press Esc to close'}
           </p>
         </div>
       )}

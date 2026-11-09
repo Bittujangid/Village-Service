@@ -1,14 +1,15 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 /**
  * Responsive Modal Component
  *
- * Mobile: bottom-sheet style — anchored at the bottom, max-h-[90vh] hard cap,
- *         internal scroll. This prevents any focus-induced viewport repaint
- *         (e.g. from radio inputs / Android Chrome virtual keyboard) from
- *         collapsing the modal height.
- * Desktop (sm+): centered card, max-h-[90vh], scrollable body.
+ * Mobile (<sm): Full-screen modal (w-full h-full) rendered via createPortal directly
+ *               in document.body. This ensures the header is ALWAYS pinned at the top (y = 0),
+ *               the sticky footer is pinned at the bottom, and virtual keyboard popups or
+ *               focus changes NEVER shift the modal off-screen or leave blank dead zones.
+ * Desktop (sm+): Centered floating dialog with max-h-[90vh], rounded-2xl, and backdrop blur.
  */
 const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl' }) => {
   useEffect(() => {
@@ -18,47 +19,30 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl' }) => 
 
     if (isOpen) {
       document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
       window.addEventListener('keydown', handleKeyDown);
     } else {
       document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
     }
 
     return () => {
       document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
-  return (
-    /*
-     * Overlay: fixed inset-0 — exact visible viewport on every device.
-     * Mobile: items-end → modal slides up from bottom as a bottom-sheet.
-     * Desktop (sm+): items-center justify-center → centered dialog.
-     * overflow-hidden on the overlay prevents any inner focus event from
-     * causing the page underneath to scroll/repaint.
-     */
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex flex-col items-stretch sm:items-center sm:justify-center bg-black/90 sm:bg-black/70 backdrop-blur-sm overflow-hidden"
+      className="fixed inset-0 z-50 flex flex-col sm:items-center sm:justify-center bg-black/60 backdrop-blur-xs sm:p-4 overflow-hidden"
       role="dialog"
       aria-modal="true"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      {/*
-       * The card itself:
-       * Mobile:  full width, rounded top corners only, max-h-[90vh] hard cap,
-       *          pushed to the bottom via mt-auto. The fixed max-h means Android
-       *          Chrome viewport repaints (focus, keyboard) cannot shrink the card.
-       * Desktop: centered, rounded all corners, max-h-[90vh].
-       */}
       <div
-        className={`w-full mt-auto sm:mt-0 sm:m-4 max-h-[90vh] ${maxWidth} bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden`}
+        className={`w-full h-full sm:h-auto sm:max-h-[90vh] ${maxWidth} bg-white sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Sticky Modal Header */}
@@ -76,12 +60,13 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl' }) => 
           </button>
         </div>
 
-        {/* Content area: flex col so GrievanceForm / StatusTracker can use flex-1 + overflow-y-auto */}
+        {/* Content area: flex-1 flex flex-col min-h-0 so child form can scroll independently */}
         <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
           {children}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

@@ -29,6 +29,16 @@ const WardHeatmap = ({
 }) => {
   const { lang, t } = useLang();
 
+  const getCategoryDisplay = (cat) => {
+    if (!cat || cat === 'कोई नहीं' || cat === 'None') return lang === 'hi' ? 'कोई नहीं' : 'None';
+    if (cat.includes('पानी') || cat.toLowerCase().includes('water')) return lang === 'hi' ? 'पानी / हैंडपंप' : 'Water Supply';
+    if (cat.includes('बिजली') || cat.toLowerCase().includes('electric')) return lang === 'hi' ? 'बिजली / स्ट्रीट लाइट' : 'Electricity & Lights';
+    if (cat.includes('सड़क') || cat.toLowerCase().includes('road')) return lang === 'hi' ? 'सड़क / नाली' : 'Road & Drainage';
+    if (cat.includes('सफाई') || cat.toLowerCase().includes('sanitat')) return lang === 'hi' ? 'सफाई व्यवस्था' : 'Sanitation & Cleanliness';
+    if (cat.includes('अन्य') || cat.toLowerCase().includes('other')) return lang === 'hi' ? 'अन्य' : 'Other';
+    return cat;
+  };
+
   // Helper to determine ward severity tier
   const getSeverityTier = (ward) => {
     const { totalComplaints, openCount, resolutionRate, wardNumber } = ward;
@@ -180,7 +190,7 @@ const WardHeatmap = ({
                 </span>
                 <span className="font-bold text-slate-800 flex items-center gap-1 truncate min-w-0 max-w-[120px] sm:max-w-[140px] text-[11px] sm:text-xs">
                   <span className="shrink-0">{getCategoryEmoji(ward.topCategory)}</span>
-                  <span className="truncate">{ward.topCategory}</span>
+                  <span className="truncate">{getCategoryDisplay(ward.topCategory)}</span>
                 </span>
               </div>
 

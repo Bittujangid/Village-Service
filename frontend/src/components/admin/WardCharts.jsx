@@ -37,14 +37,14 @@ const CustomBarTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-const CustomPieTooltip = ({ active, payload }) => {
+const CustomPieTooltip = ({ active, payload, isHi }) => {
   if (active && payload && payload.length) {
     const data = payload[0];
     return (
       <div className="bg-white/95 backdrop-blur-xs p-3 rounded-xl border border-slate-200 shadow-md text-xs">
         <p className="font-bold text-slate-900">{data.name}</p>
         <p className="text-slate-600 mt-0.5">
-          कुल: <strong className="text-slate-900">{data.value}</strong> ({data.payload.percentage || 0}%)
+          {isHi ? 'कुल' : 'Total'}: <strong className="text-slate-900">{data.value}</strong> ({data.payload.percentage || 0}%)
         </p>
       </div>
     );
@@ -54,18 +54,29 @@ const CustomPieTooltip = ({ active, payload }) => {
 
 const WardCharts = ({ wardBreakdown = [], categoryDistribution = [] }) => {
   const { lang, t } = useLang();
+  const isHi = lang === 'hi';
+
+  const getCategoryLabel = (cat) => {
+    if (!cat) return isHi ? 'अन्य' : 'Other';
+    if (cat.includes('पानी') || cat.toLowerCase().includes('water')) return isHi ? 'पानी / हैंडपंप' : 'Water Supply';
+    if (cat.includes('बिजली') || cat.toLowerCase().includes('electric')) return isHi ? 'बिजली / स्ट्रीट लाइट' : 'Electricity & Lights';
+    if (cat.includes('सड़क') || cat.toLowerCase().includes('road')) return isHi ? 'सड़क / नाली' : 'Road & Drainage';
+    if (cat.includes('सफाई') || cat.toLowerCase().includes('sanitat')) return isHi ? 'सफाई व्यवस्था' : 'Sanitation & Cleanliness';
+    if (cat.includes('अन्य') || cat.toLowerCase().includes('other')) return isHi ? 'अन्य' : 'Other';
+    return cat;
+  };
 
   // Prepare bar chart data for Wards 1 to 7
   const barData = wardBreakdown.map((w) => ({
-    name: lang === 'hi' ? `वार्ड ${w.wardNumber}` : `Ward ${w.wardNumber}`,
-    [lang === 'hi' ? 'निस्तारित (Resolved)' : 'Resolved']: w.resolved,
-    [lang === 'hi' ? 'प्रगति पर (In Progress)' : 'In Progress']: w.inProgress,
-    [lang === 'hi' ? 'लंबित (Pending)' : 'Pending']: w.pending,
+    name: isHi ? `वार्ड ${w.wardNumber}` : `Ward ${w.wardNumber}`,
+    [isHi ? 'निस्तारित' : 'Solved']: w.resolved,
+    [isHi ? 'प्रगति पर' : 'In Progress']: w.inProgress,
+    [isHi ? 'लंबित' : 'Pending']: w.pending,
   }));
 
   // Prepare pie chart data
   const pieData = categoryDistribution.map((item) => ({
-    name: item.category,
+    name: getCategoryLabel(item.category),
     value: item.count,
     percentage: item.percentage
   }));
@@ -114,17 +125,17 @@ const WardCharts = ({ wardBreakdown = [], categoryDistribution = [] }) => {
                 iconType="circle"
               />
               <Bar 
-                dataKey={lang === 'hi' ? 'निस्तारित (Resolved)' : 'Resolved'} 
+                dataKey={isHi ? 'निस्तारित' : 'Solved'} 
                 fill="#059669" 
                 radius={[4, 4, 0, 0]} 
               />
               <Bar 
-                dataKey={lang === 'hi' ? 'प्रगति पर (In Progress)' : 'In Progress'} 
+                dataKey={isHi ? 'प्रगति पर' : 'In Progress'} 
                 fill="#3b82f6" 
                 radius={[4, 4, 0, 0]} 
               />
               <Bar 
-                dataKey={lang === 'hi' ? 'लंबित (Pending)' : 'Pending'} 
+                dataKey={isHi ? 'लंबित' : 'Pending'} 
                 fill="#f59e0b" 
                 radius={[4, 4, 0, 0]} 
               />
@@ -145,7 +156,7 @@ const WardCharts = ({ wardBreakdown = [], categoryDistribution = [] }) => {
                 {t.categoryDistributionChart}
               </h4>
               <p className="text-[11px] text-slate-500">
-                {lang === 'hi' ? 'पंचायत स्तर पर कुल समस्याओं का वर्गीकरण' : 'Panchayat-wide issue category ratio'}
+                {isHi ? 'पंचायत स्तर पर कुल समस्याओं का वर्गीकरण' : 'Panchayat-wide issue category ratio'}
               </p>
             </div>
           </div>
@@ -168,7 +179,7 @@ const WardCharts = ({ wardBreakdown = [], categoryDistribution = [] }) => {
                     <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip content={<CustomPieTooltip />} />
+                <Tooltip content={<CustomPieTooltip isHi={isHi} />} />
                 <Legend 
                   wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} 
                   iconType="circle"
