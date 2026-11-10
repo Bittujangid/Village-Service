@@ -10,7 +10,11 @@ import {
   User, 
   ExternalLink,
   ShieldCheck,
-  SearchCheck
+  SearchCheck,
+  Hash,
+  Phone,
+  Info,
+  RefreshCw
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { trackComplaint } from '../api/complaints';
@@ -21,12 +25,23 @@ import { useLang } from '../context/LanguageContext';
 
 const StatusTracker = ({ initialQuery = '' }) => {
   const { lang, t } = useLang();
+  const [lookupMode, setLookupMode] = useState('trackingId'); // 'trackingId' | 'phone'
   const [query, setQuery] = useState(initialQuery);
   const [loading, setLoading] = useState(false);
   const [complaint, setComplaint] = useState(null);
   const [complaintList, setComplaintList] = useState([]);
   const [searched, setSearched] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  const handleModeChange = (mode) => {
+    if (mode === lookupMode) return;
+    setLookupMode(mode);
+    setQuery('');
+    setSearched(false);
+    setErrorMessage('');
+    setComplaint(null);
+    setComplaintList([]);
+  };
 
   const handleSearch = async (e) => {
     e?.preventDefault();
@@ -37,7 +52,20 @@ const StatusTracker = ({ initialQuery = '' }) => {
       .trim();
 
     if (!queryId) {
-      toast.error(lang === 'hi' ? 'कृपया ट्रैकिंग ID या मोबाइल नंबर दर्ज करें' : 'Please enter Tracking ID or Mobile number');
+      toast.error(
+        lookupMode === 'trackingId'
+          ? (lang === 'hi' ? 'कृपया मान्य ट्रैकिंग ID दर्ज करें' : 'Please enter a valid Tracking ID')
+          : (lang === 'hi' ? 'कृपया 10 अंकों का मोबाइल नंबर दर्ज करें' : 'Please enter 10-digit mobile number')
+      );
+      return;
+    }
+
+    if (lookupMode === 'phone' && !/^[6-9]\d{9}$/.test(queryId)) {
+      toast.error(
+        lang === 'hi'
+          ? 'कृपया 10 अंकों का वैध मोबाइल नंबर दर्ज करें'
+          : 'Please enter a valid 10-digit mobile number'
+      );
       return;
     }
 
@@ -107,44 +135,107 @@ const StatusTracker = ({ initialQuery = '' }) => {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 space-y-6">
-      {/* Search Input Box */}
-      <form onSubmit={handleSearch} className="space-y-3">
-        <label htmlFor="track-query" className="block text-sm font-bold text-slate-800">
-          {lang === 'hi' ? 'शिकायत खोजें' : 'Search Complaint'}
-          <span className="text-xs font-normal text-slate-500 ml-2">
-            ({lang === 'hi' ? 'ट्रैकिंग ID या मोबाइल' : 'Tracking ID or Phone'})
-          </span>
-        </label>
-        <div className="flex flex-col sm:flex-row gap-2.5">
+    <div className="flex-1 overflow-y-auto overscroll-contain px-4 sm:px-6 py-4 space-y-4 sm:space-y-5">
+      {/* 1. Segmented Pill Switcher */}
+      <div className="p-1 bg-slate-100 rounded-xl flex items-center gap-1">
+        <button
+          type="button"
+          onClick={() => handleModeChange('trackingId')}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs sm:text-sm transition-all duration-200 select-none cursor-pointer ${
+            lookupMode === 'trackingId'
+              ? 'bg-white text-slate-900 font-bold shadow-xs'
+              : 'text-slate-600 hover:text-slate-900 font-medium hover:bg-slate-200/50'
+          }`}
+        >
+          <Hash className="w-3.5 h-3.5 text-blue-600" />
+          <span>{lang === 'hi' ? 'ट्रैकिंग आईडी द्वारा' : 'By Tracking ID'}</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleModeChange('phone')}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs sm:text-sm transition-all duration-200 select-none cursor-pointer ${
+            lookupMode === 'phone'
+              ? 'bg-white text-slate-900 font-bold shadow-xs'
+              : 'text-slate-600 hover:text-slate-900 font-medium hover:bg-slate-200/50'
+          }`}
+        >
+          <Phone className="w-3.5 h-3.5 text-blue-600" />
+          <span>{lang === 'hi' ? 'मोबाइल नंबर द्वारा' : 'By Mobile Number'}</span>
+        </button>
+      </div>
+
+      {/* 2. Input & Unique Rounded Action Button */}
+      <form onSubmit={handleSearch} className="space-y-2">
+        <div className="flex flex-col sm:flex-row items-stretch gap-2.5">
           <div className="relative flex-1">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
+              {lookupMode === 'trackingId' ? (
+                <Hash className="w-4 h-4 text-slate-400" />
+              ) : (
+                <Phone className="w-4 h-4 text-slate-400" />
+              )}
+            </div>
+
             <input
               id="track-query"
-              type="text"
+              type={lookupMode === 'phone' ? 'tel' : 'text'}
+              inputMode={lookupMode === 'phone' ? 'numeric' : 'text'}
+              maxLength={lookupMode === 'phone' ? 10 : 25}
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                const val = lookupMode === 'phone' ? e.target.value.replace(/\D/g, '') : e.target.value;
+                setQuery(val);
+              }}
               onBlur={handleInputBlur}
-              placeholder={t.trackerPlaceholder}
-              className="w-full min-h-[48px] pl-11 pr-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-900 focus:border-blue-900 text-sm sm:text-base transition-colors"
+              placeholder={
+                lookupMode === 'trackingId'
+                  ? (lang === 'hi' ? 'ट्रैकिंग आईडी दर्ज करें (उदा. GR-JZ11)' : 'Enter Tracking ID (e.g. GR-JZ11)')
+                  : (lang === 'hi' ? '10 अंकों का मोबाइल नंबर दर्ज करें' : 'Enter 10-digit mobile number')
+              }
+              className="w-full min-h-[46px] pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 bg-slate-50/60 hover:bg-white focus:bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition text-sm sm:text-base font-medium"
             />
           </div>
+
           <button
             type="submit"
             disabled={loading}
-            className="min-h-[48px] px-6 py-3 rounded-lg bg-blue-900 hover:bg-blue-950 active:bg-blue-950 text-white font-semibold text-sm sm:text-base shadow-sm flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all active:scale-[0.98]"
+            className="group w-full sm:w-auto min-h-[46px] px-6 py-2.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.97] text-white font-bold text-sm sm:text-base shadow-[0_4px_14px_0_rgba(37,99,235,0.35)] flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed select-none"
           >
             {loading ? (
-              <span>{t.trackerSearching}</span>
+              <>
+                <RefreshCw className="w-4 h-4 animate-spin shrink-0" />
+                <span>{lang === 'hi' ? 'खोज रहे हैं...' : 'Searching...'}</span>
+              </>
             ) : (
               <>
-                <SearchCheck className="w-5 h-5" />
-                <span>{t.trackerBtn}</span>
+                <SearchCheck className="w-4 h-4 shrink-0 group-hover:scale-110 transition-transform duration-200" />
+                <span>{lang === 'hi' ? 'स्थिति जांचें' : 'Check Status'}</span>
               </>
             )}
           </button>
         </div>
       </form>
+
+      {/* 3. Helper Tip Card */}
+      <div className="flex items-start gap-2.5 p-3 rounded-xl bg-blue-50/70 border border-blue-100 text-blue-950 text-xs">
+        <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+        <div className="leading-relaxed">
+          {lookupMode === 'trackingId' ? (
+            <span>
+              {lang === 'hi'
+                ? 'SMS द्वारा प्राप्त 6-अक्षरों की संदर्भ आईडी दर्ज करें जैसे GR-JZ11 या GR-1024।'
+                : 'Enter the 6-character reference ID received via SMS like GR-JZ11 or tracking number like GR-1024.'}
+            </span>
+          ) : (
+            <span>
+              {lang === 'hi'
+                ? 'शिकायत दर्ज करते समय उपयोग किया गया 10 अंकों का पंजीकृत मोबाइल नंबर दर्ज करें।'
+                : 'Enter the 10-digit registered mobile number used while filing the complaint to view all linked complaints.'}
+            </span>
+          )}
+        </div>
+      </div>
 
       {/* Loading Spinner */}
       {loading && <LoadingSpinner label={lang === 'hi' ? 'शिकायत का विवरण खोजा जा रहा है...' : 'Searching complaint records...'} />}

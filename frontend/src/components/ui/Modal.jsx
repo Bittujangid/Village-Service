@@ -74,7 +74,7 @@ const Modal = ({
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition active:scale-95 shrink-0 cursor-pointer"
+              className="w-11 h-11 flex items-center justify-center rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition active:scale-95 shrink-0 cursor-pointer"
               aria-label="बंद करें (Close modal)"
             >
               <X className="w-5 h-5" />

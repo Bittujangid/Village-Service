@@ -6,7 +6,7 @@ import VillageDirectory from '../components/VillageDirectory';
 import Footer from '../components/Footer';
 import Modal from '../components/ui/Modal';
 import { useLang } from '../context/LanguageContext';
-import { SearchCheck, FilePlus2, Sparkles, FileText, Search } from 'lucide-react';
+import { SearchCheck, FilePlus2, Sparkles, FileText, Search, ShieldCheck } from 'lucide-react';
 
 // Lazy-load modal forms so landing page loads instantly without heavy scripts
 const GrievanceForm = lazy(() => import('../components/GrievanceForm'));
@@ -70,9 +70,9 @@ const CitizenHome = () => {
       <Modal
         isOpen={showTrackModal}
         onClose={() => setShowTrackModal(false)}
-        title={t.trackModalTitle}
+        title={lang === 'hi' ? 'शिकायत की स्थिति जांचें' : 'Track Complaint Status'}
         subtitle={lang === 'hi' ? 'ग्राम पंचायत सहरी ई-सेवा' : 'Gram Panchayat Sahari Civic Portal'}
-        icon={<Search className="w-4 h-4" />}
+        icon={<ShieldCheck className="w-4 h-4" />}
         maxWidth="max-w-2xl"
       >
         <Suspense fallback={<ModalLoader />}>
