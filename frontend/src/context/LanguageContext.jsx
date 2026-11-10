@@ -42,7 +42,7 @@ export const translations = {
     quickTrackSubtitle: 'अपनी ट्रैकिंग आईडी (जैसे GR-1024) या 10 अंकों का मोबाइल नंबर दर्ज कर स्थिति देखें',
 
     // Grievance / Complaint Form
-    formModalTitle: '📝 नई नागरिक शिकायत दर्ज करें',
+    formModalTitle: 'नई शिकायत दर्ज करें',
     formSubtitle: 'नई नागरिक शिकायत पंजीकरण',
     labelName: 'पूरा नाम',
     labelNameHint: 'उदा. रामेश्वर शर्मा',
@@ -83,7 +83,7 @@ export const translations = {
     catOther: 'अन्य समस्या',
 
     // Status Tracker
-    trackModalTitle: '🔍 शिकायत की स्थिति देखें',
+    trackModalTitle: 'शिकायत की स्थिति देखें',
     trackerTitle: 'शिकायत की स्थिति जांचें',
     trackerSubtitle: 'शिकायत की वास्तविक स्थिति देखें',
     trackerPlaceholder: 'ट्रैकिंग ID (उदा. GR-1024) या मोबाइल नंबर दर्ज करें',
@@ -231,7 +231,7 @@ export const translations = {
     quickTrackSubtitle: 'Enter your Tracking ID (e.g. GR-1024) or 10-digit mobile number to track progress',
 
     // Grievance / Complaint Form
-    formModalTitle: '📝 Register New Complaint',
+    formModalTitle: 'Register New Complaint',
     formSubtitle: 'New Complaint Registration',
     labelName: 'Full Name',
     labelNameHint: 'e.g. Rameshwar Sharma',
@@ -272,7 +272,7 @@ export const translations = {
     catOther: 'Other Issue',
 
     // Status Tracker
-    trackModalTitle: '🔍 Track Complaint Status',
+    trackModalTitle: 'Track Complaint Status',
     trackerTitle: 'Check Complaint Status',
     trackerSubtitle: 'Track your Complaint Status',
     trackerPlaceholder: 'Enter Tracking ID (e.g. GR-1024) or Mobile Number',

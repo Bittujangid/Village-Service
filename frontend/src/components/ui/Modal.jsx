@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X } from 'lucide-react';
+import { X, FileText } from 'lucide-react';
 
 /**
  * Responsive Modal Component
@@ -11,7 +11,15 @@ import { X } from 'lucide-react';
  *               focus changes NEVER shift the modal off-screen or leave blank dead zones.
  * Desktop (sm+): Centered floating dialog with max-h-[90vh], rounded-2xl, and backdrop blur.
  */
-const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl' }) => {
+const Modal = ({
+  isOpen,
+  onClose,
+  title,
+  subtitle,
+  icon,
+  children,
+  maxWidth = 'max-w-2xl',
+}) => {
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === 'Escape' && isOpen) onClose();
@@ -45,19 +53,33 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl' }) => 
         className={`w-full h-full sm:h-auto sm:max-h-[90vh] ${maxWidth} bg-white sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Sticky Modal Header */}
-        <div className="shrink-0 flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-slate-200 bg-white">
-          <h2 className="text-base sm:text-xl font-bold text-slate-800 leading-tight truncate pr-2">
-            {title}
-          </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex items-center justify-center w-9 h-9 rounded-full text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-900 shrink-0 cursor-pointer"
-            aria-label="बंद करें (Close modal)"
-          >
-            <X className="w-5 h-5 sm:w-6 sm:h-6" />
-          </button>
+        {/* Sticky Civic Header */}
+        <div className="shrink-0 px-4 sm:px-6 py-3.5 border-b border-slate-100 bg-white">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 shrink-0">
+                {icon || <FileText className="w-4 h-4" />}
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-base font-bold text-slate-900 tracking-tight truncate">
+                  {title}
+                </h3>
+                {subtitle && (
+                  <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                    {subtitle}
+                  </p>
+                )}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition active:scale-95 shrink-0 cursor-pointer"
+              aria-label="बंद करें (Close modal)"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Content area: flex-1 flex flex-col min-h-0 so child form can scroll independently */}

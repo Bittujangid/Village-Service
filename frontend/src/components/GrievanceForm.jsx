@@ -614,11 +614,11 @@ const GrievanceForm = ({ onSuccessClose }) => {
       <div id="recaptcha-container"></div>
 
       {/* ── Scrollable Form Body ── */}
-      <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 space-y-5">
+      <div className="flex-1 overflow-y-auto overscroll-contain px-4 sm:px-6 py-4 space-y-5">
 
         {/* 1. Full Name */}
         <div>
-          <label htmlFor="grievance-name" className="block text-sm font-bold text-slate-800 mb-1">
+          <label htmlFor="grievance-name" className="block text-xs font-semibold text-slate-700 tracking-wide uppercase mb-1.5">
             {t.labelName} <span className="text-red-500">*</span>
           </label>
           <input
@@ -629,9 +629,11 @@ const GrievanceForm = ({ onSuccessClose }) => {
             onChange={(e) => handleChange('name', e.target.value)}
             onBlur={handleInputBlur}
             placeholder={t.labelNameHint}
-            className={`w-full min-h-[48px] px-4 py-2.5 rounded-lg border ${
-              errors.name ? 'border-red-500 bg-red-50/30' : 'border-slate-300 bg-white'
-            } text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-900 focus:border-blue-900 transition-colors text-base`}
+            className={`w-full min-h-[46px] px-3.5 py-2.5 rounded-xl border ${
+              errors.name
+                ? 'border-red-400 bg-red-50/30 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
+                : 'border-slate-300 bg-slate-50/50 hover:bg-white focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20'
+            } text-slate-900 placeholder-slate-400 focus:outline-none transition-all text-sm`}
           />
           {errors.name && (
             <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
@@ -643,25 +645,25 @@ const GrievanceForm = ({ onSuccessClose }) => {
 
         {/* 2. Mobile Number with OTP */}
         <div>
-          <div className="flex items-center justify-between mb-1">
-            <label htmlFor="grievance-phone" className="block text-sm font-bold text-slate-800">
+          <div className="flex items-center justify-between mb-1.5">
+            <label htmlFor="grievance-phone" className="block text-xs font-semibold text-slate-700 tracking-wide uppercase">
               {t.labelPhone} <span className="text-red-500">*</span>
             </label>
             {isPhoneVerified ? (
-              <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded">
-                <Check className="w-3.5 h-3.5" />
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-md">
+                <Check className="w-3 h-3 text-emerald-600" />
                 <span>{t.otpVerified}</span>
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded">
-                <KeyRound className="w-3 h-3 text-amber-700" />
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-700 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-md">
+                <KeyRound className="w-3 h-3 text-amber-600" />
                 <span>{lang === 'hi' ? 'OTP सत्यापन आवश्यक' : 'OTP Verification Required'}</span>
               </span>
             )}
           </div>
 
           <div className="relative flex items-center">
-            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-semibold text-sm pointer-events-none">
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-semibold text-sm pointer-events-none select-none">
               +91
             </span>
             <input
@@ -684,11 +686,13 @@ const GrievanceForm = ({ onSuccessClose }) => {
               }}
               onBlur={handleInputBlur}
               placeholder={t.labelPhoneHint}
-              className={`w-full min-h-[48px] pl-12 ${
-                isPhoneVerified ? 'pr-20 bg-slate-50 border-slate-300' : 'pr-28 bg-white'
-              } py-2.5 rounded-lg border ${
-                errors.phone && !isPhoneVerified ? 'border-red-500 bg-red-50/30' : 'border-slate-300'
-              } text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-900 focus:border-blue-900 transition-colors text-base font-mono`}
+              className={`w-full min-h-[46px] pl-12 ${
+                isPhoneVerified ? 'pr-20 bg-slate-100/70 border-slate-300 text-slate-700' : 'pr-28 bg-slate-50/50 hover:bg-white focus:bg-white text-slate-900'
+              } py-2.5 rounded-xl border ${
+                errors.phone && !isPhoneVerified
+                  ? 'border-red-400 bg-red-50/30 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
+                  : 'border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20'
+              } placeholder-slate-400 focus:outline-none transition-all text-sm font-mono`}
             />
 
             {/* Inline Action Button */}
@@ -702,10 +706,10 @@ const GrievanceForm = ({ onSuccessClose }) => {
                     setOtpSent(false);
                     setOtpCode('');
                   }}
-                  className="px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-blue-900 rounded-md hover:bg-slate-100 transition-colors flex items-center gap-1"
+                  className="px-2.5 py-1 text-xs font-semibold text-slate-600 hover:text-blue-900 rounded-md hover:bg-slate-100 transition-colors flex items-center gap-1 cursor-pointer"
                   title={lang === 'hi' ? 'नंबर बदलें' : 'Change Phone'}
                 >
-                  <Edit2 className="w-3.5 h-3.5" />
+                  <Edit2 className="w-3 h-3" />
                   <span>{lang === 'hi' ? 'बदलें' : 'Change'}</span>
                 </button>
               ) : (
@@ -713,7 +717,7 @@ const GrievanceForm = ({ onSuccessClose }) => {
                   type="button"
                   disabled={!isPhoneComplete || isSendingOtp}
                   onClick={handleSendOtp}
-                  className="px-3 py-1.5 bg-blue-900 hover:bg-blue-950 disabled:bg-slate-200 disabled:text-slate-400 active:scale-95 text-white text-xs font-semibold rounded-md shadow-xs transition-all flex items-center gap-1"
+                  className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-400 active:scale-95 text-white text-xs font-semibold rounded-lg shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed"
                 >
                   {isSendingOtp ? (
                     <>
@@ -737,13 +741,13 @@ const GrievanceForm = ({ onSuccessClose }) => {
 
           {/* OTP Verification Dropdown Box */}
           {otpSent && !isPhoneVerified && (
-            <div className="mt-3 p-3 sm:p-3.5 bg-blue-50/70 border border-blue-200 rounded-xl space-y-2.5 animate-fadeIn overflow-hidden">
-              <div className="flex items-center justify-between text-xs font-bold text-blue-950">
-                <span className="flex items-center gap-1.5">
-                  <KeyRound className="w-4 h-4 text-blue-900 shrink-0" />
+            <div className="mt-3 p-3.5 sm:p-4 bg-slate-50 border border-blue-200/80 rounded-xl space-y-3 animate-fadeIn shadow-2xs">
+              <div className="flex items-center justify-between text-xs font-bold text-slate-800">
+                <span className="flex items-center gap-1.5 text-blue-900">
+                  <KeyRound className="w-4 h-4 shrink-0 text-blue-600" />
                   <span>{t.otpLabel}</span>
                 </span>
-                <span className="text-[11px] font-normal text-slate-500">
+                <span className="text-[11px] font-mono text-slate-500 font-semibold">
                   +91 {formData.phone}
                 </span>
               </div>
@@ -758,13 +762,13 @@ const GrievanceForm = ({ onSuccessClose }) => {
                   onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
                   onBlur={handleInputBlur}
                   placeholder="------"
-                  className="flex-1 min-w-0 w-full sm:w-auto min-h-[42px] px-3 py-2 bg-white border border-blue-300 rounded-lg text-slate-900 font-mono text-center text-lg tracking-widest font-bold focus:outline-none focus:ring-1 focus:ring-blue-900 focus:border-blue-900"
+                  className="flex-1 min-w-0 w-full sm:w-auto min-h-[42px] px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 font-mono text-center text-lg tracking-widest font-bold focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition"
                 />
                 <button
                   type="button"
                   disabled={otpCode.length !== 6 || isVerifyingOtp}
                   onClick={handleVerifyOtp}
-                  className="w-full sm:w-auto shrink-0 min-h-[42px] px-4 py-2 bg-blue-900 hover:bg-blue-950 disabled:bg-slate-300 text-white font-semibold text-xs sm:text-sm rounded-lg transition-all flex items-center justify-center gap-1.5 shadow-xs active:scale-95 whitespace-nowrap cursor-pointer disabled:cursor-not-allowed"
+                  className="w-full sm:w-auto shrink-0 min-h-[42px] px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold text-xs sm:text-sm rounded-lg transition-all flex items-center justify-center gap-1.5 shadow-2xs active:scale-95 whitespace-nowrap cursor-pointer disabled:cursor-not-allowed"
                 >
                   {isVerifyingOtp ? (
                     <RefreshCw className="w-4 h-4 animate-spin shrink-0" />
@@ -778,14 +782,14 @@ const GrievanceForm = ({ onSuccessClose }) => {
               <div className="flex items-center justify-between text-[11px] text-slate-500 pt-0.5">
                 <span>
                   {resendCooldown > 0 ? (
-                    <span className="text-slate-500">
+                    <span className="text-slate-500 font-medium">
                       {lang === 'hi' ? `पुनः भेजें (${resendCooldown}s)` : `Resend in ${resendCooldown}s`}
                     </span>
                   ) : (
                     <button
                       type="button"
                       onClick={handleSendOtp}
-                      className="text-blue-900 font-bold hover:underline"
+                      className="text-blue-600 font-semibold hover:underline cursor-pointer"
                     >
                       {t.resendOtp}
                     </button>
@@ -793,7 +797,7 @@ const GrievanceForm = ({ onSuccessClose }) => {
                 </span>
                 <span className="text-slate-400">
                   {isDevOtp ? (
-                    <span className="text-blue-900 font-semibold">Dev Mode (123456)</span>
+                    <span className="text-blue-600 font-semibold">Dev Mode (123456)</span>
                   ) : (
                     'SMS OTP via Firebase'
                   )}
@@ -805,13 +809,20 @@ const GrievanceForm = ({ onSuccessClose }) => {
 
         {/* 3. Ward Selection (Pills 1-7) */}
         <div>
-          <label className="block text-sm font-bold text-slate-800 mb-1">
-            {t.labelWard} (1-7) <span className="text-red-500">*</span>
-          </label>
-          <p className="text-xs text-slate-500 mb-2.5">
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs font-semibold text-slate-700 tracking-wide uppercase">
+              {t.labelWard} (1-7) <span className="text-red-500">*</span>
+            </label>
+            {formData.ward && (
+              <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200/60">
+                {lang === 'hi' ? `वार्ड ${formData.ward} चयनित` : `Ward ${formData.ward} Selected`}
+              </span>
+            )}
+          </div>
+          <p className="text-[11px] text-slate-500 mb-2">
             {lang === 'hi'
-              ? 'कृपया ग्राम पंचायत सहरी का वह वार्ड चुनें जहां यह समस्या उत्पन्न हुई है:'
-              : 'Please select the ward in Gram Panchayat Sahari where the problem is located:'}
+              ? 'ग्राम पंचायत सहरी का वह वार्ड चुनें जहां समस्या स्थित है:'
+              : 'Select the ward in Gram Panchayat Sahari where the problem is located:'}
           </p>
           <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
             {WARDS.map((w) => {
@@ -822,9 +833,9 @@ const GrievanceForm = ({ onSuccessClose }) => {
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => handleChange('ward', w)}
-                  className={`min-h-[44px] px-3 py-2 rounded-lg text-xs sm:text-sm font-bold border transition-all flex items-center justify-center ${
+                  className={`min-h-[42px] px-2 py-2 rounded-xl text-xs sm:text-sm font-bold border transition-all duration-150 flex items-center justify-center cursor-pointer active:scale-95 ${
                     isSelected
-                      ? 'bg-blue-900 text-white border-blue-900 shadow-xs ring-2 ring-blue-900/20'
+                      ? 'bg-blue-600 text-white border-blue-600 shadow-xs ring-2 ring-blue-600/20'
                       : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-slate-300'
                   }`}
                 >
@@ -843,7 +854,7 @@ const GrievanceForm = ({ onSuccessClose }) => {
 
         {/* 4. Category Radio Cards */}
         <div>
-          <label className="block text-sm font-bold text-slate-800 mb-1.5">
+          <label className="block text-xs font-semibold text-slate-700 tracking-wide uppercase mb-1.5">
             {t.labelCategory} <span className="text-red-500">*</span>
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -856,35 +867,30 @@ const GrievanceForm = ({ onSuccessClose }) => {
                   tabIndex={0}
                   aria-pressed={isSelected}
                   aria-label={cat.label}
-                  onMouseDown={(e) => {
-                    // Prevent focus-shift that causes Android Chrome modal collapse
-                    e.preventDefault();
-                  }}
-                  onClick={() => {
-                    handleChange('category', cat.id);
-                  }}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => handleChange('category', cat.id)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
                       handleChange('category', cat.id);
                     }
                   }}
-                  className={`flex items-center gap-3 p-3.5 rounded-xl border-2 cursor-pointer transition-all select-none ${
+                  className={`flex items-center gap-3 p-3 rounded-xl border transition-all select-none cursor-pointer active:scale-[0.99] ${
                     isSelected
-                      ? 'border-blue-900 bg-blue-50/60 shadow-2xs'
-                      : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                      ? 'border-blue-600 bg-blue-50/50 ring-1 ring-blue-600/30 shadow-2xs'
+                      : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/60'
                   }`}
                 >
                   <span
                     className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
-                      isSelected ? 'border-blue-900 bg-blue-900' : 'border-slate-300 bg-white'
+                      isSelected ? 'border-blue-600 bg-blue-600' : 'border-slate-300 bg-white'
                     }`}
                   >
                     {isSelected && (
                       <span className="w-1.5 h-1.5 rounded-full bg-white block" />
                     )}
                   </span>
-                  <span className="text-2xl flex-shrink-0" role="img" aria-label={cat.label}>
+                  <span className="text-xl flex-shrink-0" role="img" aria-label={cat.label}>
                     {cat.emoji}
                   </span>
                   <div className="min-w-0">
@@ -909,9 +915,14 @@ const GrievanceForm = ({ onSuccessClose }) => {
 
         {/* 5. Description Textarea */}
         <div>
-          <label htmlFor="grievance-desc" className="block text-sm font-bold text-slate-800 mb-1">
-            {t.labelDescription} <span className="text-red-500">*</span>
-          </label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label htmlFor="grievance-desc" className="block text-xs font-semibold text-slate-700 tracking-wide uppercase">
+              {t.labelDescription} <span className="text-red-500">*</span>
+            </label>
+            <span className="text-[11px] font-mono text-slate-400">
+              {formData.description.length} {lang === 'hi' ? 'अक्षर' : 'chars'}
+            </span>
+          </div>
           <textarea
             id="grievance-desc"
             rows={4}
@@ -920,9 +931,11 @@ const GrievanceForm = ({ onSuccessClose }) => {
             onChange={(e) => handleChange('description', e.target.value)}
             onBlur={handleInputBlur}
             placeholder={t.labelDescriptionHint}
-            className={`w-full p-3.5 rounded-lg border resize-none ${
-              errors.description ? 'border-red-500 bg-red-50/30' : 'border-slate-300 bg-white'
-            } text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-900 focus:border-blue-900 transition-colors text-base`}
+            className={`w-full p-3.5 rounded-xl border resize-none ${
+              errors.description
+                ? 'border-red-400 bg-red-50/30 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
+                : 'border-slate-300 bg-slate-50/50 hover:bg-white focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20'
+            } text-slate-900 placeholder-slate-400 focus:outline-none transition-all text-sm`}
           />
           <div className="flex items-center justify-between mt-1">
             {errors.description ? (
@@ -935,23 +948,20 @@ const GrievanceForm = ({ onSuccessClose }) => {
                 {lang === 'hi' ? 'न्यूनतम 10 अक्षर आवश्यक हैं' : 'Minimum 10 characters required'}
               </span>
             )}
-            <span className="text-[11px] text-slate-400">
-              {formData.description.length} {lang === 'hi' ? 'अक्षर' : 'chars'}
-            </span>
           </div>
         </div>
 
         {/* 6. Photo Upload */}
         <div>
-          <label className="block text-sm font-bold text-slate-800 mb-1">
+          <label className="block text-xs font-semibold text-slate-700 tracking-wide uppercase mb-1.5">
             {t.labelPhoto} <span className="text-red-500">*</span>
           </label>
-          <p className="text-xs text-slate-500 mb-2">
+          <p className="text-[11px] text-slate-500 mb-2">
             {t.labelPhotoHint}
           </p>
 
           {imagePreview ? (
-            <div className="relative inline-block border-2 border-slate-300 rounded-xl overflow-hidden p-1 bg-white shadow-2xs">
+            <div className="relative inline-block border border-slate-200 rounded-xl overflow-hidden p-1 bg-white shadow-2xs">
               <img
                 src={imagePreview}
                 alt="Selected Preview"
@@ -960,26 +970,30 @@ const GrievanceForm = ({ onSuccessClose }) => {
               <button
                 type="button"
                 onClick={handleRemoveImage}
-                className="absolute top-2 right-2 bg-red-600 text-white p-1.5 rounded-full shadow-md hover:bg-red-700 transition-colors focus:outline-none"
+                className="absolute top-2.5 right-2.5 bg-rose-600 hover:bg-rose-700 text-white p-1.5 rounded-full shadow-md transition-colors focus:outline-none cursor-pointer"
                 title={lang === 'hi' ? 'फोटो हटाएं' : 'Remove photo'}
               >
-                <X className="w-4 h-4" />
+                <X className="w-3.5 h-3.5" />
               </button>
-              <p className="text-[11px] text-emerald-800 font-semibold text-center mt-1">
-                {lang === 'hi' ? 'फोटो जोड़ी गई' : 'Photo Attached'}
+              <p className="text-[11px] text-emerald-700 font-semibold text-center mt-1">
+                {lang === 'hi' ? 'फोटो संलग्न' : 'Photo Attached'}
               </p>
             </div>
           ) : (
-            <label className={`flex flex-col items-center justify-center border-2 border-dashed ${
-              errors.photo ? 'border-red-400 bg-red-50/20' : 'border-slate-300 bg-slate-50 hover:bg-blue-50/30 hover:border-blue-900'
-            } rounded-xl p-6 cursor-pointer transition-all group`}>
-              <div className="w-12 h-12 rounded-full bg-slate-100 text-blue-900 flex items-center justify-center group-hover:scale-105 transition-transform mb-2">
-                <Camera className="w-6 h-6" />
+            <label
+              className={`flex flex-col items-center justify-center border-2 border-dashed ${
+                errors.photo
+                  ? 'border-red-400 bg-red-50/20'
+                  : 'border-slate-300 bg-slate-50/50 hover:bg-blue-50/30 hover:border-blue-500'
+              } rounded-xl p-5 cursor-pointer transition-all group`}
+            >
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center group-hover:scale-105 transition-transform mb-2">
+                <Camera className="w-5 h-5" />
               </div>
-              <span className="text-sm font-bold text-slate-700 group-hover:text-blue-950">
+              <span className="text-xs sm:text-sm font-bold text-slate-700 group-hover:text-blue-900">
                 {lang === 'hi' ? 'फोटो चुनें या कैमरे से खींचें' : 'Select photo or take a picture'}
               </span>
-              <span className="text-xs text-slate-400 mt-0.5">
+              <span className="text-[11px] text-slate-400 mt-0.5">
                 PNG, JPG, JPEG (Max 10MB)
               </span>
               <input
@@ -1003,22 +1017,22 @@ const GrievanceForm = ({ onSuccessClose }) => {
 
       {/* ── Sticky Submit Footer ── */}
       <div
-        className="shrink-0 px-4 pt-3 border-t border-slate-100 bg-white"
+        className="shrink-0 px-4 sm:px-6 pt-3 border-t border-slate-100 bg-white"
         style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
       >
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full min-h-[52px] px-6 py-3.5 rounded-xl bg-blue-900 hover:bg-blue-950 active:scale-[0.98] disabled:opacity-60 text-white font-bold text-base sm:text-lg shadow-sm transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-4 focus:ring-blue-900/30 cursor-pointer"
+          className="w-full min-h-[48px] px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-60 text-white font-bold text-sm sm:text-base shadow-sm transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-4 focus:ring-blue-600/30 cursor-pointer"
         >
           {isSubmitting ? (
             <>
-              <RefreshCw className="w-5 h-5 animate-spin" />
+              <RefreshCw className="w-4 h-4 animate-spin" />
               <span>{t.btnSubmitting}</span>
             </>
           ) : (
             <>
-              <Send className="w-5 h-5" />
+              <Send className="w-4 h-4" />
               <span>{t.btnSubmit}</span>
             </>
           )}
