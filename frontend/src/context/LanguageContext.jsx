@@ -75,6 +75,22 @@ export const translations = {
     fileAnother: 'अन्य शिकायत दर्ज करें',
     closeBtn: 'बंद करें',
 
+    // Digital Receipt Translations
+    receiptTitle: 'ग्राम पंचायत सहरी - ई-शिकायत पावती',
+    receiptSubtitle: 'लोक शिकायत निवारण प्रणाली',
+    receiptVerified: 'सफलतापूर्वक दर्ज (Registered)',
+    receiptTrackNote: 'स्कैन करके कभी भी स्थिति जांचें (Scan to track anytime)',
+    receiptDownload: 'पावती डाउनलोड करें',
+    receiptDownloading: 'डाउनलोड हो रहा है...',
+    receiptShareWhatsApp: 'WhatsApp पर शेयर करें',
+    receiptCopyId: 'आईडी कॉपी करें',
+    receiptCopied: 'कॉपी हो गया!',
+    receiptCitizen: 'नागरिक का नाम',
+    receiptWard: 'वार्ड नंबर',
+    receiptCategory: 'समस्या श्रेणी',
+    receiptDate: 'पंजीकरण समय',
+    receiptDone: 'समाप्त / बंद करें',
+
     // Categories
     catWater: 'पानी / हैंडपंप',
     catElectricity: 'बिजली / स्ट्रीट लाइट',
@@ -263,6 +279,22 @@ export const translations = {
     whatsappSave: 'Save to WhatsApp',
     fileAnother: 'Register Another Complaint',
     closeBtn: 'Close',
+
+    // Digital Receipt Translations
+    receiptTitle: 'Gram Panchayat Sahari - Civic Receipt',
+    receiptSubtitle: 'Public Grievance Redressal System',
+    receiptVerified: 'Successfully Registered',
+    receiptTrackNote: 'Scan to track status anytime',
+    receiptDownload: 'Download Receipt',
+    receiptDownloading: 'Downloading...',
+    receiptShareWhatsApp: 'Share on WhatsApp',
+    receiptCopyId: 'Copy ID',
+    receiptCopied: 'Copied!',
+    receiptCitizen: 'Citizen Name',
+    receiptWard: 'Ward Number',
+    receiptCategory: 'Category',
+    receiptDate: 'Registered Date & Time',
+    receiptDone: 'Done / Close',
 
     // Categories
     catWater: 'Water / Handpump',

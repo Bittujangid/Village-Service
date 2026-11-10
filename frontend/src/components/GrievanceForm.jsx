@@ -11,10 +11,16 @@ import {
   Sparkles,
   KeyRound,
   Check,
-  Edit2
+  Edit2,
+  Copy,
+  Download,
+  Landmark,
+  FileText
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
+import { QRCodeSVG } from 'qrcode.react';
+import html2canvas from 'html2canvas';
 import { auth } from '../config/firebase';
 import { submitComplaint } from '../api/complaints';
 import { useLang } from '../context/LanguageContext';
@@ -46,6 +52,9 @@ const GrievanceForm = ({ onSuccessClose }) => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successResult, setSuccessResult] = useState(null);
+  const [copiedId, setCopiedId] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const receiptRef = useRef(null);
 
   // Phone OTP States
   const [isPhoneVerified, setIsPhoneVerified] = useState(false);
@@ -508,7 +517,12 @@ const GrievanceForm = ({ onSuccessClose }) => {
 
       setSuccessResult({
         trackingId,
-        citizenName: formData.name,
+        citizenName: formData.name.trim(),
+        phone: formData.phone.trim(),
+        ward: formData.ward,
+        category: formData.category,
+        description: formData.description.trim(),
+        submittedAt: new Date().toISOString(),
       });
 
       toast.success(lang === 'hi' ? 'आपकी शिकायत सफलतापूर्वक दर्ज कर ली गई है!' : 'Complaint submitted successfully!');
@@ -545,61 +559,260 @@ const GrievanceForm = ({ onSuccessClose }) => {
     setResendCooldown(0);
   };
 
-  // ================= SUCCESS VIEW =================
+  // ================= SUCCESS VIEW (1-CLICK DIGITAL CIVIC RECEIPT) =================
   if (successResult) {
-    const shareMessage = `${lang === 'hi' ? 'मेरी ग्राम पंचायत शिकायत दर्ज हो गई है।' : 'My Gram Panchayat Complaint is registered.'}\n${lang === 'hi' ? 'ट्रैकिंग ID' : 'Tracking ID'}: ${successResult.trackingId}\n${t.navTitle} | GramSeva`;
+    const trackUrl = `${window.location.origin}?track=${encodeURIComponent(successResult.trackingId)}`;
+
+    const shareMessage = lang === 'hi'
+      ? `नमस्ते, मेरी शिकायत ग्राम पंचायत सहरी पोर्टल पर दर्ज हो गई है।\n\n📋 ट्रैकिंग आईडी: ${successResult.trackingId}\n🏛️ वार्ड: ${successResult.ward}\n🔍 स्थिति जांचें: ${trackUrl}`
+      : `Hello, my complaint is registered on Gram Panchayat Sahari Portal.\n\n📋 Tracking ID: ${successResult.trackingId}\n🏛️ Ward: ${successResult.ward}\n🔍 Track Status: ${trackUrl}`;
+
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
 
+    const formatReceiptDate = (isoString) => {
+      try {
+        const date = isoString ? new Date(isoString) : new Date();
+        return date.toLocaleString(lang === 'hi' ? 'hi-IN' : 'en-US', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        });
+      } catch {
+        return new Date().toLocaleDateString();
+      }
+    };
+
+    const handleCopyId = async () => {
+      try {
+        if (navigator?.clipboard?.writeText) {
+          await navigator.clipboard.writeText(successResult.trackingId);
+        } else {
+          const textarea = document.createElement('textarea');
+          textarea.value = successResult.trackingId;
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+        }
+        setCopiedId(true);
+        toast.success(t.receiptCopied || (lang === 'hi' ? 'ट्रैकिंग आईडी कॉपी हो गई!' : 'Tracking ID copied!'));
+        setTimeout(() => setCopiedId(false), 2500);
+      } catch (err) {
+        toast.error(lang === 'hi' ? 'कॉपी विफल रहा' : 'Failed to copy');
+      }
+    };
+
+    const handleDownloadReceipt = async () => {
+      if (!receiptRef.current) return;
+      setIsDownloading(true);
+      const loadingToast = toast.loading(t.receiptDownloading || (lang === 'hi' ? 'पावती तैयार हो रही है...' : 'Generating receipt slip...'));
+      try {
+        const canvas = await html2canvas(receiptRef.current, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+        });
+        const link = document.createElement('a');
+        link.download = `Sahari_Panchayat_Receipt_${successResult.trackingId}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        toast.dismiss(loadingToast);
+        toast.success(t.receiptDownloadSuccess || (lang === 'hi' ? 'पावती डाउनलोड हो गई!' : 'Receipt downloaded successfully!'));
+      } catch (err) {
+        console.error('Download receipt error:', err);
+        toast.dismiss(loadingToast);
+        toast.error(lang === 'hi' ? 'पावती डाउनलोड विफल हुआ' : 'Failed to download receipt');
+      } finally {
+        setIsDownloading(false);
+      }
+    };
+
     return (
-      <div className="flex-1 overflow-y-auto overscroll-contain p-4 pb-8 text-center animate-fadeIn">
-        {/* Checkmark Icon */}
-        <div className="w-20 h-20 mx-auto rounded-3xl bg-emerald-100/90 border-4 border-emerald-200 text-emerald-600 flex items-center justify-center shadow-lg mb-4">
-          <CheckCircle2 className="w-12 h-12 stroke-[2.5]" />
-        </div>
+      <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-3.5 sm:p-6 space-y-4 animate-fadeIn">
+        {/* Printable Official Civic Receipt Slip */}
+        <div
+          ref={receiptRef}
+          className="bg-white border-2 border-dashed border-slate-300 rounded-2xl p-4 sm:p-6 shadow-xs relative overflow-hidden text-left"
+        >
+          {/* Subtle Decorative Civic Gradient Glow */}
+          <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-50/60 rounded-full blur-xl pointer-events-none" />
 
-        <h3 className="text-2xl sm:text-3xl font-black text-slate-900">
-          {t.successTitle}
-        </h3>
-        <p className="mt-2 text-sm sm:text-base text-slate-600 max-w-md mx-auto">
-          {lang === 'hi'
-            ? `धन्यवाद ${successResult.citizenName}! आपकी समस्या ग्राम पंचायत के संबंधित विभाग को प्रेषित कर दी गई है।`
-            : `Thank you ${successResult.citizenName}! Your complaint has been forwarded to the concerned Panchayat department.`}
-        </p>
+          {/* Header with Civic Emblem */}
+          <div className="text-center pb-4 border-b border-slate-100 relative">
+            <div className="w-12 h-12 mx-auto rounded-xl bg-blue-50 border border-blue-200/90 text-blue-900 flex items-center justify-center shadow-2xs mb-2">
+              <Landmark className="w-6 h-6 stroke-[2.2]" />
+            </div>
+            <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-snug">
+              {t.receiptTitle || (lang === 'hi' ? 'ग्राम पंचायत सहरी - ई-शिकायत पावती' : 'Gram Panchayat Sahari - Civic Receipt')}
+            </h3>
+            <p className="text-[11px] sm:text-xs text-slate-500 font-semibold tracking-wide uppercase mt-0.5">
+              {t.receiptSubtitle || (lang === 'hi' ? 'लोक शिकायत निवारण प्रणाली' : 'Public Grievance Redressal System')}
+            </p>
 
-        {/* Tracking ID Display Card */}
-        <div className="mt-6 p-5 max-w-md mx-auto rounded-xl bg-slate-50 border border-slate-200 shadow-2xs">
-          <p className="text-xs uppercase font-extrabold tracking-wider text-slate-500">
-            {t.trackingLabel}
-          </p>
-          <div className="mt-2 text-3xl sm:text-4xl font-black text-blue-900 tracking-wider font-mono">
-            #{successResult.trackingId}
+            <div className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold shadow-2xs">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>{t.receiptVerified || (lang === 'hi' ? 'सफलतापूर्वक दर्ज (Registered)' : 'Successfully Registered')}</span>
+            </div>
           </div>
-          <p className="mt-2 text-xs font-semibold text-slate-600">
-            {t.trackingNote}
-          </p>
+
+          {/* Reference ID Highlight Banner */}
+          <div className="mt-4 p-3.5 sm:p-4 rounded-xl bg-gradient-to-r from-blue-50/70 via-slate-50 to-blue-50/70 border border-blue-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xs">
+            <div>
+              <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-slate-500 block">
+                {lang === 'hi' ? 'शिकायत संदर्भ आईडी (Tracking ID)' : 'Complaint Reference ID'}
+              </span>
+              <div className="text-2xl sm:text-3xl font-black font-mono text-blue-950 tracking-wider mt-0.5">
+                #{successResult.trackingId}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleCopyId}
+              className={`w-full sm:w-auto min-h-[42px] px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs ${
+                copiedId
+                  ? 'bg-emerald-600 text-white border border-emerald-600'
+                  : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-300'
+              }`}
+            >
+              {copiedId ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-white" />
+                  <span>{t.receiptCopied || (lang === 'hi' ? 'कॉपी हुआ!' : 'Copied!')}</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5 text-slate-600" />
+                  <span>{t.receiptCopyId || (lang === 'hi' ? 'आईडी कॉपी करें' : 'Copy ID')}</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Citizen & Grievance Information Grid */}
+          <div className="mt-4 grid grid-cols-2 gap-2.5 sm:gap-3 text-left">
+            {/* Citizen Name */}
+            <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/80 border border-slate-200/80">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
+                {t.receiptCitizen || (lang === 'hi' ? 'नागरिक का नाम' : 'Citizen Name')}
+              </span>
+              <span className="text-xs sm:text-sm font-bold text-slate-900 block truncate mt-0.5">
+                {successResult.citizenName || '—'}
+              </span>
+            </div>
+
+            {/* Ward */}
+            <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/80 border border-slate-200/80">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
+                {t.receiptWard || (lang === 'hi' ? 'वार्ड नंबर' : 'Ward Number')}
+              </span>
+              <span className="text-xs sm:text-sm font-bold text-blue-900 block truncate mt-0.5">
+                {lang === 'hi' ? `वार्ड ${successResult.ward}` : `Ward ${successResult.ward}`}
+              </span>
+            </div>
+
+            {/* Category */}
+            <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/80 border border-slate-200/80">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
+                {t.receiptCategory || (lang === 'hi' ? 'समस्या श्रेणी' : 'Category')}
+              </span>
+              <span className="text-xs sm:text-sm font-bold text-slate-900 block truncate mt-0.5">
+                {successResult.category || '—'}
+              </span>
+            </div>
+
+            {/* Submission Date & Time */}
+            <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/80 border border-slate-200/80">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
+                {t.receiptDate || (lang === 'hi' ? 'पंजीकरण समय' : 'Date & Time')}
+              </span>
+              <span className="text-xs sm:text-sm font-semibold text-slate-800 block truncate mt-0.5">
+                {formatReceiptDate(successResult.submittedAt)}
+              </span>
+            </div>
+          </div>
+
+          {/* Dynamic QR Code Box */}
+          <div className="mt-4 p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-3.5">
+            <div className="bg-white p-2 rounded-xl border border-slate-200 shadow-2xs shrink-0 flex items-center justify-center">
+              <QRCodeSVG value={trackUrl} size={84} level="M" />
+            </div>
+            <div className="min-w-0">
+              <h4 className="text-xs sm:text-sm font-bold text-slate-900 leading-tight">
+                {lang === 'hi' ? 'डिजिटल सत्यापन क्यूआर कोड' : 'Digital Verification QR'}
+              </h4>
+              <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                {t.receiptTrackNote || (lang === 'hi' ? 'स्कैन करके कभी भी स्थिति जांचें (Scan to track anytime)' : 'Scan anytime to track your complaint resolution progress.')}
+              </p>
+              <span className="text-[10px] text-blue-700 font-mono font-medium block truncate mt-1">
+                {trackUrl}
+              </span>
+            </div>
+          </div>
+
+          {/* Civic Verification Footnote */}
+          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[10px] sm:text-[11px] text-slate-400">
+            <span>ग्राम पंचायत सहरी, राजस्थान • डिजिटल भारत ई-सुविधा</span>
+            <span className="font-mono">Gov-Tech Verified</span>
+          </div>
         </div>
 
-        {/* WhatsApp Share & Actions */}
-        <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full sm:w-auto flex-1 min-h-[48px] px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-sm sm:text-base shadow-md flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
-          >
-            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-            </svg>
-            <span>{t.whatsappSave}</span>
-          </a>
+        {/* Actions Bottom Bar */}
+        <div className="space-y-2.5 pt-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            {/* 1. WhatsApp Share Button */}
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="min-h-[46px] px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold text-xs sm:text-sm shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer"
+            >
+              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current shrink-0" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+              </svg>
+              <span>{t.receiptShareWhatsApp || (lang === 'hi' ? 'WhatsApp पर शेयर करें' : 'Share on WhatsApp')}</span>
+            </a>
 
-          <button
-            type="button"
-            onClick={handleResetForm}
-            className="w-full sm:w-auto flex-1 min-h-[48px] px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-sm sm:text-base border border-slate-300 transition-all active:scale-[0.98]"
-          >
-            {t.fileAnother}
-          </button>
+            {/* 2. Download Receipt Button */}
+            <button
+              type="button"
+              disabled={isDownloading}
+              onClick={handleDownloadReceipt}
+              className="min-h-[46px] px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 active:scale-95 text-slate-800 border border-slate-300 font-semibold text-xs sm:text-sm shadow-2xs flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-60"
+            >
+              <Download className="w-4 h-4 text-blue-600 shrink-0" />
+              <span>{isDownloading ? (t.receiptDownloading || (lang === 'hi' ? 'डाउनलोड हो रहा है...' : 'Downloading...')) : (t.receiptDownload || (lang === 'hi' ? 'पावती डाउनलोड करें' : 'Download Receipt'))}</span>
+            </button>
+          </div>
+
+          {/* 3. Done / Register Another Action Links */}
+          <div className="flex items-center justify-center gap-3 pt-1">
+            <button
+              type="button"
+              onClick={() => {
+                if (onSuccessClose) {
+                  onSuccessClose();
+                } else {
+                  handleResetForm();
+                }
+              }}
+              className="min-h-[44px] px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+            >
+              {t.receiptDone || (lang === 'hi' ? 'समाप्त / बंद करें' : 'Done / Close')}
+            </button>
+            <span className="text-slate-300 select-none">•</span>
+            <button
+              type="button"
+              onClick={handleResetForm}
+              className="min-h-[44px] px-4 py-2 text-xs font-bold text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+            >
+              {t.fileAnother || (lang === 'hi' ? 'अन्य शिकायत दर्ज करें' : 'Register Another Complaint')}
+            </button>
+          </div>
         </div>
       </div>
     );

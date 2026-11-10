@@ -1,4 +1,4 @@
-import React, { useState, Suspense, lazy } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import Navbar from '../components/Navbar';
 import NoticeBoard from '../components/NoticeBoard';
 import HeroSection from '../components/HeroSection';
@@ -23,6 +23,21 @@ const CitizenHome = () => {
   const { lang, t } = useLang();
   const [showGrievanceModal, setShowGrievanceModal] = useState(false);
   const [showTrackModal, setShowTrackModal] = useState(false);
+  const [initialTrackQuery, setInitialTrackQuery] = useState('');
+
+  // Handle URL deep link query e.g. ?track=GR-JZ11 from QR code scan or WhatsApp link
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const trackParam = params.get('track');
+      if (trackParam) {
+        setInitialTrackQuery(trackParam.trim());
+        setShowTrackModal(true);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 overflow-x-hidden">
@@ -76,7 +91,7 @@ const CitizenHome = () => {
         maxWidth="max-w-2xl"
       >
         <Suspense fallback={<ModalLoader />}>
-          {showTrackModal && <StatusTracker />}
+          {showTrackModal && <StatusTracker initialQuery={initialTrackQuery} />}
         </Suspense>
       </Modal>
     </div>

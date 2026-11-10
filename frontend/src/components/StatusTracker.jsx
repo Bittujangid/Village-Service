@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Search, 
   AlertCircle, 
@@ -43,10 +43,10 @@ const StatusTracker = ({ initialQuery = '' }) => {
     setComplaintList([]);
   };
 
-  const handleSearch = async (e) => {
-    e?.preventDefault();
+  const handleSearch = async (e, directQuery) => {
+    e?.preventDefault?.();
     // Sanitize query by removing all '#' and internal spaces
-    const queryId = (query || '')
+    const queryId = ((directQuery !== undefined ? directQuery : query) || '')
       .replace(/#/g, '')
       .replace(/\s+/g, '')
       .trim();
@@ -113,6 +113,20 @@ const StatusTracker = ({ initialQuery = '' }) => {
       setLoading(false);
     }
   };
+
+  // Auto-trigger search when initialQuery is provided (e.g., from QR code or deep link)
+  useEffect(() => {
+    if (initialQuery && initialQuery.trim()) {
+      const clean = initialQuery.trim();
+      setQuery(clean);
+      if (/^[6-9]\d{9}$/.test(clean)) {
+        setLookupMode('phone');
+      } else {
+        setLookupMode('trackingId');
+      }
+      handleSearch(null, clean);
+    }
+  }, [initialQuery]);
 
   const formatDate = (dateString) => {
     if (!dateString) return lang === 'hi' ? 'उपलब्ध नहीं' : 'N/A';
