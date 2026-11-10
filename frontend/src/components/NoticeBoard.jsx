@@ -5,20 +5,82 @@ import { useLang } from '../context/LanguageContext';
 
 const CACHE_KEY = 'cached_public_notices';
 
-const getDefaultFallbackNotices = (currentLang) => [
+const SEED_NOTICES = [
   {
-    _id: 'default-welcome-notice',
-    title: currentLang === 'hi'
-      ? 'ग्राम पंचायत सहरी में आपका स्वागत है'
-      : 'Welcome to Gram Panchayat Sahari',
-    description: currentLang === 'hi'
-      ? 'ग्राम पंचायत सहरी में आपका स्वागत है | किसी भी समस्या के समाधान हेतु नागरिक शिकायत दर्ज करें'
-      : 'Welcome to Gram Panchayat Sahari | Submit your complaint online for quick resolution of civic issues',
-    category: currentLang === 'hi' ? 'सामान्य सूचना' : 'General Notice',
+    _id: 'notice-welcome',
+    titleHi: 'ग्राम पंचायत सहरी में आपका स्वागत है',
+    titleEn: 'Welcome to Gram Panchayat Sahari',
+    title: 'ग्राम पंचायत सहरी में आपका स्वागत है',
+    descriptionHi: 'ग्राम पंचायत सहरी ई-सेवा पोर्टल पर आपका स्वागत है। किसी भी सार्वजनिक समस्या के त्वरित समाधान हेतु नागरिक शिकायत दर्ज करें।',
+    descriptionEn: 'Welcome to Gram Panchayat Sahari E-Services Portal. Submit your complaint online for quick resolution of civic issues.',
+    description: 'ग्राम पंचायत सहरी ई-सेवा पोर्टल पर आपका स्वागत है। किसी भी सार्वजनिक समस्या के त्वरित समाधान हेतु नागरिक शिकायत दर्ज करें।',
+    categoryHi: 'सामान्य सूचना',
+    categoryEn: 'General Notice',
+    category: 'सामान्य सूचना',
     isImportant: false,
     priority: 'normal',
+  },
+  {
+    _id: 'notice-health-camp',
+    titleHi: 'निःशुल्क स्वास्थ्य जांच एवं दवा वितरण शिविर',
+    titleEn: 'Free Health Checkup and Medicine Distribution Camp',
+    title: 'निःशुल्क स्वास्थ्य जांच एवं दवा वितरण शिविर',
+    descriptionHi: 'ग्राम पंचायत भवन में आगामी रविवार को सुबह 9:00 बजे से दोपहर 3:00 बजे तक निःशुल्क स्वास्थ्य जांच शिविर का आयोजन किया जाएगा। सभी ग्रामवासी लाभ उठाएं।',
+    descriptionEn: 'A free health checkup and medicine camp will be organized at the Panchayat Bhawan this Sunday from 9:00 AM to 3:00 PM. All villagers are welcome to benefit.',
+    description: 'ग्राम पंचायत भवन में आगामी रविवार को सुबह 9:00 बजे से दोपहर 3:00 बजे तक निःशुल्क स्वास्थ्य जांच शिविर का आयोजन किया जाएगा। सभी ग्रामवासी लाभ उठाएं।',
+    categoryHi: 'स्वास्थ्य / शिविर',
+    categoryEn: 'Health & Camp',
+    category: 'स्वास्थ्य / शिविर',
+    isImportant: true,
+    priority: 'high',
+  },
+  {
+    _id: 'notice-ration-distribution',
+    titleHi: 'मासिक सार्वजनिक राशन वितरण सूचना',
+    titleEn: 'Monthly Public Foodgrain Distribution Notice',
+    title: 'मासिक सार्वजनिक राशन वितरण सूचना',
+    descriptionHi: 'सभी राशन कार्ड धारकों को सूचित किया जाता है कि चालू माह का खाद्यान्न वितरण 5 से 12 तारीख तक उचित मूल्य की दुकान पर किया जाएगा। अपना आधार कार्ड साथ लाएं।',
+    descriptionEn: 'All ration card holders are informed that monthly foodgrain distribution will take place from the 5th to the 12th at the Fair Price Shop. Please bring your Aadhaar card.',
+    description: 'सभी राशन कार्ड धारकों को सूचित किया जाता है कि चालू माह का खाद्यान्न वितरण 5 से 12 तारीख तक उचित मूल्य की दुकान पर किया जाएगा। अपना आधार कार्ड साथ लाएं।',
+    categoryHi: 'राशन वितरण',
+    categoryEn: 'Ration Distribution',
+    category: 'राशन वितरण',
+    isImportant: false,
+    priority: 'normal',
+  },
+  {
+    _id: 'notice-gram-sabha',
+    titleHi: 'विशेष ग्राम सभा बैठक आमंत्रण',
+    titleEn: 'Special Gram Sabha Meeting Invitation',
+    title: 'विशेष ग्राम सभा बैठक आमंत्रण',
+    descriptionHi: 'गांव में सीसी रोड व नाली निर्माण कार्य की समीक्षा तथा नए विकास प्रस्तावों पर चर्चा हेतु ग्राम सभा की बैठक शुक्रवार सुबह 11:00 बजे पंचायत सचिवालय में होगी।',
+    descriptionEn: 'A Gram Sabha meeting to review CC road and drainage works and discuss new development proposals will be held on Friday at 11:00 AM in the Panchayat Secretariat.',
+    description: 'गांव में सीसी रोड व नाली निर्माण कार्य की समीक्षा तथा नए विकास प्रस्तावों पर चर्चा हेतु ग्राम सभा की बैठक शुक्रवार सुबह 11:00 बजे पंचायत सचिवालय में होगी।',
+    categoryHi: 'ग्राम सभा',
+    categoryEn: 'Gram Sabha',
+    category: 'ग्राम सभा',
+    isImportant: true,
+    priority: 'high',
   }
 ];
+
+const enrichNotice = (notice) => {
+  if (!notice) return notice;
+  const match = SEED_NOTICES.find(
+    (s) => s.title === notice.title || s.titleHi === notice.title || s._id === notice._id || s._id === notice.id
+  );
+  return {
+    ...notice,
+    titleHi: notice.titleHi || match?.titleHi || notice.title,
+    titleEn: notice.titleEn || match?.titleEn || notice.title,
+    descriptionHi: notice.descriptionHi || match?.descriptionHi || notice.description || notice.content,
+    descriptionEn: notice.descriptionEn || match?.descriptionEn || match?.descriptionHi || notice.description || notice.content,
+    categoryHi: notice.categoryHi || match?.categoryHi || notice.category,
+    categoryEn: notice.categoryEn || match?.categoryEn || notice.category,
+  };
+};
+
+const getDefaultFallbackNotices = () => SEED_NOTICES;
 
 const getInitialNotices = () => {
   try {
@@ -26,35 +88,23 @@ const getInitialNotices = () => {
     if (cached) {
       const parsed = JSON.parse(cached);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
+        return parsed.map(enrichNotice);
       }
     }
   } catch (e) {
     console.warn('Failed to parse cached notices:', e);
   }
-  return [];
+  return SEED_NOTICES;
 };
 
 const NoticeBoard = () => {
   const { lang, t } = useLang();
-  const [notices, setNotices] = useState(() => {
-    const cached = getInitialNotices();
-    return cached.length > 0 ? cached : getDefaultFallbackNotices('hi');
-  });
+  const isHi = lang === 'hi';
+  const [notices, setNotices] = useState(() => getInitialNotices());
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [slideDirection, setSlideDirection] = useState('right');
   const [isTransitioning, setIsTransitioning] = useState(false);
-
-  // Sync fallback notice language when user switches language
-  useEffect(() => {
-    setNotices((prev) => {
-      if (prev.length === 1 && prev[0]._id === 'default-welcome-notice') {
-        return getDefaultFallbackNotices(lang);
-      }
-      return prev;
-    });
-  }, [lang]);
 
   // Stale-While-Revalidate: fetch fresh notices asynchronously
   useEffect(() => {
@@ -69,15 +119,16 @@ const NoticeBoard = () => {
             : data?.notices || data?.data || [];
 
           if (list.length > 0) {
-            setNotices(list);
+            const enriched = list.map(enrichNotice);
+            setNotices(enriched);
             setCurrentIndex(0);
             try {
-              localStorage.setItem(CACHE_KEY, JSON.stringify(list));
+              localStorage.setItem(CACHE_KEY, JSON.stringify(enriched));
             } catch (err) {
               console.warn('Failed to cache notices in localStorage:', err);
             }
           } else if (notices.length === 0) {
-            setNotices(getDefaultFallbackNotices(lang));
+            setNotices(SEED_NOTICES);
           }
         }
       } catch (err) {
@@ -86,7 +137,7 @@ const NoticeBoard = () => {
           // Maintain existing cached notices on error, fallback only if empty
           setNotices((prev) => {
             if (prev.length > 0) return prev;
-            return getDefaultFallbackNotices(lang);
+            return SEED_NOTICES;
           });
         }
       } finally {
@@ -147,9 +198,15 @@ const NoticeBoard = () => {
   }
 
   const activeNotice = notices[currentIndex] || notices[0];
-  const title = activeNotice?.title || (lang === 'hi' ? 'सार्वजनिक सूचना' : 'Public Notice');
-  const description = activeNotice?.description || activeNotice?.content || '';
-  const category = activeNotice?.category;
+  const title = isHi
+    ? (activeNotice?.titleHi || activeNotice?.title)
+    : (activeNotice?.titleEn || activeNotice?.title);
+  const description = isHi
+    ? (activeNotice?.descriptionHi || activeNotice?.description || activeNotice?.content || '')
+    : (activeNotice?.descriptionEn || activeNotice?.description || activeNotice?.content || '');
+  const category = isHi
+    ? (activeNotice?.categoryHi || activeNotice?.category)
+    : (activeNotice?.categoryEn || activeNotice?.category);
 
   const isHighPriority = Boolean(
     activeNotice?.isImportant ||
@@ -178,33 +235,42 @@ const NoticeBoard = () => {
 
   const portalUrl = typeof window !== 'undefined' ? window.location.origin : 'https://gramseva.in';
   const priorityText = isHighPriority
-    ? (lang === 'hi' ? 'अति आवश्यक' : 'High Priority')
-    : (activeNotice?.priority || (lang === 'hi' ? 'सामान्य' : 'General'));
+    ? (isHi ? 'अति आवश्यक' : 'High Priority')
+    : (activeNotice?.priority || (isHi ? 'सामान्य' : 'General'));
 
   const getCategoryDisplay = (cat) => {
-    if (!cat) return lang === 'hi' ? 'सामान्य सूचना' : 'General Notice';
+    if (!cat) return isHi ? 'सामान्य सूचना' : 'General Notice';
     if (cat === 'सामान्य सूचना' || cat === 'General Notice') {
-      return lang === 'hi' ? 'सामान्य सूचना' : 'General Notice';
+      return isHi ? 'सामान्य सूचना' : 'General Notice';
     }
     if (cat === 'पेयजल व जल आपूर्ति' || cat === 'Water Supply') {
-      return lang === 'hi' ? 'पेयजल व जल आपूर्ति' : 'Water Supply';
+      return isHi ? 'पेयजल व जल आपूर्ति' : 'Water Supply';
     }
     if (cat === 'स्वच्छता अभियान' || cat === 'Sanitation') {
-      return lang === 'hi' ? 'स्वच्छता अभियान' : 'Sanitation';
+      return isHi ? 'स्वच्छता अभियान' : 'Sanitation';
     }
     if (cat === 'विद्युत आपूर्ति' || cat === 'Electricity') {
-      return lang === 'hi' ? 'विद्युत आपूर्ति' : 'Electricity';
+      return isHi ? 'विद्युत आपूर्ति' : 'Electricity';
     }
     if (cat === 'सड़क व निर्माण' || cat === 'Roads & Works') {
-      return lang === 'hi' ? 'सड़क व निर्माण' : 'Roads & Works';
+      return isHi ? 'सड़क व निर्माण' : 'Roads & Works';
     }
     if (cat === 'कृषि व योजनाएं' || cat === 'Agriculture & Schemes') {
-      return lang === 'hi' ? 'कृषि व योजनाएं' : 'Agriculture & Schemes';
+      return isHi ? 'कृषि व योजनाएं' : 'Agriculture & Schemes';
+    }
+    if (cat === 'स्वास्थ्य / शिविर' || cat === 'Health & Camp') {
+      return isHi ? 'स्वास्थ्य / शिविर' : 'Health & Camp';
+    }
+    if (cat === 'राशन वितरण' || cat === 'Ration Distribution') {
+      return isHi ? 'राशन वितरण' : 'Ration Distribution';
+    }
+    if (cat === 'ग्राम सभा' || cat === 'Gram Sabha') {
+      return isHi ? 'ग्राम सभा' : 'Gram Sabha';
     }
     return cat;
   };
 
-  const formattedWhatsAppText = lang === 'hi'
+  const formattedWhatsAppText = isHi
     ? `📢 *ग्राम पंचायत सहरी - आधिकारिक सूचना*
 ━━━━━━━━━━━━━━━━━━━━━
 📌 *विषय:* ${title}

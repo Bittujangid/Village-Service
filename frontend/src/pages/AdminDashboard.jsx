@@ -1491,7 +1491,7 @@ const AdminDashboard = () => {
                               </span>
                             )}
                             <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
-                              {getCategoryDisplay(n.category, lang)}
+                              {isHi ? (n.categoryHi || getCategoryDisplay(n.category, lang)) : (n.categoryEn || getCategoryDisplay(n.category, lang))}
                             </span>
                             <span className="text-xs text-slate-400">
                               {formatDate(n.createdAt)}
@@ -1499,10 +1499,10 @@ const AdminDashboard = () => {
                           </div>
 
                           <h4 className="text-base font-bold text-slate-900">
-                            {n.title}
+                            {isHi ? (n.titleHi || n.title) : (n.titleEn || n.title)}
                           </h4>
                           <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
-                            {n.description || n.content}
+                            {isHi ? (n.descriptionHi || n.description || n.content) : (n.descriptionEn || n.description || n.content)}
                           </p>
                         </div>
 
