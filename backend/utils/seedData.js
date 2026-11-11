@@ -70,6 +70,19 @@ const defaultAdmin = {
 
 const sampleNotices = [
   {
+    title: 'क्रिकेट मैदान निर्माण एवं खेल सुविधा',
+    titleHi: 'क्रिकेट मैदान निर्माण एवं खेल सुविधा',
+    titleEn: 'Cricket Ground Construction and Sports Facility',
+    description: 'हमारे गांव में एक क्रिकेट मैदान तैयार किया जा रहा है जहाँ सभी बच्चे आसानी से खेल सकें। खेल सुविधाओं के विकास हेतु पंचायत प्रयासरत है।',
+    descriptionHi: 'हमारे गांव में एक क्रिकेट मैदान तैयार किया जा रहा है जहाँ सभी बच्चे आसानी से खेल सकें। खेल सुविधाओं के विकास हेतु पंचायत प्रयासरत है।',
+    descriptionEn: 'We are organizing a cricket ground in our village where all children can play comfortably.',
+    category: 'खेलकूद व युवा कल्याण',
+    categoryHi: 'खेलकूद व युवा कल्याण',
+    categoryEn: 'Sports & Youth',
+    isImportant: false,
+    isActive: true
+  },
+  {
     title: 'ग्रिड ट्रांसफार्मर मरम्मत हेतु अस्थायी विद्युत आपूर्ति कटौती',
     titleHi: 'ग्रिड ट्रांसफार्मर मरम्मत हेतु अस्थायी विद्युत आपूर्ति कटौती',
     titleEn: 'Temporary Power Shutdown for Grid Transformer Upgrades',

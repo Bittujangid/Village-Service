@@ -60,12 +60,14 @@ const NOTICE_CATEGORIES = [
   { id: 'विद्युत आपूर्ति', hi: 'विद्युत आपूर्ति', en: 'Electricity Supply' },
   { id: 'सड़क व निर्माण', hi: 'सड़क व निर्माण', en: 'Road & Construction' },
   { id: 'कृषि व योजनाएं', hi: 'कृषि व योजनाएं', en: 'Agriculture & Schemes' },
+  { id: 'खेलकूद व युवा कल्याण', hi: 'खेलकूद व युवा कल्याण', en: 'Sports & Youth' },
 ];
 
 const getCategoryDisplay = (cat, lang) => {
   if (!cat) return lang === 'hi' ? 'सामान्य' : 'General';
   const match = NOTICE_CATEGORIES.find((c) => c.id === cat || c.hi === cat || c.en === cat);
   if (match) return lang === 'hi' ? match.hi : match.en;
+  if (cat.includes('खेल') || cat.toLowerCase().includes('sport') || cat.toLowerCase().includes('cricket')) return lang === 'hi' ? 'खेलकूद व युवा' : 'Sports & Youth';
   if (cat.includes('पानी') || cat.toLowerCase().includes('water')) return lang === 'hi' ? 'पानी / हैंडपंप' : 'Water / Handpump';
   if (cat.includes('बिजली') || cat.toLowerCase().includes('electric')) return lang === 'hi' ? 'बिजली / स्ट्रीट लाइट' : 'Electricity & Lights';
   if (cat.includes('सड़क') || cat.toLowerCase().includes('road')) return lang === 'hi' ? 'सड़क / नाली' : 'Road & Drainage';

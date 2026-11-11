@@ -7,6 +7,20 @@ const CACHE_KEY = 'cached_public_notices';
 
 export const SEED_NOTICES = [
   {
+    _id: 'notice-cricket-ground',
+    titleHi: 'क्रिकेट मैदान निर्माण एवं खेल सुविधा',
+    titleEn: 'Cricket Ground Construction and Sports Facility',
+    title: 'क्रिकेट मैदान निर्माण एवं खेल सुविधा',
+    descriptionHi: 'हमारे गांव में एक क्रिकेट मैदान तैयार किया जा रहा है जहाँ सभी बच्चे आसानी से खेल सकें।',
+    descriptionEn: 'We are organizing a cricket ground in our village where all children can play comfortably.',
+    description: 'हमारे गांव में एक क्रिकेट मैदान तैयार किया जा रहा है जहाँ सभी बच्चे आसानी से खेल सकें।',
+    categoryHi: 'खेलकूद व युवा कल्याण',
+    categoryEn: 'Sports & Youth',
+    category: 'खेलकूद व युवा कल्याण',
+    isImportant: false,
+    priority: 'normal',
+  },
+  {
     _id: 'notice-transformer-upgrades',
     titleHi: 'ग्रिड ट्रांसफार्मर मरम्मत हेतु अस्थायी विद्युत आपूर्ति कटौती',
     titleEn: 'Temporary Power Shutdown for Grid Transformer Upgrades',
@@ -196,8 +210,156 @@ export const BUILT_IN_TRANSLATIONS = [
     categoryEn: 'General Notice',
     isImportant: false,
     priority: 'normal',
+  },
+  // 8. Cricket Ground & Sports Notice
+  {
+    matcher: (text) => /cricket|ground|मैदान|sports|खेलकूद/i.test(text),
+    titleHi: 'क्रिकेट मैदान निर्माण एवं खेल सुविधा',
+    titleEn: 'Cricket Ground Construction and Sports Facility',
+    descriptionHi: 'हमारे गांव में एक क्रिकेट मैदान तैयार किया जा रहा है जहाँ सभी बच्चे आसानी से खेल सकें।',
+    descriptionEn: 'We are organizing a cricket ground in our village where all children can play comfortably.',
+    categoryHi: 'खेलकूद व युवा कल्याण',
+    categoryEn: 'Sports & Youth',
+    isImportant: false,
+    priority: 'normal',
   }
 ];
+
+export const COMMON_TRANSLATIONS = {
+  // Titles & Keywords
+  'cricket ground': 'क्रिकेट मैदान निर्माण एवं खेल सुविधा',
+  'cricket': 'क्रिकेट',
+  'ground': 'मैदान',
+  'sports': 'खेलकूद',
+  'meeting': 'बैठक',
+  'water': 'पेयजल',
+  'electricity': 'विद्युत',
+  'cleanliness': 'सफाई',
+  'drain': 'नाली',
+  'road': 'सड़क',
+  'nothing': 'कोई नई सूचना नहीं',
+
+  // Variations & Community keywords
+  'playground': 'खेल मैदान',
+  'water supply': 'पेयजल आपूर्ति',
+  'power': 'विद्युत आपूर्ति',
+  'street light': 'स्ट्रीट लाइट',
+  'sanitation': 'स्वच्छता अभियान',
+  'gram sabha': 'ग्राम सभा',
+  'health': 'स्वास्थ्य जांच',
+  'ration': 'राशन वितरण',
+
+  // Common notice sentences
+  'we are organizing a cricket ground in our village where all children can play comfortably.': 
+    'हमारे गांव में एक क्रिकेट मैदान तैयार किया जा रहा है जहाँ सभी बच्चे आसानी से खेल सकें।',
+  'we are organizing a cricket ground in our village where all children can play comfortably': 
+    'हमारे गांव में एक क्रिकेट मैदान तैयार किया जा रहा है जहाँ सभी बच्चे आसानी से खेल सकें।',
+};
+
+const normalizeStr = (s) => (s || '').toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, ' ').replace(/\s+/g, ' ').trim();
+
+export const translateFallbackText = (text, isTitle = false) => {
+  if (!text || typeof text !== 'string') return '';
+  const trimmed = text.trim();
+  if (!trimmed) return '';
+  if (isDevanagari(trimmed)) return trimmed;
+
+  const normalized = normalizeStr(trimmed);
+
+  // 1. Exact match in COMMON_TRANSLATIONS
+  for (const [key, val] of Object.entries(COMMON_TRANSLATIONS)) {
+    if (normalized === normalizeStr(key)) {
+      return val;
+    }
+  }
+
+  // 2. Contains long phrase (>15 chars) match from COMMON_TRANSLATIONS
+  for (const [key, val] of Object.entries(COMMON_TRANSLATIONS)) {
+    if (key.length > 15 && normalized.includes(normalizeStr(key))) {
+      return val;
+    }
+  }
+
+  // 3. Topic: Cricket & Sports
+  if (/cricket.*ground|ground.*cricket/i.test(trimmed)) {
+    return isTitle
+      ? 'क्रिकेट मैदान निर्माण एवं खेल सुविधा'
+      : 'हमारे गांव में एक क्रिकेट मैदान तैयार किया जा रहा है जहाँ सभी बच्चे आसानी से खेल सकें।';
+  }
+  if (/cricket/i.test(trimmed)) {
+    return isTitle
+      ? 'क्रिकेट खेलकूद आयोजन'
+      : 'गांव में क्रिकेट खेलकूद व खेल मैदान की व्यवस्था की जा रही है।';
+  }
+  if (/sports|playground|खेलकूद/i.test(trimmed)) {
+    return isTitle
+      ? 'खेलकूद एवं युवा कल्याण'
+      : 'गांव के बच्चों एवं युवाओं के लिए खेल मैदान एवं खेलकूद की सुविधाएं विकसित की जा रही हैं।';
+  }
+
+  // 4. Topic: Meeting / Sabha
+  if (/meeting|बैठक/i.test(trimmed)) {
+    return isTitle
+      ? 'सार्वजनिक ग्राम बैठक'
+      : 'गांव के विकास कार्यों एवं जनसमस्याओं के समाधान हेतु पंचायत में बैठक आयोजित की जाएगी।';
+  }
+
+  // 5. Topic: Cleanliness / Drainage / Waste
+  if (/drain|नाली/i.test(trimmed)) {
+    return isTitle
+      ? 'नाली निर्माण एवं जल निकासी'
+      : 'गांव के विभिन्न वार्डों में नाली निर्माण एवं सफाई का कार्य किया जा रहा है।';
+  }
+  if (/clean|sanit|सफाई|स्वच्छ/i.test(trimmed)) {
+    return isTitle
+      ? 'स्वच्छता एवं सफाई अभियान'
+      : 'गांव के सभी वार्डों में स्वच्छता एवं नियमित सफाई अभियान चलाया जा रहा है।';
+  }
+
+  // 6. Topic: Road
+  if (/road|cc road|सड़क/i.test(trimmed)) {
+    return isTitle
+      ? 'सड़क एवं निर्माण कार्य'
+      : 'गांव में सीसी रोड व संपर्क मार्गों का निर्माण कार्य प्रगति पर है।';
+  }
+
+  // 7. Topic: Water
+  if (/water|pipeline|पेयजल|पानी/i.test(trimmed)) {
+    return isTitle
+      ? 'पेयजल आपूर्ति व्यवस्था'
+      : 'पेयजल आपूर्ति एवं पाइपलाइन रखरखाव का कार्य सुचारू रूप से किया जा रहा है।';
+  }
+
+  // 8. Topic: Electricity
+  if (/electric|power|बिजली|विद्युत/i.test(trimmed)) {
+    return isTitle
+      ? 'विद्युत आपूर्ति व्यवस्था'
+      : 'विद्युत आपूर्ति एवं ग्रिड रखरखाव का कार्य किया जा रहा है।';
+  }
+
+  // 9. Topic: Nothing
+  if (/^nothing$/i.test(trimmed)) {
+    return 'कोई नई सूचना नहीं';
+  }
+
+  // 10. Multi-word phrase check in COMMON_TRANSLATIONS
+  for (const [key, val] of Object.entries(COMMON_TRANSLATIONS)) {
+    if (key.includes(' ') && normalized.includes(normalizeStr(key))) {
+      return val;
+    }
+  }
+
+  // 11. Single word match in COMMON_TRANSLATIONS
+  for (const [key, val] of Object.entries(COMMON_TRANSLATIONS)) {
+    const kNorm = normalizeStr(key);
+    const regex = new RegExp(`\\b${kNorm}\\b`, 'i');
+    if (regex.test(trimmed)) {
+      return val;
+    }
+  }
+
+  return '';
+};
 
 export const enrichNotice = (notice) => {
   if (!notice) return notice;
@@ -226,9 +388,14 @@ export const enrichNotice = (notice) => {
   const hasValidEnTitle = notice.titleEn && !isDevanagari(notice.titleEn);
   const hasValidEnDesc  = notice.descriptionEn && !isDevanagari(notice.descriptionEn);
 
-  // Derive titleHi: genuine Hindi from notice, or translation match, or rawTitle if it's Devanagari
+  // 3. Fallback translation for custom notices without explicit titleHi / descriptionHi
+  const fallbackHiTitle = translateFallbackText(rawTitle, true) || translateFallbackText(searchCorpus, true);
+  const fallbackHiDesc  = translateFallbackText(rawDesc, false);
+
+  // Derive titleHi: genuine Hindi from notice, or translation match, or fallback translation, or rawTitle if it's Devanagari
   const titleHi = (hasValidHiTitle ? notice.titleHi.trim() : '')
     || matched?.titleHi
+    || fallbackHiTitle
     || (isDevanagari(rawTitle) ? rawTitle : '');
 
   // Derive titleEn: genuine English from notice, or translation match, or rawTitle if it's English
@@ -239,6 +406,7 @@ export const enrichNotice = (notice) => {
   // Derive descriptionHi
   const descriptionHi = (hasValidHiDesc ? notice.descriptionHi.trim() : '')
     || matched?.descriptionHi
+    || fallbackHiDesc
     || (isDevanagari(rawDesc) ? rawDesc : '');
 
   // Derive descriptionEn
@@ -248,12 +416,18 @@ export const enrichNotice = (notice) => {
 
   // Derive categoryHi & categoryEn
   const rawCat = notice.category || '';
+  const isCricketOrSports = /cricket|sports|ground|playground|खेल/i.test(`${rawTitle} ${rawDesc} ${rawCat}`);
+  const autoCatHi = isCricketOrSports ? 'खेलकूद व युवा कल्याण' : '';
+  const autoCatEn = isCricketOrSports ? 'Sports & Youth' : '';
+
   const categoryHi = (isDevanagari(notice.categoryHi) ? notice.categoryHi.trim() : '')
     || matched?.categoryHi
+    || autoCatHi
     || (isDevanagari(rawCat) ? rawCat : '');
 
   const categoryEn = (notice.categoryEn && !isDevanagari(notice.categoryEn) ? notice.categoryEn.trim() : '')
     || matched?.categoryEn
+    || autoCatEn
     || (!isDevanagari(rawCat) ? rawCat : '');
 
   return {
@@ -454,6 +628,9 @@ const NoticeBoard = () => {
     }
     if (c.includes('ग्राम सभा') || c.includes('sabha')) {
       return isHi ? 'ग्राम सभा' : 'Gram Sabha';
+    }
+    if (c.includes('खेल') || c.includes('sport') || c.includes('cricket') || c.includes('मैदान')) {
+      return isHi ? 'खेलकूद व युवा कल्याण' : 'Sports & Youth';
     }
     if (cat === 'सामान्य सूचना' || cat === 'General Notice' || cat === 'सामान्य') {
       return isHi ? 'सामान्य सूचना' : 'General Notice';
