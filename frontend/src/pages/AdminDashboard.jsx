@@ -141,11 +141,15 @@ const AdminDashboard = () => {
   });
   const [loadingNotices, setLoadingNotices] = useState(false);
   const [newNotice, setNewNotice] = useState({
-    title: '',
-    description: '',
+    titleHi: '',
+    titleEn: '',
+    descriptionHi: '',
+    descriptionEn: '',
     category: NOTICE_CATEGORIES[0].id,
     isImportant: false,
   });
+  // Which language tab is active in the notice form: 'hi' or 'en'
+  const [noticeFormLang, setNoticeFormLang] = useState('hi');
   const [creatingNotice, setCreatingNotice] = useState(false);
 
   // Ward Analytics & Heatmap state (Stale-While-Revalidate with sessionStorage)
@@ -471,18 +475,45 @@ const AdminDashboard = () => {
   // Create Notice
   const handleCreateNotice = async (e) => {
     e.preventDefault();
-    if (!newNotice.title.trim() || !newNotice.description.trim()) {
-      toast.error(isHi ? 'कृपया सूचना का शीर्षक और विवरण दोनों भरें' : 'Please enter both notice title and description');
+    const hiTitle = newNotice.titleHi.trim();
+    const enTitle = newNotice.titleEn.trim();
+    const hiDesc  = newNotice.descriptionHi.trim();
+    const enDesc  = newNotice.descriptionEn.trim();
+
+    // At minimum, one language's title+description must be filled
+    if ((!hiTitle && !enTitle) || (!hiDesc && !enDesc)) {
+      toast.error(isHi
+        ? 'कृपया कम से कम हिंदी या अंग्रेज़ी में सूचना का शीर्षक और विवरण भरें'
+        : 'Please fill title and description in at least Hindi or English');
       return;
     }
 
+    // Derive primary `title` / `description` (Hindi preferred, fallback to English)
+    const primaryTitle = hiTitle || enTitle;
+    const primaryDesc  = hiDesc  || enDesc;
+
+    const categoryObj  = NOTICE_CATEGORIES.find((c) => c.id === newNotice.category) || NOTICE_CATEGORIES[0];
+
     setCreatingNotice(true);
     try {
-      await createNotice(newNotice);
+      await createNotice({
+        title:         primaryTitle,
+        description:   primaryDesc,
+        titleHi:       hiTitle || primaryTitle,
+        titleEn:       enTitle || primaryTitle,
+        descriptionHi: hiDesc  || primaryDesc,
+        descriptionEn: enDesc  || primaryDesc,
+        category:      newNotice.category,
+        categoryHi:    categoryObj.hi,
+        categoryEn:    categoryObj.en,
+        isImportant:   newNotice.isImportant,
+      });
       toast.success(isHi ? 'नई सार्वजनिक सूचना सफलतापूर्वक प्रकाशित की गई!' : 'New notice published successfully!');
       setNewNotice({
-        title: '',
-        description: '',
+        titleHi: '',
+        titleEn: '',
+        descriptionHi: '',
+        descriptionEn: '',
         category: NOTICE_CATEGORIES[0].id,
         isImportant: false,
       });
@@ -1367,6 +1398,7 @@ const AdminDashboard = () => {
               </h3>
 
               <form onSubmit={handleCreateNotice} className="space-y-4">
+                {/* Category */}
                 <div>
                   <label htmlFor="notice-cat" className="block text-xs font-bold text-slate-700 mb-1">
                     {isHi ? 'श्रेणी चुनें' : 'Notice Category'}
@@ -1385,34 +1417,104 @@ const AdminDashboard = () => {
                   </select>
                 </div>
 
+                {/* Bilingual Tab Switcher */}
                 <div>
-                  <label htmlFor="notice-title" className="block text-xs font-bold text-slate-700 mb-1">
-                    {isHi ? 'सूचना शीर्षक' : 'Notice Title'} <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="notice-title"
-                    type="text"
-                    required
-                    value={newNotice.title}
-                    onChange={(e) => setNewNotice({ ...newNotice, title: e.target.value })}
-                    placeholder={isHi ? 'उदा. ग्राम सभा की विशेष बैठक' : 'e.g. Special Gram Sabha Meeting'}
-                    className="w-full min-h-[48px] px-3 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
-                </div>
+                  <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl mb-3 w-fit">
+                    <button
+                      type="button"
+                      onClick={() => setNoticeFormLang('hi')}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        noticeFormLang === 'hi'
+                          ? 'bg-white text-emerald-700 shadow-sm border border-slate-200'
+                          : 'text-slate-500 hover:text-slate-700'
+                      }`}
+                    >
+                      हिंदी
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNoticeFormLang('en')}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        noticeFormLang === 'en'
+                          ? 'bg-white text-blue-700 shadow-sm border border-slate-200'
+                          : 'text-slate-500 hover:text-slate-700'
+                      }`}
+                    >
+                      English
+                    </button>
+                  </div>
 
-                <div>
-                  <label htmlFor="notice-desc" className="block text-xs font-bold text-slate-700 mb-1">
-                    {isHi ? 'सूचना विवरण' : 'Notice Details'} <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    id="notice-desc"
-                    rows={4}
-                    required
-                    value={newNotice.description}
-                    onChange={(e) => setNewNotice({ ...newNotice, description: e.target.value })}
-                    placeholder={isHi ? 'सूचना का पूरा विवरण लिखें जो नागरिकों को प्रदर्शित होगा...' : 'Write full notice details to be shown to citizens...'}
-                    className="w-full p-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
+                  {/* Hindi fields */}
+                  {noticeFormLang === 'hi' && (
+                    <div className="space-y-3">
+                      <div>
+                        <label htmlFor="notice-title-hi" className="block text-xs font-bold text-slate-700 mb-1">
+                          सूचना शीर्षक (हिंदी) <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="notice-title-hi"
+                          type="text"
+                          value={newNotice.titleHi}
+                          onChange={(e) => setNewNotice({ ...newNotice, titleHi: e.target.value })}
+                          placeholder="उदा. ग्राम सभा की विशेष बैठक"
+                          className="w-full min-h-[48px] px-3 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="notice-desc-hi" className="block text-xs font-bold text-slate-700 mb-1">
+                          सूचना विवरण (हिंदी) <span className="text-red-500">*</span>
+                        </label>
+                        <textarea
+                          id="notice-desc-hi"
+                          rows={4}
+                          value={newNotice.descriptionHi}
+                          onChange={(e) => setNewNotice({ ...newNotice, descriptionHi: e.target.value })}
+                          placeholder="सूचना का पूरा विवरण लिखें जो नागरिकों को प्रदर्शित होगा..."
+                          className="w-full p-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* English fields */}
+                  {noticeFormLang === 'en' && (
+                    <div className="space-y-3">
+                      <div>
+                        <label htmlFor="notice-title-en" className="block text-xs font-bold text-slate-700 mb-1">
+                          Notice Title (English)
+                        </label>
+                        <input
+                          id="notice-title-en"
+                          type="text"
+                          value={newNotice.titleEn}
+                          onChange={(e) => setNewNotice({ ...newNotice, titleEn: e.target.value })}
+                          placeholder="e.g. Special Gram Sabha Meeting"
+                          className="w-full min-h-[48px] px-3 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="notice-desc-en" className="block text-xs font-bold text-slate-700 mb-1">
+                          Notice Details (English)
+                        </label>
+                        <textarea
+                          id="notice-desc-en"
+                          rows={4}
+                          value={newNotice.descriptionEn}
+                          onChange={(e) => setNewNotice({ ...newNotice, descriptionEn: e.target.value })}
+                          placeholder="Write full notice details to be shown to citizens..."
+                          className="w-full p-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Bilingual fill hint */}
+                  <p className="text-[11px] text-slate-400 mt-2 flex items-center gap-1">
+                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                    {isHi
+                      ? 'दोनों भाषाओं में भरें — जो भाषा नागरिक चुनें, वही दिखेगी।'
+                      : 'Fill both languages — citizens will see the one they select.'}
+                  </p>
                 </div>
 
                 <div className="flex items-center gap-2 pt-1">

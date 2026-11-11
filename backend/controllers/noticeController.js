@@ -32,7 +32,10 @@ const getNotices = async (req, res, next) => {
  */
 const createNotice = async (req, res, next) => {
   try {
-    const { title, description, content, category, isImportant } = req.body;
+    const {
+      title, description, content, category, isImportant,
+      titleHi, titleEn, descriptionHi, descriptionEn, categoryHi, categoryEn
+    } = req.body;
     const desc = (description || content || '').trim();
 
     if (!title || !desc) {
@@ -42,10 +45,25 @@ const createNotice = async (req, res, next) => {
       });
     }
 
+    // Derive bilingual fields: use explicit values or fall back to the primary field
+    const resolvedTitleHi  = (titleHi  || '').trim() || title.trim();
+    const resolvedTitleEn  = (titleEn  || '').trim() || title.trim();
+    const resolvedDescHi   = (descriptionHi  || '').trim() || desc;
+    const resolvedDescEn   = (descriptionEn  || '').trim() || desc;
+    const resolvedCat      = (category || 'सामान्य सूचना').trim();
+    const resolvedCatHi    = (categoryHi || '').trim() || resolvedCat;
+    const resolvedCatEn    = (categoryEn || '').trim() || resolvedCat;
+
     const noticeData = {
       title: title.trim(),
       description: desc,
-      category: (category || 'सामान्य').trim(),
+      category: resolvedCat,
+      titleHi:  resolvedTitleHi,
+      titleEn:  resolvedTitleEn,
+      descriptionHi: resolvedDescHi,
+      descriptionEn: resolvedDescEn,
+      categoryHi: resolvedCatHi,
+      categoryEn: resolvedCatEn,
       isImportant: isImportant === true || isImportant === 'true',
       isActive: true
     };
@@ -72,7 +90,10 @@ const createNotice = async (req, res, next) => {
 const updateNotice = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { title, description, content, category, isImportant, isActive } = req.body;
+    const {
+      title, description, content, category, isImportant, isActive,
+      titleHi, titleEn, descriptionHi, descriptionEn, categoryHi, categoryEn
+    } = req.body;
 
     const notice = await Notice.findById(id);
     if (!notice) {
@@ -82,11 +103,17 @@ const updateNotice = async (req, res, next) => {
       });
     }
 
-    if (title) notice.title = title.trim();
+    if (title)                notice.title        = title.trim();
     if (description || content) notice.description = (description || content).trim();
-    if (category) notice.category = category.trim();
-    if (isImportant !== undefined) notice.isImportant = isImportant;
-    if (isActive !== undefined) notice.isActive = isActive;
+    if (category)             notice.category     = category.trim();
+    if (titleHi !== undefined)        notice.titleHi       = titleHi.trim();
+    if (titleEn !== undefined)        notice.titleEn       = titleEn.trim();
+    if (descriptionHi !== undefined)  notice.descriptionHi = descriptionHi.trim();
+    if (descriptionEn !== undefined)  notice.descriptionEn = descriptionEn.trim();
+    if (categoryHi !== undefined)     notice.categoryHi    = categoryHi.trim();
+    if (categoryEn !== undefined)     notice.categoryEn    = categoryEn.trim();
+    if (isImportant !== undefined)    notice.isImportant   = isImportant;
+    if (isActive !== undefined)       notice.isActive      = isActive;
 
     const savedNotice = await notice.save();
     return res.status(200).json({

@@ -64,19 +64,35 @@ const SEED_NOTICES = [
   }
 ];
 
+const isDevanagari = (str) => /[\u0900-\u097F]/.test(str || '');
+
 const enrichNotice = (notice) => {
   if (!notice) return notice;
   const match = SEED_NOTICES.find(
     (s) => s.title === notice.title || s.titleHi === notice.title || s._id === notice._id || s._id === notice.id
   );
+
+  // Determine best titleHi / titleEn from stored bilingual fields, seed match, or script detection
+  const storedHiTitle = notice.titleHi || match?.titleHi || '';
+  const storedEnTitle = notice.titleEn || match?.titleEn || '';
+  const rawTitle      = notice.title || '';
+  const titleHi = storedHiTitle || (isDevanagari(rawTitle) ? rawTitle : '');
+  const titleEn = storedEnTitle || (!isDevanagari(rawTitle) ? rawTitle : '');
+
+  const storedHiDesc = notice.descriptionHi || match?.descriptionHi || '';
+  const storedEnDesc = notice.descriptionEn || match?.descriptionEn || '';
+  const rawDesc      = notice.description || notice.content || '';
+  const descriptionHi = storedHiDesc || (isDevanagari(rawDesc) ? rawDesc : '');
+  const descriptionEn = storedEnDesc || (!isDevanagari(rawDesc) ? rawDesc : '');
+
   return {
     ...notice,
-    titleHi: notice.titleHi || match?.titleHi || notice.title,
-    titleEn: notice.titleEn || match?.titleEn || notice.title,
-    descriptionHi: notice.descriptionHi || match?.descriptionHi || notice.description || notice.content,
-    descriptionEn: notice.descriptionEn || match?.descriptionEn || match?.descriptionHi || notice.description || notice.content,
-    categoryHi: notice.categoryHi || match?.categoryHi || notice.category,
-    categoryEn: notice.categoryEn || match?.categoryEn || notice.category,
+    titleHi:       titleHi || rawTitle,
+    titleEn:       titleEn || rawTitle,
+    descriptionHi: descriptionHi || rawDesc,
+    descriptionEn: descriptionEn || rawDesc,
+    categoryHi:    notice.categoryHi || match?.categoryHi || notice.category || '',
+    categoryEn:    notice.categoryEn || match?.categoryEn || notice.category || '',
   };
 };
 
