@@ -37,6 +37,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLang } from '../context/LanguageContext';
 import { getStats, getComplaints, updateStatus, getWardInsights } from '../api/admin';
 import { getNotices, createNotice, deleteNotice } from '../api/notices';
+import { enrichNotice } from '../components/NoticeBoard';
 import StatusBadge from '../components/ui/StatusBadge';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import WardHeatmap from '../components/admin/WardHeatmap';
@@ -134,7 +135,7 @@ const AdminDashboard = () => {
       const cached = sessionStorage.getItem('cached_admin_notices');
       if (cached) {
         const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed.map(enrichNotice);
       }
     } catch (e) {}
     return [];
@@ -341,9 +342,10 @@ const AdminDashboard = () => {
         ? data
         : data?.notices || data?.data || [];
       if (list.length > 0) {
-        setNotices(list);
+        const enrichedList = list.map(enrichNotice);
+        setNotices(enrichedList);
         try {
-          sessionStorage.setItem('cached_admin_notices', JSON.stringify(list));
+          sessionStorage.setItem('cached_admin_notices', JSON.stringify(enrichedList));
         } catch (e) {}
       }
     } catch (err) {
@@ -1578,7 +1580,8 @@ const AdminDashboard = () => {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {notices.map((n) => {
+                  {notices.map((rawNotice) => {
+                    const n = enrichNotice(rawNotice);
                     const noticeId = n._id || n.id;
                     return (
                       <div

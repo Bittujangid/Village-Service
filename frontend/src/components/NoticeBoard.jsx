@@ -5,20 +5,62 @@ import { useLang } from '../context/LanguageContext';
 
 const CACHE_KEY = 'cached_public_notices';
 
-const SEED_NOTICES = [
+export const SEED_NOTICES = [
   {
-    _id: 'notice-welcome',
-    titleHi: 'ग्राम पंचायत सहरी में आपका स्वागत है',
-    titleEn: 'Welcome to Gram Panchayat Sahari',
-    title: 'ग्राम पंचायत सहरी में आपका स्वागत है',
-    descriptionHi: 'ग्राम पंचायत सहरी ई-सेवा पोर्टल पर आपका स्वागत है। किसी भी सार्वजनिक समस्या के त्वरित समाधान हेतु नागरिक शिकायत दर्ज करें।',
-    descriptionEn: 'Welcome to Gram Panchayat Sahari E-Services Portal. Submit your complaint online for quick resolution of civic issues.',
-    description: 'ग्राम पंचायत सहरी ई-सेवा पोर्टल पर आपका स्वागत है। किसी भी सार्वजनिक समस्या के त्वरित समाधान हेतु नागरिक शिकायत दर्ज करें।',
-    categoryHi: 'सामान्य सूचना',
-    categoryEn: 'General Notice',
-    category: 'सामान्य सूचना',
+    _id: 'notice-transformer-upgrades',
+    titleHi: 'ग्रिड ट्रांसफार्मर मरम्मत हेतु अस्थायी विद्युत आपूर्ति कटौती',
+    titleEn: 'Temporary Power Shutdown for Grid Transformer Upgrades',
+    title: 'ग्रिड ट्रांसफार्मर मरम्मत हेतु अस्थायी विद्युत आपूर्ति कटौती',
+    descriptionHi: 'विद्युत वितरण निगम द्वारा ट्रांसफार्मर मरम्मत कार्य के चलते कल दोपहर 12:00 बजे से 3:00 बजे तक वार्ड 4, 5 और 6 में बिजली आपूर्ति बंद रहेगी। कार्य पूर्ण होते ही आपूर्ति सुचारू कर दी जाएगी।',
+    descriptionEn: 'Power supply across Wards 4, 5, and 6 will remain shut tomorrow between 12:00 PM and 3:00 PM for critical transformer maintenance by the electricity distribution board. Normal power supply will resume promptly after testing.',
+    description: 'विद्युत वितरण निगम द्वारा ट्रांसफार्मर मरम्मत कार्य के चलते कल दोपहर 12:00 बजे से 3:00 बजे तक वार्ड 4, 5 और 6 में बिजली आपूर्ति बंद रहेगी। कार्य पूर्ण होते ही आपूर्ति सुचारू कर दी जाएगी।',
+    categoryHi: 'विद्युत आपूर्ति',
+    categoryEn: 'Electricity',
+    category: 'विद्युत आपूर्ति',
+    isImportant: true,
+    priority: 'high',
+  },
+  {
+    _id: 'notice-pipeline-maintenance',
+    titleHi: 'वार्ड 2 और 3 में मुख्य पेयजल पाइपलाइन मरम्मत कार्य',
+    titleEn: 'Scheduled Pipeline Maintenance in Wards 2 & 3',
+    title: 'वार्ड 2 और 3 में मुख्य पेयजल पाइपलाइन मरम्मत कार्य',
+    descriptionHi: 'वार्ड 2 में मुख्य पेयजल पाइपलाइन लीकेज मरम्मत कार्य के कारण कल प्रातः 8:00 बजे से दोपहर 1:00 बजे तक जलापूर्ति बाधित रहेगी। सभी ग्रामवासी आवश्यकतानुसार पर्याप्त पानी का भंडारण कर लें। असुविधा के लिए खेद है।',
+    descriptionEn: 'Water supply across Wards 2 & 3 will remain disrupted tomorrow from 8:00 AM to 1:00 PM due to main drinking water pipeline leakage repairs in Ward 2. All villagers are requested to store adequate water. Inconvenience is regretted.',
+    description: 'वार्ड 2 में मुख्य पेयजल पाइपलाइन मरम्मत कार्य के कारण कल प्रातः 8:00 बजे से दोपहर 1:00 बजे तक जलापूर्ति बाधित रहेगी। सभी ग्रामवासी आवश्यकतानुसार पर्याप्त पानी का भंडारण कर लें। असुविधा के लिए खेद है।',
+    categoryHi: 'पेयजल व जल आपूर्ति',
+    categoryEn: 'Water Supply',
+    category: 'पेयजल व जल आपूर्ति',
+    isImportant: true,
+    priority: 'high',
+  },
+  {
+    _id: 'notice-fogging-drive',
+    titleHi: 'समस्त वार्डों में फॉगिंग एवं कीटनाशक छिड़काव अभियान',
+    titleEn: 'Fogging and Insecticide Spray Drive Across All Wards',
+    title: 'समस्त वार्डों में फॉगिंग एवं कीटनाशक छिड़काव अभियान',
+    descriptionHi: 'मौसमी बीमारियों (मलेरिया/डेंगू) की रोकथाम हेतु पंचायत द्वारा सभी 7 वार्डों में नियमित फॉगिंग और नालियों में कीटनाशक दवा का छिड़काव किया जा रहा है। अपने घर के आसपास जलभराव न होने दें।',
+    descriptionEn: 'Regular fogging and anti-larval chemical spraying in drains is being conducted across all 7 wards by the Panchayat to prevent seasonal vector-borne diseases (malaria/dengue). Please avoid water stagnation near your homes.',
+    description: 'मौसमी बीमारियों (मलेरिया/डेंगू) की रोकथाम हेतु पंचायत द्वारा सभी 7 वार्डों में नियमित फॉगिंग और नालियों में कीटनाशक दवा का छिड़काव किया जा रहा है। अपने घर के आसपास जलभराव न होने दें।',
+    categoryHi: 'स्वच्छता अभियान',
+    categoryEn: 'Sanitation',
+    category: 'स्वच्छता अभियान',
     isImportant: false,
     priority: 'normal',
+  },
+  {
+    _id: 'notice-gram-sabha',
+    titleHi: 'वार्षिक विकास योजनाओं हेतु विशेष ग्राम सभा बैठक',
+    titleEn: 'Special Gram Sabha Meeting for Annual Development Plans',
+    title: 'वार्षिक विकास योजनाओं हेतु विशेष ग्राम सभा बैठक',
+    descriptionHi: 'आगामी वित्तीय वर्ष के विकास कार्यों एवं नरेगा कार्ययोजना के अनुमोदन हेतु पंचायत भवन में विशेष ग्राम सभा आयोजित की जाएगी। समस्त ग्रामवासी अपनी सहभागिता सुनिश्चित करें।',
+    descriptionEn: 'A special Gram Sabha will be held at Panchayat Bhawan for approval of next financial year development works and NREGA action plan. All villagers are requested to ensure their participation.',
+    description: 'आगामी वित्तीय वर्ष के विकास कार्यों एवं नरेगा कार्ययोजना के अनुमोदन हेतु पंचायत भवन में विशेष ग्राम सभा आयोजित की जाएगी। समस्त ग्रामवासी अपनी सहभागिता सुनिश्चित करें।',
+    categoryHi: 'ग्राम सभा',
+    categoryEn: 'Gram Sabha',
+    category: 'ग्राम सभा',
+    isImportant: true,
+    priority: 'high',
   },
   {
     _id: 'notice-health-camp',
@@ -49,41 +91,170 @@ const SEED_NOTICES = [
     priority: 'normal',
   },
   {
-    _id: 'notice-gram-sabha',
-    titleHi: 'विशेष ग्राम सभा बैठक आमंत्रण',
-    titleEn: 'Special Gram Sabha Meeting Invitation',
-    title: 'विशेष ग्राम सभा बैठक आमंत्रण',
-    descriptionHi: 'गांव में सीसी रोड व नाली निर्माण कार्य की समीक्षा तथा नए विकास प्रस्तावों पर चर्चा हेतु ग्राम सभा की बैठक शुक्रवार सुबह 11:00 बजे पंचायत सचिवालय में होगी।',
-    descriptionEn: 'A Gram Sabha meeting to review CC road and drainage works and discuss new development proposals will be held on Friday at 11:00 AM in the Panchayat Secretariat.',
-    description: 'गांव में सीसी रोड व नाली निर्माण कार्य की समीक्षा तथा नए विकास प्रस्तावों पर चर्चा हेतु ग्राम सभा की बैठक शुक्रवार सुबह 11:00 बजे पंचायत सचिवालय में होगी।',
-    categoryHi: 'ग्राम सभा',
-    categoryEn: 'Gram Sabha',
-    category: 'ग्राम सभा',
-    isImportant: true,
-    priority: 'high',
+    _id: 'notice-welcome',
+    titleHi: 'ग्राम पंचायत सहरी में आपका स्वागत है',
+    titleEn: 'Welcome to Gram Panchayat Sahari',
+    title: 'ग्राम पंचायत सहरी में आपका स्वागत है',
+    descriptionHi: 'ग्राम पंचायत सहरी ई-सेवा पोर्टल पर आपका स्वागत है। किसी भी सार्वजनिक समस्या के त्वरित समाधान हेतु नागरिक शिकायत दर्ज करें।',
+    descriptionEn: 'Welcome to Gram Panchayat Sahari E-Services Portal. Submit your complaint online for quick resolution of civic issues.',
+    description: 'ग्राम पंचायत सहरी ई-सेवा पोर्टल पर आपका स्वागत है। किसी भी सार्वजनिक समस्या के त्वरित समाधान हेतु नागरिक शिकायत दर्ज करें।',
+    categoryHi: 'सामान्य सूचना',
+    categoryEn: 'General Notice',
+    category: 'सामान्य सूचना',
+    isImportant: false,
+    priority: 'normal',
   }
 ];
 
-const isDevanagari = (str) => /[\u0900-\u097F]/.test(str || '');
+export const isDevanagari = (str) => /[\u0900-\u097F]/.test(str || '');
 
-const enrichNotice = (notice) => {
+/**
+ * Built-in translation dictionaries for standard/existing village notices.
+ * Matches keywords across title, description, or category to provide instant bilingual fidelity.
+ */
+export const BUILT_IN_TRANSLATIONS = [
+  // 1. Transformer Upgrades / Power Shutdown
+  {
+    matcher: (text) => /transformer|विद्युत आपूर्ति|बिजली|grid|shutdown|power/i.test(text),
+    titleHi: 'ग्रिड ट्रांसफार्मर मरम्मत हेतु अस्थायी विद्युत आपूर्ति कटौती',
+    titleEn: 'Temporary Power Shutdown for Grid Transformer Upgrades',
+    descriptionHi: 'विद्युत वितरण निगम द्वारा ट्रांसफार्मर मरम्मत कार्य के चलते कल दोपहर 12:00 बजे से 3:00 बजे तक वार्ड 4, 5 और 6 में बिजली आपूर्ति बंद रहेगी। कार्य पूर्ण होते ही आपूर्ति सुचारू कर दी जाएगी।',
+    descriptionEn: 'Power supply across Wards 4, 5, and 6 will remain shut tomorrow between 12:00 PM and 3:00 PM for critical transformer maintenance by the electricity distribution board. Normal power supply will resume promptly after testing.',
+    categoryHi: 'विद्युत आपूर्ति',
+    categoryEn: 'Electricity',
+    isImportant: true,
+    priority: 'high',
+  },
+  // 2. Pipeline Maintenance
+  {
+    matcher: (text) => /pipeline|पाइपलाइन|पेयजल|water supply|leakage|लीकेज/i.test(text),
+    titleHi: 'वार्ड 2 और 3 में मुख्य पेयजल पाइपलाइन मरम्मत कार्य',
+    titleEn: 'Scheduled Pipeline Maintenance in Wards 2 & 3',
+    descriptionHi: 'वार्ड 2 में मुख्य पेयजल पाइपलाइन लीकेज मरम्मत कार्य के कारण कल प्रातः 8:00 बजे से दोपहर 1:00 बजे तक जलापूर्ति बाधित रहेगी। सभी ग्रामवासी आवश्यकतानुसार पर्याप्त पानी का भंडारण कर लें। असुविधा के लिए खेद है।',
+    descriptionEn: 'Water supply across Wards 2 & 3 will remain disrupted tomorrow from 8:00 AM to 1:00 PM due to main drinking water pipeline leakage repairs in Ward 2. All villagers are requested to store adequate water. Inconvenience is regretted.',
+    categoryHi: 'पेयजल व जल आपूर्ति',
+    categoryEn: 'Water Supply',
+    isImportant: true,
+    priority: 'high',
+  },
+  // 3. Fogging and Spray Drive
+  {
+    matcher: (text) => /fogging|फॉगिंग|कीटनाशक|spraying|spray|dengue|malaria|डेंगू/i.test(text),
+    titleHi: 'समस्त वार्डों में फॉगिंग एवं कीटनाशक छिड़काव अभियान',
+    titleEn: 'Fogging and Insecticide Spray Drive Across All Wards',
+    descriptionHi: 'मौसमी बीमारियों (मलेरिया/डेंगू) की रोकथाम हेतु पंचायत द्वारा सभी 7 वार्डों में नियमित फॉगिंग और नालियों में कीटनाशक दवा का छिड़काव किया जा रहा है। अपने घर के आसपास जलभराव न होने दें।',
+    descriptionEn: 'Regular fogging and anti-larval chemical spraying in drains is being conducted across all 7 wards by the Panchayat to prevent seasonal vector-borne diseases (malaria/dengue). Please avoid water stagnation near your homes.',
+    categoryHi: 'स्वच्छता अभियान',
+    categoryEn: 'Sanitation',
+    isImportant: false,
+    priority: 'normal',
+  },
+  // 4. Special Gram Sabha Meeting
+  {
+    matcher: (text) => /gram sabha|ग्राम सभा|वार्षिक विकास|विकास योजना|nrega|नरेगा|meeting/i.test(text),
+    titleHi: 'वार्षिक विकास योजनाओं हेतु विशेष ग्राम सभा बैठक',
+    titleEn: 'Special Gram Sabha Meeting for Annual Development Plans',
+    descriptionHi: 'आगामी वित्तीय वर्ष के विकास कार्यों एवं नरेगा कार्ययोजना के अनुमोदन हेतु पंचायत भवन में विशेष ग्राम सभा आयोजित की जाएगी। समस्त ग्रामवासी अपनी सहभागिता सुनिश्चित करें।',
+    descriptionEn: 'A special Gram Sabha will be held at Panchayat Bhawan for approval of next financial year development works and NREGA action plan. All villagers are requested to ensure their participation.',
+    categoryHi: 'ग्राम सभा',
+    categoryEn: 'Gram Sabha',
+    isImportant: true,
+    priority: 'high',
+  },
+  // 5. Health Checkup Camp
+  {
+    matcher: (text) => /health|स्वास्थ्य|शिविर|camp|दवा वितरण/i.test(text),
+    titleHi: 'निःशुल्क स्वास्थ्य जांच एवं दवा वितरण शिविर',
+    titleEn: 'Free Health Checkup and Medicine Distribution Camp',
+    descriptionHi: 'ग्राम पंचायत भवन में आगामी रविवार को सुबह 9:00 बजे से दोपहर 3:00 बजे तक निःशुल्क स्वास्थ्य जांच शिविर का आयोजन किया जाएगा। सभी ग्रामवासी लाभ उठाएं।',
+    descriptionEn: 'A free health checkup and medicine camp will be organized at the Panchayat Bhawan this Sunday from 9:00 AM to 3:00 PM. All villagers are welcome to benefit.',
+    categoryHi: 'स्वास्थ्य / शिविर',
+    categoryEn: 'Health & Camp',
+    isImportant: true,
+    priority: 'high',
+  },
+  // 6. Ration Distribution
+  {
+    matcher: (text) => /ration|राशन|foodgrain|खाद्यान्न|fair price/i.test(text),
+    titleHi: 'मासिक सार्वजनिक राशन वितरण सूचना',
+    titleEn: 'Monthly Public Foodgrain Distribution Notice',
+    descriptionHi: 'सभी राशन कार्ड धारकों को सूचित किया जाता है कि चालू माह का खाद्यान्न वितरण 5 से 12 तारीख तक उचित मूल्य की दुकान पर किया जाएगा। अपना आधार कार्ड साथ लाएं।',
+    descriptionEn: 'All ration card holders are informed that monthly foodgrain distribution will take place from the 5th to the 12th at the Fair Price Shop. Please bring your Aadhaar card.',
+    categoryHi: 'राशन वितरण',
+    categoryEn: 'Ration Distribution',
+    isImportant: false,
+    priority: 'normal',
+  },
+  // 7. Welcome Notice
+  {
+    matcher: (text) => /welcome|स्वागत/i.test(text),
+    titleHi: 'ग्राम पंचायत सहरी में आपका स्वागत है',
+    titleEn: 'Welcome to Gram Panchayat Sahari',
+    descriptionHi: 'ग्राम पंचायत सहरी ई-सेवा पोर्टल पर आपका स्वागत है। किसी भी सार्वजनिक समस्या के त्वरित समाधान हेतु नागरिक शिकायत दर्ज करें।',
+    descriptionEn: 'Welcome to Gram Panchayat Sahari E-Services Portal. Submit your complaint online for quick resolution of civic issues.',
+    categoryHi: 'सामान्य सूचना',
+    categoryEn: 'General Notice',
+    isImportant: false,
+    priority: 'normal',
+  }
+];
+
+export const enrichNotice = (notice) => {
   if (!notice) return notice;
-  const match = SEED_NOTICES.find(
-    (s) => s.title === notice.title || s.titleHi === notice.title || s._id === notice._id || s._id === notice.id
+
+  const rawTitle = (notice.title || '').trim();
+  const rawDesc  = (notice.description || notice.content || '').trim();
+  const searchCorpus = `${rawTitle} ${rawDesc} ${notice.titleEn || ''} ${notice.descriptionEn || ''} ${notice.titleHi || ''} ${notice.descriptionHi || ''}`.toLowerCase();
+
+  // 1. Direct seed or ID match
+  const seedMatch = SEED_NOTICES.find(
+    (s) =>
+      s._id === notice._id ||
+      s._id === notice.id ||
+      s.title === rawTitle ||
+      s.titleHi === rawTitle ||
+      s.titleEn === rawTitle
   );
 
-  // Determine best titleHi / titleEn from stored bilingual fields, seed match, or script detection
-  const storedHiTitle = notice.titleHi || match?.titleHi || '';
-  const storedEnTitle = notice.titleEn || match?.titleEn || '';
-  const rawTitle      = notice.title || '';
-  const titleHi = storedHiTitle || (isDevanagari(rawTitle) ? rawTitle : '');
-  const titleEn = storedEnTitle || (!isDevanagari(rawTitle) ? rawTitle : '');
+  // 2. Built-in translation dictionary match
+  const transMatch = BUILT_IN_TRANSLATIONS.find((t) => t.matcher(searchCorpus));
+  const matched = seedMatch || transMatch;
 
-  const storedHiDesc = notice.descriptionHi || match?.descriptionHi || '';
-  const storedEnDesc = notice.descriptionEn || match?.descriptionEn || '';
-  const rawDesc      = notice.description || notice.content || '';
-  const descriptionHi = storedHiDesc || (isDevanagari(rawDesc) ? rawDesc : '');
-  const descriptionEn = storedEnDesc || (!isDevanagari(rawDesc) ? rawDesc : '');
+  // Genuine Hindi check (must contain Devanagari Unicode characters)
+  const hasValidHiTitle = isDevanagari(notice.titleHi);
+  const hasValidHiDesc  = isDevanagari(notice.descriptionHi);
+  const hasValidEnTitle = notice.titleEn && !isDevanagari(notice.titleEn);
+  const hasValidEnDesc  = notice.descriptionEn && !isDevanagari(notice.descriptionEn);
+
+  // Derive titleHi: genuine Hindi from notice, or translation match, or rawTitle if it's Devanagari
+  const titleHi = (hasValidHiTitle ? notice.titleHi.trim() : '')
+    || matched?.titleHi
+    || (isDevanagari(rawTitle) ? rawTitle : '');
+
+  // Derive titleEn: genuine English from notice, or translation match, or rawTitle if it's English
+  const titleEn = (hasValidEnTitle ? notice.titleEn.trim() : '')
+    || matched?.titleEn
+    || (!isDevanagari(rawTitle) ? rawTitle : '');
+
+  // Derive descriptionHi
+  const descriptionHi = (hasValidHiDesc ? notice.descriptionHi.trim() : '')
+    || matched?.descriptionHi
+    || (isDevanagari(rawDesc) ? rawDesc : '');
+
+  // Derive descriptionEn
+  const descriptionEn = (hasValidEnDesc ? notice.descriptionEn.trim() : '')
+    || matched?.descriptionEn
+    || (!isDevanagari(rawDesc) ? rawDesc : '');
+
+  // Derive categoryHi & categoryEn
+  const rawCat = notice.category || '';
+  const categoryHi = (isDevanagari(notice.categoryHi) ? notice.categoryHi.trim() : '')
+    || matched?.categoryHi
+    || (isDevanagari(rawCat) ? rawCat : '');
+
+  const categoryEn = (notice.categoryEn && !isDevanagari(notice.categoryEn) ? notice.categoryEn.trim() : '')
+    || matched?.categoryEn
+    || (!isDevanagari(rawCat) ? rawCat : '');
 
   return {
     ...notice,
@@ -91,8 +262,10 @@ const enrichNotice = (notice) => {
     titleEn:       titleEn || rawTitle,
     descriptionHi: descriptionHi || rawDesc,
     descriptionEn: descriptionEn || rawDesc,
-    categoryHi:    notice.categoryHi || match?.categoryHi || notice.category || '',
-    categoryEn:    notice.categoryEn || match?.categoryEn || notice.category || '',
+    categoryHi:    categoryHi || rawCat,
+    categoryEn:    categoryEn || rawCat,
+    isImportant:   notice.isImportant !== undefined ? notice.isImportant : (matched?.isImportant ?? false),
+    priority:      notice.priority || matched?.priority || 'normal',
   };
 };
 
@@ -213,7 +386,8 @@ const NoticeBoard = () => {
     );
   }
 
-  const activeNotice = notices[currentIndex] || notices[0];
+  const rawNotice = notices[currentIndex] || notices[0];
+  const activeNotice = enrichNotice(rawNotice);
   const title = isHi
     ? (activeNotice?.titleHi || activeNotice?.title)
     : (activeNotice?.titleEn || activeNotice?.title);
@@ -256,32 +430,33 @@ const NoticeBoard = () => {
 
   const getCategoryDisplay = (cat) => {
     if (!cat) return isHi ? 'सामान्य सूचना' : 'General Notice';
-    if (cat === 'सामान्य सूचना' || cat === 'General Notice') {
-      return isHi ? 'सामान्य सूचना' : 'General Notice';
-    }
-    if (cat === 'पेयजल व जल आपूर्ति' || cat === 'Water Supply') {
-      return isHi ? 'पेयजल व जल आपूर्ति' : 'Water Supply';
-    }
-    if (cat === 'स्वच्छता अभियान' || cat === 'Sanitation') {
-      return isHi ? 'स्वच्छता अभियान' : 'Sanitation';
-    }
-    if (cat === 'विद्युत आपूर्ति' || cat === 'Electricity') {
+    const c = String(cat).toLowerCase();
+    if (c.includes('विद्युत') || c.includes('electric') || c.includes('बिजली')) {
       return isHi ? 'विद्युत आपूर्ति' : 'Electricity';
     }
-    if (cat === 'सड़क व निर्माण' || cat === 'Roads & Works') {
+    if (c.includes('पेयजल') || c.includes('water') || c.includes('पानी') || c.includes('पाइपलाइन')) {
+      return isHi ? 'पेयजल व जल आपूर्ति' : 'Water Supply';
+    }
+    if (c.includes('स्वच्छता') || c.includes('sanit') || c.includes('सफाई') || c.includes('फॉगिंग')) {
+      return isHi ? 'स्वच्छता अभियान' : 'Sanitation';
+    }
+    if (c.includes('सड़क') || c.includes('road') || c.includes('निर्माण')) {
       return isHi ? 'सड़क व निर्माण' : 'Roads & Works';
     }
-    if (cat === 'कृषि व योजनाएं' || cat === 'Agriculture & Schemes') {
+    if (c.includes('कृषि') || c.includes('agri') || c.includes('योजना')) {
       return isHi ? 'कृषि व योजनाएं' : 'Agriculture & Schemes';
     }
-    if (cat === 'स्वास्थ्य / शिविर' || cat === 'Health & Camp') {
+    if (c.includes('स्वास्थ्य') || c.includes('health') || c.includes('शिविर') || c.includes('दवा')) {
       return isHi ? 'स्वास्थ्य / शिविर' : 'Health & Camp';
     }
-    if (cat === 'राशन वितरण' || cat === 'Ration Distribution') {
+    if (c.includes('राशन') || c.includes('ration') || c.includes('खाद्यान्न')) {
       return isHi ? 'राशन वितरण' : 'Ration Distribution';
     }
-    if (cat === 'ग्राम सभा' || cat === 'Gram Sabha') {
+    if (c.includes('ग्राम सभा') || c.includes('sabha')) {
       return isHi ? 'ग्राम सभा' : 'Gram Sabha';
+    }
+    if (cat === 'सामान्य सूचना' || cat === 'General Notice' || cat === 'सामान्य') {
+      return isHi ? 'सामान्य सूचना' : 'General Notice';
     }
     return cat;
   };
