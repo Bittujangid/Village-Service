@@ -238,7 +238,7 @@ const VillageDirectory = () => {
         title={t.dirModalTitle}
         maxWidth="max-w-3xl"
       >
-        <div className="space-y-5">
+        <div className="flex-1 overflow-y-auto overscroll-contain px-4 sm:px-6 py-4 sm:py-5 space-y-5">
           
           {/* Section A (Top): Featured Sarpanch Institutional Card */}
           <div className="bg-slate-50 border border-slate-200 border-t-4 border-t-blue-900 rounded-xl p-4 sm:p-5 shadow-2xs">
