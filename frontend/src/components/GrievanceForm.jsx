@@ -23,6 +23,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import html2canvas from 'html2canvas';
 import { auth } from '../config/firebase';
 import { submitComplaint } from '../api/complaints';
+import { generateAiDescription } from '../api/ai';
 import { useLang } from '../context/LanguageContext';
 
 const getCategories = (lang) => [
@@ -37,6 +38,7 @@ const WARDS = Array.from({ length: 7 }, (_, i) => i + 1);
 
 const GrievanceForm = ({ onSuccessClose }) => {
   const { lang, t } = useLang();
+  const isHi = lang === 'hi';
   const categories = getCategories(lang);
 
   const [formData, setFormData] = useState({
@@ -51,6 +53,7 @@ const GrievanceForm = ({ onSuccessClose }) => {
   const [imagePreview, setImagePreview] = useState(null);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGeneratingAi, setIsGeneratingAi] = useState(false);
   const [successResult, setSuccessResult] = useState(null);
   const [copiedId, setCopiedId] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -424,6 +427,62 @@ const GrievanceForm = ({ onSuccessClose }) => {
     if (imagePreview) {
       URL.revokeObjectURL(imagePreview);
       setImagePreview(null);
+    }
+  };
+
+  // AI Auto-Write Description using Gemini Vision
+  const handleAiGenerateDescription = async () => {
+    if (!imageFile) {
+      toast(
+        isHi ? 'कृपया पहले समस्या की फोटो संलग्न करें' : 'Please attach a photo first',
+        { icon: '📸' }
+      );
+      setErrors((prev) => ({
+        ...prev,
+        photo: isHi ? 'कृपया पहले समस्या की फोटो संलग्न करें' : 'Please attach a photo first',
+      }));
+      return;
+    }
+
+    setIsGeneratingAi(true);
+    try {
+      // Convert image file to base64 data URL
+      const base64Data = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(imageFile);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (err) => reject(err);
+      });
+
+      const res = await generateAiDescription({
+        imageBase64: base64Data,
+        ward: formData.ward,
+        category: formData.category,
+        language: lang,
+      });
+
+      if (res?.description) {
+        setFormData((prev) => ({
+          ...prev,
+          description: res.description,
+        }));
+        setErrors((prev) => {
+          const next = { ...prev };
+          delete next.description;
+          return next;
+        });
+        toast.success(
+          isHi ? '✨ AI द्वारा विवरण लिखा गया!' : '✨ Description generated with AI!'
+        );
+      }
+    } catch (err) {
+      console.warn('AI generate description error:', err);
+      const msg =
+        err?.response?.data?.message ||
+        (isHi ? 'AI विवरण तैयार करने में समस्या आई' : 'Failed to generate AI description');
+      toast.error(msg);
+    } finally {
+      setIsGeneratingAi(false);
     }
   };
 
@@ -1126,45 +1185,7 @@ const GrievanceForm = ({ onSuccessClose }) => {
           )}
         </div>
 
-        {/* 5. Description Textarea */}
-        <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label htmlFor="grievance-desc" className="block text-xs font-semibold text-slate-700 tracking-wide uppercase">
-              {t.labelDescription} <span className="text-red-500">*</span>
-            </label>
-            <span className="text-[11px] font-mono text-slate-400">
-              {formData.description.length} {lang === 'hi' ? 'अक्षर' : 'chars'}
-            </span>
-          </div>
-          <textarea
-            id="grievance-desc"
-            rows={4}
-            required
-            value={formData.description}
-            onChange={(e) => handleChange('description', e.target.value)}
-            onBlur={handleInputBlur}
-            placeholder={t.labelDescriptionHint}
-            className={`w-full p-3.5 rounded-xl border resize-none ${
-              errors.description
-                ? 'border-red-400 bg-red-50/30 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
-                : 'border-slate-300 bg-slate-50/50 hover:bg-white focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20'
-            } text-slate-900 placeholder-slate-400 focus:outline-none transition-all text-sm`}
-          />
-          <div className="flex items-center justify-between mt-1">
-            {errors.description ? (
-              <p className="text-xs text-red-600 flex items-center gap-1">
-                <AlertCircle className="w-3.5 h-3.5" />
-                {errors.description}
-              </p>
-            ) : (
-              <span className="text-[11px] text-slate-400">
-                {lang === 'hi' ? 'न्यूनतम 10 अक्षर आवश्यक हैं' : 'Minimum 10 characters required'}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* 6. Photo Upload */}
+        {/* 5. Photo Upload (Moved above Description for seamless AI Vision workflow) */}
         <div>
           <label className="block text-xs font-semibold text-slate-700 tracking-wide uppercase mb-1.5">
             {t.labelPhoto} <span className="text-red-500">*</span>
@@ -1224,6 +1245,65 @@ const GrievanceForm = ({ onSuccessClose }) => {
               {errors.photo}
             </p>
           )}
+        </div>
+
+        {/* 6. Description Textarea with AI Auto-Write */}
+        <div>
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+            <div className="flex items-center gap-2">
+              <label htmlFor="grievance-desc" className="block text-xs font-semibold text-slate-700 tracking-wide uppercase">
+                {t.labelDescription} <span className="text-red-500">*</span>
+              </label>
+              <button
+                type="button"
+                onClick={handleAiGenerateDescription}
+                disabled={isGeneratingAi}
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-xs hover:opacity-95 active:scale-95 disabled:opacity-60 flex items-center gap-1.5 transition-all cursor-pointer"
+                title={isHi ? 'फोटो देखकर AI से विवरण लिखवाएं' : 'Auto-write description from photo using AI'}
+              >
+                {isGeneratingAi ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>{t.aiAnalyzing || (isHi ? 'AI फोटो देख रहा है...' : 'Analyzing photo...')}</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-3.5 h-3.5 text-amber-200" />
+                    <span>{t.aiWriteDesc || (isHi ? '✨ AI से विवरण लिखें' : '✨ Write with AI')}</span>
+                  </>
+                )}
+              </button>
+            </div>
+            <span className="text-[11px] font-mono text-slate-400">
+              {formData.description.length} {lang === 'hi' ? 'अक्षर' : 'chars'}
+            </span>
+          </div>
+          <textarea
+            id="grievance-desc"
+            rows={4}
+            required
+            value={formData.description}
+            onChange={(e) => handleChange('description', e.target.value)}
+            onBlur={handleInputBlur}
+            placeholder={t.labelDescriptionHint}
+            className={`w-full p-3.5 rounded-xl border resize-none ${
+              errors.description
+                ? 'border-red-400 bg-red-50/30 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
+                : 'border-slate-300 bg-slate-50/50 hover:bg-white focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20'
+            } text-slate-900 placeholder-slate-400 focus:outline-none transition-all text-sm`}
+          />
+          <div className="flex items-center justify-between mt-1">
+            {errors.description ? (
+              <p className="text-xs text-red-600 flex items-center gap-1">
+                <AlertCircle className="w-3.5 h-3.5" />
+                {errors.description}
+              </p>
+            ) : (
+              <span className="text-[11px] text-slate-400">
+                {lang === 'hi' ? 'न्यूनतम 10 अक्षर आवश्यक हैं' : 'Minimum 10 characters required'}
+              </span>
+            )}
+          </div>
         </div>
 
       </div>{/* end scrollable body */}

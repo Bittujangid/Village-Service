@@ -8,6 +8,7 @@ const complaintRoutes = require('./routes/complaintRoutes');
 const noticeRoutes = require('./routes/noticeRoutes');
 const directoryRoutes = require('./routes/directoryRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 
 // Import error handler middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -64,6 +65,7 @@ app.use('/api/complaints', complaintRoutes);
 app.use('/api/notices', noticeRoutes);
 app.use('/api/directory', directoryRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/ai', aiRoutes);
 
 // 404 Route Handler for undefined endpoints
 app.use((req, res, next) => {
