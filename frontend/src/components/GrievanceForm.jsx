@@ -1269,7 +1269,7 @@ const GrievanceForm = ({ onSuccessClose }) => {
                 ) : (
                   <>
                     <Sparkles className="w-3.5 h-3.5 text-amber-200" />
-                    <span>{t.aiWriteDesc || (isHi ? '✨ AI से विवरण लिखें' : '✨ Write with AI')}</span>
+                    <span>{t.aiWriteDesc || (isHi ? 'AI से विवरण लिखें' : 'Write with AI')}</span>
                   </>
                 )}
               </button>
