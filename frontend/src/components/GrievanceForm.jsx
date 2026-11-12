@@ -472,7 +472,7 @@ const GrievanceForm = ({ onSuccessClose }) => {
           return next;
         });
         toast.success(
-          isHi ? '✨ AI द्वारा विवरण लिखा गया!' : '✨ Description generated with AI!'
+          t.aiGeneratedSuccess || (isHi ? 'AI द्वारा विवरण लिखा गया!' : 'Description generated with AI!')
         );
       }
     } catch (err) {
@@ -1249,32 +1249,32 @@ const GrievanceForm = ({ onSuccessClose }) => {
 
         {/* 6. Description Textarea with AI Auto-Write */}
         <div>
-          <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
-            <div className="flex items-center gap-2">
-              <label htmlFor="grievance-desc" className="block text-xs font-semibold text-slate-700 tracking-wide uppercase">
+          <div className="flex items-center justify-between gap-2 mb-1.5">
+            <div className="flex items-center gap-2 min-w-0 flex-wrap">
+              <label htmlFor="grievance-desc" className="block text-xs font-semibold text-slate-700 tracking-wide uppercase shrink-0">
                 {t.labelDescription} <span className="text-red-500">*</span>
               </label>
               <button
                 type="button"
                 onClick={handleAiGenerateDescription}
                 disabled={isGeneratingAi}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-xs hover:opacity-95 active:scale-95 disabled:opacity-60 flex items-center gap-1.5 transition-all cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-indigo-700 bg-indigo-50/90 border border-indigo-200/80 shadow-2xs hover:bg-indigo-100/80 hover:border-indigo-300 active:scale-95 transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 title={isHi ? 'फोटो देखकर AI से विवरण लिखवाएं' : 'Auto-write description from photo using AI'}
               >
                 {isGeneratingAi ? (
                   <>
-                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin text-indigo-600 shrink-0" />
                     <span>{t.aiAnalyzing || (isHi ? 'AI फोटो देख रहा है...' : 'Analyzing photo...')}</span>
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-3.5 h-3.5 text-amber-200" />
+                    <Sparkles className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
                     <span>{t.aiWriteDesc || (isHi ? 'AI से विवरण लिखें' : 'Write with AI')}</span>
                   </>
                 )}
               </button>
             </div>
-            <span className="text-[11px] font-mono text-slate-400">
+            <span className="text-[11px] font-mono text-slate-400 shrink-0 ml-auto">
               {formData.description.length} {lang === 'hi' ? 'अक्षर' : 'chars'}
             </span>
           </div>
