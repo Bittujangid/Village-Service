@@ -1397,7 +1397,7 @@ const AdminDashboard = () => {
             {/* Left: Create Notice Form */}
             <div className="lg:col-span-1 bg-white p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200 shadow-xs h-fit">
               <h3 className="text-base sm:text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <PlusCircle className="w-5 h-5 text-emerald-700" />
+                <PlusCircle className="w-5 h-5 text-pink-600" />
                 <span>{isHi ? 'नई सार्वजनिक सूचना बनाएं' : 'Publish Notice'}</span>
               </h3>
 
@@ -1411,7 +1411,7 @@ const AdminDashboard = () => {
                     id="notice-cat"
                     value={newNotice.category}
                     onChange={(e) => setNewNotice({ ...newNotice, category: e.target.value })}
-                    className="w-full min-h-[48px] px-3 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full min-h-[48px] px-3 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
                   >
                     {NOTICE_CATEGORIES.map((c) => (
                       <option key={c.id} value={c.id}>
@@ -1429,7 +1429,7 @@ const AdminDashboard = () => {
                       onClick={() => setNoticeFormLang('hi')}
                       className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                         noticeFormLang === 'hi'
-                          ? 'bg-white text-emerald-700 shadow-sm border border-slate-200'
+                          ? 'bg-white text-pink-600 shadow-sm border border-slate-200'
                           : 'text-slate-500 hover:text-slate-700'
                       }`}
                     >
@@ -1440,7 +1440,7 @@ const AdminDashboard = () => {
                       onClick={() => setNoticeFormLang('en')}
                       className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                         noticeFormLang === 'en'
-                          ? 'bg-white text-blue-700 shadow-sm border border-slate-200'
+                          ? 'bg-white text-pink-600 shadow-sm border border-slate-200'
                           : 'text-slate-500 hover:text-slate-700'
                       }`}
                     >
@@ -1461,7 +1461,7 @@ const AdminDashboard = () => {
                           value={newNotice.titleHi}
                           onChange={(e) => setNewNotice({ ...newNotice, titleHi: e.target.value })}
                           placeholder="सूचना का विषय या शीर्षक"
-                          className="w-full min-h-[48px] px-3 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                          className="w-full min-h-[48px] px-3 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
                         />
                       </div>
                       <div>
@@ -1474,7 +1474,7 @@ const AdminDashboard = () => {
                           value={newNotice.descriptionHi}
                           onChange={(e) => setNewNotice({ ...newNotice, descriptionHi: e.target.value })}
                           placeholder="सूचना का विवरण, समय-सारणी या आवश्यक निर्देश लिखें"
-                          className="w-full p-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                          className="w-full p-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
                         />
                       </div>
                     </div>
@@ -1493,7 +1493,7 @@ const AdminDashboard = () => {
                           value={newNotice.titleEn}
                           onChange={(e) => setNewNotice({ ...newNotice, titleEn: e.target.value })}
                           placeholder="Notice title or subject"
-                          className="w-full min-h-[48px] px-3 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full min-h-[48px] px-3 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
                         />
                       </div>
                       <div>
@@ -1506,7 +1506,7 @@ const AdminDashboard = () => {
                           value={newNotice.descriptionEn}
                           onChange={(e) => setNewNotice({ ...newNotice, descriptionEn: e.target.value })}
                           placeholder="Provide clear announcement details, schedule, or instructions"
-                          className="w-full p-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full p-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
                         />
                       </div>
                     </div>
