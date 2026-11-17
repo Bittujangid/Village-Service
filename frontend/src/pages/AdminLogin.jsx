@@ -266,7 +266,7 @@ const AdminLogin = () => {
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       placeholder={lang === 'hi' ? 'उदा. sarpanch_sahari' : 'e.g. sarpanch_sahari'}
-                      className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition disabled:bg-slate-100 disabled:cursor-not-allowed"
+                      className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition disabled:bg-slate-100 disabled:cursor-not-allowed"
                     />
                   </div>
                 </div>
@@ -291,7 +291,7 @@ const AdminLogin = () => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition disabled:bg-slate-100 disabled:cursor-not-allowed"
+                      className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition disabled:bg-slate-100 disabled:cursor-not-allowed"
                     />
                     <button
                       type="button"
@@ -311,7 +311,7 @@ const AdminLogin = () => {
                   <div className="flex justify-end mt-1.5">
                     <Link
                       to="/admin/forgot-password"
-                      className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors"
+                      className="text-xs font-semibold text-violet-600 hover:text-violet-800 transition-colors"
                     >
                       {lang === 'hi' ? 'पासवर्ड भूल गए?' : 'Forgot Password?'}
                     </Link>
@@ -323,7 +323,7 @@ const AdminLogin = () => {
                   <button
                     type="submit"
                     disabled={loading || isLocked}
-                    className="group w-full min-h-[48px] px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-semibold text-sm tracking-wide shadow-md shadow-indigo-500/25 hover:shadow-lg hover:shadow-indigo-500/35 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+                    className="group w-full min-h-[48px] px-5 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white font-semibold text-sm tracking-wide shadow-md shadow-violet-500/25 hover:shadow-lg hover:shadow-violet-500/35 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
                   >
                     {loading ? (
                       <>
@@ -394,7 +394,7 @@ const AdminLogin = () => {
                         setPin(val);
                       }}
                       placeholder="••••••"
-                      className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 text-center tracking-[0.4em] text-lg font-bold font-mono transition disabled:bg-slate-100 disabled:cursor-not-allowed"
+                      className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 text-center tracking-[0.4em] text-lg font-bold font-mono transition disabled:bg-slate-100 disabled:cursor-not-allowed"
                     />
                     <button
                       type="button"
