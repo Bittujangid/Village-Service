@@ -1537,7 +1537,7 @@ const AdminDashboard = () => {
                 <button
                   type="submit"
                   disabled={creatingNotice}
-                  className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-400 text-white font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2 touch-target-min cursor-pointer"
+                  className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-pink-500 hover:bg-pink-600 disabled:bg-pink-300 text-white font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2 touch-target-min cursor-pointer"
                 >
                   {creatingNotice ? (
                     <span>{isHi ? 'प्रकाशित कर रहे हैं...' : 'Publishing...'}</span>
@@ -1597,7 +1597,7 @@ const AdminDashboard = () => {
                                 {isHi ? '⚠️ अति महत्वपूर्ण' : '⚠️ High Priority'}
                               </span>
                             )}
-                            <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                            <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-pink-100 text-pink-800 border border-pink-200">
                               {isHi ? (n.categoryHi || getCategoryDisplay(n.category, lang)) : (n.categoryEn || getCategoryDisplay(n.category, lang))}
                             </span>
                             <span className="text-xs text-slate-400">
