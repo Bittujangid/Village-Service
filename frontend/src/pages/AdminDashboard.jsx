@@ -487,8 +487,8 @@ const AdminDashboard = () => {
     // At minimum, one language's title+description must be filled
     if ((!hiTitle && !enTitle) || (!hiDesc && !enDesc)) {
       toast.error(isHi
-        ? 'कृपया कम से कम हिंदी या अंग्रेज़ी में सूचना का शीर्षक और विवरण भरें'
-        : 'Please fill title and description in at least Hindi or English');
+        ? 'कृपया सूचना का शीर्षक और विवरण दोनों दर्ज करें।'
+        : 'Please enter both the notice title and description');
       return;
     }
 
@@ -1514,7 +1514,7 @@ const AdminDashboard = () => {
 
                   {/* Bilingual fill hint */}
                   <p className="text-[11px] text-slate-400 mt-2 flex items-center gap-1">
-                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-pink-500 shrink-0"></span>
                     {isHi
                       ? 'दोनों भाषाओं में भरें — जो भाषा नागरिक चुनें, वही दिखेगी।'
                       : 'Fill both languages — citizens will see the one they select.'}
@@ -1527,7 +1527,7 @@ const AdminDashboard = () => {
                     type="checkbox"
                     checked={newNotice.isImportant}
                     onChange={(e) => setNewNotice({ ...newNotice, isImportant: e.target.checked })}
-                    className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer"
+                    className="w-4 h-4 rounded text-pink-500 focus:ring-pink-500 border-slate-300 cursor-pointer"
                   />
                   <label htmlFor="notice-important" className="text-xs font-bold text-slate-700 cursor-pointer">
                     {isHi ? '⚠️ अति महत्वपूर्ण सूचना (High Priority)' : '⚠️ High Priority Notice'}
