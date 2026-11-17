@@ -311,7 +311,7 @@ const AdminLogin = () => {
                   <div className="flex justify-end mt-1.5">
                     <Link
                       to="/admin/forgot-password"
-                      className="text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+                      className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors"
                     >
                       {lang === 'hi' ? 'पासवर्ड भूल गए?' : 'Forgot Password?'}
                     </Link>
@@ -323,7 +323,7 @@ const AdminLogin = () => {
                   <button
                     type="submit"
                     disabled={loading || isLocked}
-                    className="w-full py-2.5 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-60 text-white font-medium text-sm shadow-xs transition flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-600/20 cursor-pointer"
+                    className="group w-full min-h-[48px] px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-semibold text-sm tracking-wide shadow-md shadow-indigo-500/25 hover:shadow-lg hover:shadow-indigo-500/35 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
                   >
                     {loading ? (
                       <>
@@ -333,7 +333,7 @@ const AdminLogin = () => {
                     ) : (
                       <>
                         <span>{lang === 'hi' ? 'आगे बढ़ें (सुरक्षा पिन)' : 'Continue to Security PIN'}</span>
-                        <ArrowRight className="w-4 h-4" />
+                        <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
                       </>
                     )}
                   </button>
