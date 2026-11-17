@@ -1460,7 +1460,7 @@ const AdminDashboard = () => {
                           type="text"
                           value={newNotice.titleHi}
                           onChange={(e) => setNewNotice({ ...newNotice, titleHi: e.target.value })}
-                          placeholder="उदा. ग्राम सभा की विशेष बैठक"
+                          placeholder="सूचना का विषय या शीर्षक"
                           className="w-full min-h-[48px] px-3 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                         />
                       </div>
@@ -1473,7 +1473,7 @@ const AdminDashboard = () => {
                           rows={4}
                           value={newNotice.descriptionHi}
                           onChange={(e) => setNewNotice({ ...newNotice, descriptionHi: e.target.value })}
-                          placeholder="सूचना का पूरा विवरण लिखें जो नागरिकों को प्रदर्शित होगा..."
+                          placeholder="सूचना का विवरण, समय-सारणी या आवश्यक निर्देश लिखें"
                           className="w-full p-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                         />
                       </div>
@@ -1492,7 +1492,7 @@ const AdminDashboard = () => {
                           type="text"
                           value={newNotice.titleEn}
                           onChange={(e) => setNewNotice({ ...newNotice, titleEn: e.target.value })}
-                          placeholder="e.g. Special Gram Sabha Meeting"
+                          placeholder="Notice title or subject"
                           className="w-full min-h-[48px] px-3 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
@@ -1505,7 +1505,7 @@ const AdminDashboard = () => {
                           rows={4}
                           value={newNotice.descriptionEn}
                           onChange={(e) => setNewNotice({ ...newNotice, descriptionEn: e.target.value })}
-                          placeholder="Write full notice details to be shown to citizens..."
+                          placeholder="Provide clear announcement details, schedule, or instructions"
                           className="w-full p-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
