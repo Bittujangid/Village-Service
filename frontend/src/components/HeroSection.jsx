@@ -64,16 +64,16 @@ const HeroSection = ({ onOpenGrievance, onOpenTrack }) => {
   const [resolvedCount, setResolvedCount] = useState(() => {
     try {
       const cached = localStorage.getItem('cached_resolved_count');
-      return cached !== null ? Number(cached) : 48;
+      return cached !== null ? Number(cached) : null;
     } catch {
-      return 48;
+      return null;
     }
   });
   const [totalWards, setTotalWards] = useState(7);
-  const [loadingStats, setLoadingStats] = useState(false);
+  const [loadingStats, setLoadingStats] = useState(true);
 
   // Animated Count-Up values for civic metrics
-  const animatedResolved = useCountUp(resolvedCount, 800);
+  const animatedResolved = useCountUp(resolvedCount ?? 0, 800);
   const animatedWards = useCountUp(totalWards, 800);
 
   useEffect(() => {
@@ -108,7 +108,10 @@ const HeroSection = ({ onOpenGrievance, onOpenTrack }) => {
     };
   }, []);
 
-  const displayResolved = animatedResolved > 0 ? `${animatedResolved}+` : '0';
+  // On cold start (no cache), show '—' until the API resolves
+  const displayResolved = resolvedCount === null
+    ? '—'
+    : animatedResolved > 0 ? `${animatedResolved}+` : '0';
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50 py-6 sm:py-12 lg:py-16 border-b border-slate-200/80">
