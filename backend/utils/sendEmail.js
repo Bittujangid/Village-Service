@@ -1,6 +1,36 @@
 const nodemailer = require('nodemailer');
 
 /**
+ * Strip HTML tags and decode basic HTML entities to create a clean plain-text fallback.
+ *
+ * @param {string} htmlStr - HTML string to convert
+ * @returns {string} Clean plain text
+ */
+const stripHtml = (htmlStr) => {
+  if (!htmlStr) return '';
+  return htmlStr
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/(p|div|tr|h[1-6]|li)>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&mdash;/gi, '—')
+    .replace(/&ndash;/gi, '–')
+    .replace(/&bull;/gi, '•')
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#([0-9]+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)))
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n\s*\n+/g, '\n\n')
+    .trim();
+};
+
+/**
  * Send an email via Brevo HTTP API (preferred) or Nodemailer SMTP (fallback).
  *
  * Priority:
@@ -21,15 +51,18 @@ const sendEmail = async ({ to, subject, html, text }) => {
 
   // ── 1. Brevo HTTP API (works on Render free tier) ───────────────────────────
   if (brevoKey) {
-    const senderName  = process.env.EMAIL_SENDER_NAME || 'Citizen Portal';
-    const senderEmail = user || 'no-reply@gramseva.in';
+    const senderName   = process.env.EMAIL_SENDER_NAME || 'Citizen Portal';
+    const senderEmail  = user || 'no-reply@gramseva.in';
+    const replyToEmail = process.env.EMAIL_USER || senderEmail;
+    const textContent  = (text && text.trim()) ? text.trim() : stripHtml(html);
 
     const payload = {
       sender:      { name: senderName, email: senderEmail },
+      replyTo:     { email: replyToEmail, name: senderName },
       to:          [{ email: to }],
       subject,
       htmlContent: html,
-      ...(text ? { textContent: text } : {}),
+      textContent,
     };
 
     const response = await fetch('https://api.brevo.com/v3/smtp/email', {
