@@ -67,6 +67,18 @@ const complaintSchema = new mongoose.Schema(
     adminRemarks: {
       type: String,
       default: 'शिकायत दर्ज कर ली गई है।'
+    },
+    email: {
+      type: String,
+      default: '',
+      trim: true,
+      validate: {
+        validator: function (v) {
+          if (!v || v.trim() === '') return true; // optional field
+          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+        },
+        message: props => `${props.value} एक मान्य ईमेल पता नहीं है (not a valid email address)`
+      }
     }
   },
   {

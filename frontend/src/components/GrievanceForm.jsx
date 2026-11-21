@@ -47,6 +47,7 @@ const GrievanceForm = ({ onSuccessClose }) => {
     ward: '',
     category: '',
     description: '',
+    email: '',
   });
 
   const [imageFile, setImageFile] = useState(null);
@@ -557,6 +558,9 @@ const GrievanceForm = ({ onSuccessClose }) => {
       payload.append('wardNumber', String(formData.ward));   // backend expects 'wardNumber'
       payload.append('category', formData.category);
       payload.append('description', formData.description.trim());
+      if (formData.email && formData.email.trim()) {
+        payload.append('email', formData.email.trim().toLowerCase());
+      }
       if (imageFile) {
         payload.append('image', imageFile);
       }
@@ -1076,6 +1080,35 @@ const GrievanceForm = ({ onSuccessClose }) => {
                 </span>
               </div>
             </div>
+          )}
+        </div>
+
+        {/* 2b. Email (Optional) — for resolution notification */}
+        <div>
+          <label htmlFor="grievance-email" className="block text-xs font-semibold text-slate-700 tracking-wide uppercase mb-1.5">
+            {lang === 'hi' ? 'ईमेल (वैकल्पिक)' : 'Email (Optional)'}
+          </label>
+          <p className="text-[11px] text-slate-500 mb-2">
+            {lang === 'hi'
+              ? 'शिकायत निस्तारण होने पर ईमेल सूचना प्राप्त करने के लिए दर्ज करें।'
+              : 'Provide your email to receive a notification when your complaint is resolved.'}
+          </p>
+          <input
+            id="grievance-email"
+            type="email"
+            inputMode="email"
+            autoComplete="email"
+            value={formData.email}
+            onChange={(e) => handleChange('email', e.target.value)}
+            onBlur={handleInputBlur}
+            placeholder={lang === 'hi' ? 'उदा. ram@example.com' : 'e.g. ram@example.com'}
+            className="w-full min-h-[46px] px-3.5 py-2.5 rounded-xl border border-slate-300 bg-slate-50/50 hover:bg-white focus:bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition-all text-sm"
+          />
+          {errors.email && (
+            <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+              <AlertCircle className="w-3.5 h-3.5" />
+              {errors.email}
+            </p>
           )}
         </div>
 

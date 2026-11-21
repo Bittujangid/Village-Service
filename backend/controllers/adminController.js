@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const Admin = require('../models/Admin');
 const Complaint = require('../models/Complaint');
-const { sendEmail, generateResetPasswordEmailHtml } = require('../utils/sendEmail');
+const { sendEmail, generateResetPasswordEmailHtml, generateResolutionEmailHtml } = require('../utils/sendEmail');
 const { recordFailedAttempt, resetFailedAttempts } = require('../middleware/loginLimiter');
 
 /**
@@ -285,6 +285,9 @@ const updateComplaintStatus = async (req, res, next) => {
       });
     }
 
+    // Capture previous status before update (for email trigger logic)
+    const previousStatus = complaint.status;
+
     if (normalizedStatus) {
       complaint.status = normalizedStatus;
     }
@@ -294,6 +297,35 @@ const updateComplaintStatus = async (req, res, next) => {
     }
 
     const updatedComplaint = await complaint.save();
+
+    // Fire resolution email non-blockingly when status transitions to Resolved
+    if (
+      normalizedStatus === 'Resolved' &&
+      previousStatus !== 'Resolved' &&
+      updatedComplaint.email &&
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(updatedComplaint.email)
+    ) {
+      setImmediate(async () => {
+        try {
+          const html = generateResolutionEmailHtml({
+            citizenName: updatedComplaint.citizenName,
+            trackingId: updatedComplaint.trackingId,
+            category: updatedComplaint.category,
+            wardNumber: updatedComplaint.wardNumber,
+            adminRemarks: updatedComplaint.adminRemarks,
+            resolvedAt: updatedComplaint.updatedAt,
+          });
+          await sendEmail({
+            to: updatedComplaint.email,
+            subject: `शिकायत निस्तारण सूचना - #${updatedComplaint.trackingId} | ग्राम पंचायत सहरी`,
+            html,
+            text: `नमस्ते ${updatedComplaint.citizenName},\n\nआपकी शिकायत #${updatedComplaint.trackingId} (${updatedComplaint.category}, वार्ड ${updatedComplaint.wardNumber}) का निस्तारण कर दिया गया है।\n\nटिप्पणी: ${updatedComplaint.adminRemarks || '—'}\n\nग्राम पंचायत सहरी`,
+          });
+        } catch (emailErr) {
+          console.warn('[updateComplaintStatus] Resolution email failed (non-critical):', emailErr.message);
+        }
+      });
+    }
 
     return res.status(200).json({
       success: true,

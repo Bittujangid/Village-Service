@@ -8,7 +8,7 @@ const generateTrackingId = require('../utils/generateTrackingId');
  */
 const createComplaint = async (req, res, next) => {
   try {
-    const { citizenName, phone, wardNumber, category, description } = req.body;
+    const { citizenName, phone, wardNumber, category, description, email } = req.body;
 
     // Validate required fields
     if (!citizenName || !phone || !wardNumber || !category || !description) {
@@ -44,6 +44,15 @@ const createComplaint = async (req, res, next) => {
       });
     }
 
+    // Validate optional email (only when provided)
+    const cleanEmail = email ? email.toString().trim().toLowerCase() : '';
+    if (cleanEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      return res.status(400).json({
+        success: false,
+        message: 'कृपया एक मान्य ईमेल पता दर्ज करें (Please provide a valid email address)'
+      });
+    }
+
     // Extract image URL if file uploaded via Multer Cloudinary
     let imageUrl = '';
     if (req.file) {
@@ -70,6 +79,7 @@ const createComplaint = async (req, res, next) => {
       category: category.trim(),
       description: description.trim(),
       imageUrl,
+      email: cleanEmail,
       status: 'Pending',
       adminRemarks: 'शिकायत दर्ज कर ली गई है।'
     });
