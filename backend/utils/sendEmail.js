@@ -1,57 +1,83 @@
 const nodemailer = require('nodemailer');
 
 /**
- * Send an email using Nodemailer transporter
+ * Send an email via Brevo HTTP API (preferred) or Nodemailer SMTP (fallback).
+ *
+ * Priority:
+ *   1. BREVO_API_KEY present  → Brevo transactional API (no SMTP port needed)
+ *   2. EMAIL_USER + EMAIL_PASS present → Nodemailer SMTP
+ *   3. Neither               → dev-mode console simulation
  *
  * @param {object} options
- * @param {string} options.to - Recipient email address
+ * @param {string} options.to      - Recipient email address
  * @param {string} options.subject - Subject line
- * @param {string} options.html - HTML body
- * @param {string} [options.text] - Plain text fallback
+ * @param {string} options.html    - HTML body
+ * @param {string} [options.text]  - Plain-text fallback
  */
 const sendEmail = async ({ to, subject, html, text }) => {
-  const host = process.env.EMAIL_HOST || 'smtp.gmail.com';
-  const port = parseInt(process.env.EMAIL_PORT, 10) || 587;
-  const user = process.env.EMAIL_USER;
-  const pass = process.env.EMAIL_PASS;
-  const from = process.env.EMAIL_FROM || '"ग्राम पंचायत सहरी पोर्टल" <no-reply@gramseva.in>';
+  const brevoKey = process.env.BREVO_API_KEY;
+  const user     = process.env.EMAIL_USER;
+  const pass     = process.env.EMAIL_PASS;
 
-  // If email credentials are not set in .env, simulate email dispatch in dev mode
-  if (!user || !pass) {
-    console.log('\n======================================================');
-    console.log('📧 [sendEmail SIMULATION] EMAIL_USER / EMAIL_PASS not set in .env');
-    console.log(`To: ${to}`);
-    console.log(`Subject: ${subject}`);
-    console.log('Body:');
-    console.log(text || html);
-    console.log('======================================================\n');
-    return {
-      messageId: `simulated-${Date.now()}`,
-      simulated: true,
+  // ── 1. Brevo HTTP API (works on Render free tier) ───────────────────────────
+  if (brevoKey) {
+    const senderName  = process.env.EMAIL_SENDER_NAME || 'Citizen Portal';
+    const senderEmail = user || 'no-reply@gramseva.in';
+
+    const payload = {
+      sender:      { name: senderName, email: senderEmail },
+      to:          [{ email: to }],
+      subject,
+      htmlContent: html,
+      ...(text ? { textContent: text } : {}),
     };
+
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method:  'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'api-key':      brevoKey,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errBody = await response.text();
+      throw new Error(`[sendEmail] Brevo API error ${response.status}: ${errBody}`);
+    }
+
+    const data = await response.json();
+    console.log(`[sendEmail] Brevo: message sent to ${to} — messageId: ${data.messageId}`);
+    return { messageId: data.messageId, provider: 'brevo' };
   }
 
-  const transporter = nodemailer.createTransport({
-    host,
-    port,
-    secure: port === 465,
-    auth: {
-      user,
-      pass,
-    },
-  });
+  // ── 2. Nodemailer SMTP fallback ──────────────────────────────────────────────
+  if (user && pass) {
+    const host = process.env.EMAIL_HOST || 'smtp.gmail.com';
+    const port = parseInt(process.env.EMAIL_PORT, 10) || 587;
+    const from = process.env.EMAIL_FROM || '"ग्राम पंचायत सहरी पोर्टल" <no-reply@gramseva.in>';
 
-  const mailOptions = {
-    from,
-    to,
-    subject,
-    text: text || '',
-    html,
-  };
+    const transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure: port === 465,
+      auth: { user, pass },
+    });
 
-  const info = await transporter.sendMail(mailOptions);
-  console.log(`[sendEmail] Message sent successfully to ${to}: ${info.messageId}`);
-  return info;
+    const info = await transporter.sendMail({ from, to, subject, text: text || '', html });
+    console.log(`[sendEmail] SMTP: message sent to ${to} — messageId: ${info.messageId}`);
+    return info;
+  }
+
+  // ── 3. Dev simulation (no credentials configured) ───────────────────────────
+  console.log('\n======================================================');
+  console.log('📧 [sendEmail SIMULATION] No BREVO_API_KEY or EMAIL_USER/PASS set in .env');
+  console.log(`To: ${to}`);
+  console.log(`Subject: ${subject}`);
+  console.log('Body:');
+  console.log(text || html);
+  console.log('======================================================\n');
+  return { messageId: `simulated-${Date.now()}`, simulated: true };
 };
 
 /**
